@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Film, DoorOpen, Calendar, Users, BarChart3, ShieldCheck, ArrowRight } from "lucide-react";
+import { Film, DoorOpen, Calendar, Users, ShieldCheck, ArrowRight, UserCheck } from "lucide-react";
 
 export default function BackofficeDashboardPage() {
   const modules = [
@@ -32,6 +32,13 @@ export default function BackofficeDashboardPage() {
       href: "/backoffice/usuarios",
       icon: Users,
       badge: "Equipe",
+    },
+    {
+      title: "Compliance LGPD (Art. 18)",
+      description: "Atendimento a titulares, consulta cadastral e anonimização in-place sem quebra de FK (ADR-009).",
+      href: "/backoffice/titulares",
+      icon: ShieldCheck,
+      badge: "Segurança & LGPD",
     },
   ];
 
@@ -78,7 +85,7 @@ export default function BackofficeDashboardPage() {
         </div>
 
         {/* Grid de Módulos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {modules.map((m) => {
             const Icon = m.icon;
             return (
