@@ -296,6 +296,55 @@ describe("Módulo de Sessões & Pré-população de SessionSeat (TASK-8 / ADR-00
       });
     });
 
+    it("herda status BLOCKED para SessionSeat quando assento físico da sala for BLOCKED ou MAINTENANCE", async () => {
+      vi.mocked(rawPrisma.film.findFirst).mockResolvedValue({
+        id: validFilmId,
+        durationMinutes: 100,
+      } as any);
+      vi.mocked(rawPrisma.room.findFirst).mockResolvedValue({
+        id: validRoomId,
+        name: "Sala Principal",
+      } as any);
+      vi.mocked(rawPrisma.session.findMany).mockResolvedValue([]);
+
+      const mockCreatedSession = {
+        id: "session-uuid-blocked-test",
+        tenantId,
+        filmId: validFilmId,
+        roomId: validRoomId,
+        startsAt: new Date("2026-11-05T19:00:00.000Z"),
+        price: 40,
+        status: "SCHEDULED",
+      };
+
+      const mockSeats = [
+        { id: "seat-ok", roomId: validRoomId, rowLabel: "A", columnNumber: 1, status: "AVAILABLE" },
+        { id: "seat-blocked", roomId: validRoomId, rowLabel: "A", columnNumber: 2, status: "BLOCKED" },
+        { id: "seat-maint", roomId: validRoomId, rowLabel: "A", columnNumber: 3, status: "MAINTENANCE" },
+      ];
+
+      vi.mocked(rawPrisma.session.create).mockResolvedValue(mockCreatedSession as any);
+      vi.mocked(rawPrisma.seat.findMany).mockResolvedValue(mockSeats as any);
+
+      await SessionService.createSession(
+        {
+          filmId: validFilmId,
+          roomId: validRoomId,
+          startsAt: new Date("2026-11-05T19:00:00.000Z"),
+          price: 40,
+        } as any,
+        tenantId
+      );
+
+      expect(rawPrisma.sessionSeat.createMany).toHaveBeenCalledWith({
+        data: [
+          { sessionId: "session-uuid-blocked-test", seatId: "seat-ok", tenantId, status: "AVAILABLE" },
+          { sessionId: "session-uuid-blocked-test", seatId: "seat-blocked", tenantId, status: "BLOCKED" },
+          { sessionId: "session-uuid-blocked-test", seatId: "seat-maint", tenantId, status: "BLOCKED" },
+        ],
+      });
+    });
+
     it("deleteSession lança SessionHasTicketsError se houver ingressos ou reservas vinculadas", async () => {
       vi.mocked(rawPrisma.session.findFirst).mockResolvedValue({
         id: "sess-1",

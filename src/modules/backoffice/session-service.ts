@@ -109,11 +109,14 @@ export async function createSession(input: CreateSessionInput, tenantId: string)
 
     if (physicalSeats.length > 0) {
       await tx.sessionSeat.createMany({
-        data: physicalSeats.map((seat) => ({
+        data: physicalSeats.map((seat: any) => ({
           sessionId: session.id,
           seatId: seat.id,
           tenantId,
-          status: "AVAILABLE",
+          status:
+            seat.status === "BLOCKED" || seat.status === "MAINTENANCE"
+              ? "BLOCKED"
+              : "AVAILABLE",
         })),
       });
     }

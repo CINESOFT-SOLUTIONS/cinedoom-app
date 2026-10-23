@@ -15,6 +15,28 @@ export function hasRole(userRole: string, allowedRoles: string[]): boolean {
  * - Rotas operacionais (/bilheteria) sao acessiveis por ATENDENTE e GERENTE.
  */
 export function evaluateRouteAccess(pathname: string, userRole?: string): RouteAccessResult {
+  // Endpoint de polling de assentos (AC-2 / US-5 / TC-17): acessivel por ATENDENTE, GERENTE e CLIENTE
+  const isAssentosPollingRoute =
+    pathname.startsWith("/api/sessoes/") && pathname.endsWith("/assentos");
+
+  if (isAssentosPollingRoute) {
+    if (!userRole) {
+      return {
+        allowed: false,
+        statusCode: 401,
+        reason: "Autenticacao obrigatoria para consultar mapa de assentos.",
+      };
+    }
+    if (userRole === "ATENDENTE" || userRole === "GERENTE" || userRole === "CLIENTE") {
+      return { allowed: true, statusCode: 200 };
+    }
+    return {
+      allowed: false,
+      statusCode: 403,
+      reason: `Acesso negado: Perfil ${userRole} nao possui autorizacao para consultar assentos.`,
+    };
+  }
+
   const isBackofficeRoute =
     pathname.startsWith("/backoffice") ||
     pathname.startsWith("/api/backoffice") ||

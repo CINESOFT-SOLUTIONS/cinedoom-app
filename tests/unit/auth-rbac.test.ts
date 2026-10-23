@@ -95,6 +95,26 @@ describe("Authentication & RBAC Control (AC-5 / TC-5 / TC-13 / TC-20)", () => {
       expect(bilheteriaRes.statusCode).toBe(403);
     });
 
+    it("permite ATENDENTE, GERENTE e CLIENTE no endpoint de polling de assentos (AC-2 / TC-17)", () => {
+      const pollingPath = "/api/sessoes/sess-123/assentos";
+
+      const atendenteRes = evaluateRouteAccess(pollingPath, "ATENDENTE");
+      expect(atendenteRes.allowed).toBe(true);
+      expect(atendenteRes.statusCode).toBe(200);
+
+      const gerenteRes = evaluateRouteAccess(pollingPath, "GERENTE");
+      expect(gerenteRes.allowed).toBe(true);
+      expect(gerenteRes.statusCode).toBe(200);
+
+      const clienteRes = evaluateRouteAccess(pollingPath, "CLIENTE");
+      expect(clienteRes.allowed).toBe(true);
+      expect(clienteRes.statusCode).toBe(200);
+
+      const unauthRes = evaluateRouteAccess(pollingPath, undefined);
+      expect(unauthRes.allowed).toBe(false);
+      expect(unauthRes.statusCode).toBe(401);
+    });
+
     it("requisicao desautenticada em rota protegida deve retornar HTTP 401", () => {
       const result = evaluateRouteAccess("/backoffice/filmes", undefined);
       expect(result.allowed).toBe(false);
