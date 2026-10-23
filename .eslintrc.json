@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "next/core-web-vitals"
+  ],
+  "plugins": [
+    "import"
+  ],
+  "rules": {
+    "import/no-cycle": [
+      "error",
+      {
+        "maxDepth": 5
+      }
+    ],
+    "@next/next/no-html-link-for-pages": "off"
+  }
+}

@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #1A1A2E;
+  --secondary: #0F3460;
+  --cta: #E94560;
+  --neutral-bg: #F5F5F5;
+  --dark-bg: #16213E;
+}
+
+body {
+  background-color: #16213E;
+  color: #F5F5F5;
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
