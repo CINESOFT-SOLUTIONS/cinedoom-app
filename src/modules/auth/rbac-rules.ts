@@ -10,7 +10,7 @@ export function hasRole(userRole: string, allowedRoles: string[]): boolean {
 
 /**
  * Validador estrito de politicas RBAC (Componente C-2 / AC-5).
- * - Rotas gerenciais (/backoffice, /admin, /gerente, /api/filmes, etc.) exigem compulsoriamente GERENTE.
+ * - Rotas gerenciais (/backoffice, /admin, /gerente, /api/filmes, /api/titulares, etc.) exigem compulsoriamente GERENTE.
  * - ATENDENTE e CLIENTE recebem HTTP 403 Forbidden se tentarem acessar rotas gerenciais.
  * - Rotas operacionais (/bilheteria) sao acessiveis por ATENDENTE e GERENTE.
  */
@@ -47,7 +47,8 @@ export function evaluateRouteAccess(pathname: string, userRole?: string): RouteA
     pathname.startsWith("/api/filmes") ||
     pathname.startsWith("/api/salas") ||
     pathname.startsWith("/api/sessoes") ||
-    pathname.startsWith("/api/usuarios");
+    pathname.startsWith("/api/usuarios") ||
+    pathname.startsWith("/api/titulares");
 
   const isBilheteriaRoute =
     pathname.startsWith("/bilheteria") ||

@@ -95,5 +95,7 @@ export const config = {
     "/api/sessoes/:path*",
     "/api/usuarios",
     "/api/usuarios/:path*",
+    "/api/titulares",
+    "/api/titulares/:path*",
   ],
 };
