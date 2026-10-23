@@ -71,6 +71,8 @@ export const config = {
     "/bilheteria/:path*",
     "/api/bilheteria",
     "/api/bilheteria/:path*",
+    "/api/vendas",
+    "/api/vendas/:path*",
     "/api/filmes",
     "/api/filmes/:path*",
     "/api/salas",
