@@ -1,0 +1,341 @@
+// ============================================================
+// CineDoom SaaS — Prisma Schema (Neon Serverless PostgreSQL)
+// Especificacao: specs/data-model/data-model.md
+// Rastreabilidade: ADR-004, ADR-007, ADR-008, ADR-010, ADR-012
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+// ------------------------------------------------------------
+// Enums
+// ------------------------------------------------------------
+
+enum UserRole {
+  ATENDENTE
+  GERENTE
+  CLIENTE
+}
+
+enum SeatStatus {
+  AVAILABLE
+  BLOCKED
+}
+
+enum SessionStatus {
+  SCHEDULED
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum SessionSeatStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+  BLOCKED
+}
+
+enum TicketStatus {
+  SOLD
+  CANCELLED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+// ------------------------------------------------------------
+// E-1: Tenant (Isolamento Multi-tenant)
+// ------------------------------------------------------------
+
+model Tenant {
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String        @db.VarChar(255)
+  slug         String        @unique @db.VarChar(100)
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz
+
+  users        User[]
+  films        Film[]
+  rooms        Room[]
+  sessions     Session[]
+  buyers       Buyer[]
+  tickets      Ticket[]
+  reservations Reservation[]
+
+  @@map("tenants")
+}
+
+// ------------------------------------------------------------
+// E-2: User (Autenticacao e RBAC: Atendente, Gerente e Cliente)
+// ------------------------------------------------------------
+
+model User {
+  id           String      @id @default(uuid()) @db.Uuid
+  tenantId     String      @map("tenant_id") @db.Uuid
+  email        String      @db.VarChar(255)
+  name         String      @db.VarChar(255)
+  passwordHash String      @map("password_hash") @db.VarChar(255)
+  role         UserRole    @default(ATENDENTE)
+  active       Boolean     @default(true)
+  createdAt    DateTime    @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant       Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  ticketsSold  Ticket[]    @relation("SoldTickets")
+  cancellations CancellationAudit[] @relation("CancelledAudits")
+  reservations Reservation[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId], name: "idx_users_tenant_id")
+  @@index([role], name: "idx_users_role")
+  @@map("users")
+}
+
+// ------------------------------------------------------------
+// E-3: Film (Catalogo Cinematografico)
+// ------------------------------------------------------------
+
+model Film {
+  id              String      @id @default(uuid()) @db.Uuid
+  tenantId        String      @map("tenant_id") @db.Uuid
+  title           String      @db.VarChar(255)
+  director        String?     @db.VarChar(255)
+  durationMinutes Int         @map("duration_minutes")
+  rating          String?     @db.VarChar(10)
+  synopsis        String?     @db.Text
+  posterUrl       String?     @map("poster_url") @db.VarChar(500)
+  createdAt       DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant          Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions        Session[]
+
+  @@index([tenantId], name: "idx_films_tenant_id")
+  @@map("films")
+}
+
+// ------------------------------------------------------------
+// E-4: Room (Salas de Exibicao)
+// ------------------------------------------------------------
+
+model Room {
+  id             String      @id @default(uuid()) @db.Uuid
+  tenantId       String      @map("tenant_id") @db.Uuid
+  name           String      @db.VarChar(100)
+  capacity       Int
+  layoutMetadata Json?       @map("layout_metadata")
+  createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant         Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  seats          Seat[]
+  sessions       Session[]
+
+  @@index([tenantId], name: "idx_rooms_tenant_id")
+  @@map("rooms")
+}
+
+// ------------------------------------------------------------
+// E-5: Seat (Assentos Fisicos)
+// ------------------------------------------------------------
+
+model Seat {
+  id           String       @id @default(uuid()) @db.Uuid
+  roomId       String       @map("room_id") @db.Uuid
+  tenantId     String       @map("tenant_id") @db.Uuid
+  rowLabel     String       @map("row_label") @db.VarChar(10)
+  columnNumber Int          @map("column_number")
+  seatCode     String       @map("seat_code") @db.VarChar(20)
+  status       SeatStatus   @default(AVAILABLE)
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz
+
+  room         Room         @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  sessionSeats SessionSeat[]
+  tickets      Ticket[]
+
+  @@unique([roomId, rowLabel, columnNumber])
+  @@index([roomId], name: "idx_seats_room_id")
+  @@index([tenantId], name: "idx_seats_tenant_id")
+  @@map("seats")
+}
+
+// ------------------------------------------------------------
+// E-6: Session (Sessoes Cinematograficas)
+// ------------------------------------------------------------
+
+model Session {
+  id           String        @id @default(uuid()) @db.Uuid
+  tenantId     String        @map("tenant_id") @db.Uuid
+  filmId       String        @map("film_id") @db.Uuid
+  roomId       String        @map("room_id") @db.Uuid
+  startsAt     DateTime      @map("starts_at") @db.Timestamptz
+  price        Decimal       @db.Decimal(10, 2)
+  status       SessionStatus @default(SCHEDULED)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  film         Film          @relation(fields: [filmId], references: [id], onDelete: Restrict)
+  room         Room          @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  sessionSeats SessionSeat[]
+  tickets      Ticket[]
+  reservations Reservation[]
+
+  @@index([tenantId], name: "idx_sessions_tenant_id")
+  @@index([startsAt], name: "idx_sessions_starts_at")
+  @@index([status], name: "idx_sessions_status")
+  @@index([filmId], name: "idx_sessions_film_id")
+  @@index([roomId], name: "idx_sessions_room_id")
+  @@map("sessions")
+}
+
+// ------------------------------------------------------------
+// E-11: Reservation (Reserva Publica Online com Expiracao JIT)
+// ------------------------------------------------------------
+
+model Reservation {
+  id                String            @id @default(uuid()) @db.Uuid
+  code              String            @unique @db.VarChar(10)
+  tenantId          String            @map("tenant_id") @db.Uuid
+  sessionId         String            @map("session_id") @db.Uuid
+  userId            String?           @map("user_id") @db.Uuid
+  buyerId           String?           @map("buyer_id") @db.Uuid
+  buyerName         String            @map("buyer_name") @db.VarChar(255)
+  buyerEmail        String            @map("buyer_email") @db.VarChar(255)
+  buyerCpfHash      String            @map("buyer_cpf_hash") @db.Char(64)
+  buyerCpfEncrypted String            @map("buyer_cpf_encrypted") @db.Text
+  status            ReservationStatus @default(PENDING)
+  totalPrice        Decimal           @map("total_price") @db.Decimal(10, 2)
+  expiresAt         DateTime          @map("expires_at") @db.Timestamptz
+  emailSentAt       DateTime?         @map("email_sent_at") @db.Timestamptz
+  confirmedAt       DateTime?         @map("confirmed_at") @db.Timestamptz
+  cancelledAt       DateTime?         @map("cancelled_at") @db.Timestamptz
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  session           Session           @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  user              User?             @relation(fields: [userId], references: [id], onDelete: Restrict)
+  buyer             Buyer?            @relation(fields: [buyerId], references: [id], onDelete: Restrict)
+  sessionSeats      SessionSeat[]
+
+  @@index([tenantId], name: "idx_reservations_tenant_id")
+  @@index([code], name: "idx_reservations_code")
+  @@index([userId], name: "idx_reservations_user_id")
+  @@index([sessionId], name: "idx_reservations_session_id")
+  @@index([status, expiresAt], name: "idx_reservations_status_expires")
+  @@map("reservations")
+}
+
+// ------------------------------------------------------------
+// E-7: SessionSeat (Pre-populada; trava SELECT FOR UPDATE)
+// ------------------------------------------------------------
+
+model SessionSeat {
+  id                   String            @id @default(uuid()) @db.Uuid
+  sessionId            String            @map("session_id") @db.Uuid
+  seatId               String            @map("seat_id") @db.Uuid
+  tenantId             String            @map("tenant_id") @db.Uuid
+  status               SessionSeatStatus @default(AVAILABLE)
+  reservationId        String?           @map("reservation_id") @db.Uuid
+  reservationExpiresAt DateTime?         @map("reservation_expires_at") @db.Timestamptz
+  updatedAt            DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  session              Session           @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  seat                 Seat              @relation(fields: [seatId], references: [id], onDelete: Restrict)
+  reservation          Reservation?      @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+
+  @@unique([sessionId, seatId])
+  @@index([sessionId], name: "idx_session_seats_session_id")
+  @@index([sessionId, status], name: "idx_session_seats_session_status")
+  @@index([tenantId], name: "idx_session_seats_tenant_id")
+  @@map("session_seats")
+}
+
+// ------------------------------------------------------------
+// E-8: Buyer (Dados PII com Criptografia LGPD: HMAC + AES)
+// ------------------------------------------------------------
+
+model Buyer {
+  id            String        @id @default(uuid()) @db.Uuid
+  tenantId      String        @map("tenant_id") @db.Uuid
+  name          String        @db.VarChar(255)
+  email         String        @db.VarChar(255)
+  cpfHash       String        @map("cpf_hash") @db.Char(64)
+  cpfEncrypted  String        @map("cpf_encrypted") @db.Text
+  lgpdConsentAt DateTime      @map("lgpd_consent_at") @db.Timestamptz
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  tickets       Ticket[]
+  reservations  Reservation[]
+
+  @@index([tenantId], name: "idx_buyers_tenant_id")
+  @@index([cpfHash], name: "idx_buyers_cpf_hash")
+  @@index([tenantId, cpfHash], name: "idx_buyers_tenant_cpf")
+  @@map("buyers")
+}
+
+// ------------------------------------------------------------
+// E-9: Ticket (Emissao de Ingressos)
+// ------------------------------------------------------------
+
+model Ticket {
+  id                String             @id @default(uuid()) @db.Uuid
+  tenantId          String             @map("tenant_id") @db.Uuid
+  sessionId         String             @map("session_id") @db.Uuid
+  seatId            String             @map("seat_id") @db.Uuid
+  buyerId           String             @map("buyer_id") @db.Uuid
+  soldByUserId      String             @map("sold_by_user_id") @db.Uuid
+  status            TicketStatus       @default(SOLD)
+  price             Decimal            @db.Decimal(10, 2)
+  soldAt            DateTime           @default(now()) @map("sold_at") @db.Timestamptz
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  session           Session            @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  seat              Seat               @relation(fields: [seatId], references: [id], onDelete: Restrict)
+  buyer             Buyer              @relation(fields: [buyerId], references: [id], onDelete: Restrict)
+  soldByUser        User               @relation("SoldTickets", fields: [soldByUserId], references: [id], onDelete: Restrict)
+  cancellationAudit CancellationAudit?
+
+  @@unique([sessionId, seatId])
+  @@index([tenantId], name: "idx_tickets_tenant_id")
+  @@index([sessionId], name: "idx_tickets_session_id")
+  @@index([buyerId], name: "idx_tickets_buyer_id")
+  @@index([status], name: "idx_tickets_status")
+  @@index([soldByUserId], name: "idx_tickets_sold_by_user_id")
+  @@map("tickets")
+}
+
+// ------------------------------------------------------------
+// E-10: CancellationAudit (Append-only imutavel via Trigger)
+// ------------------------------------------------------------
+
+model CancellationAudit {
+  id                 String   @id @default(uuid()) @db.Uuid
+  tenantId           String   @map("tenant_id") @db.Uuid
+  ticketId           String   @unique @map("ticket_id") @db.Uuid
+  cancelledByUserId  String   @map("cancelled_by_user_id") @db.Uuid
+  reason             String   @db.Text
+  cancelledAt        DateTime @default(now()) @map("cancelled_at") @db.Timestamptz
+
+  ticket             Ticket   @relation(fields: [ticketId], references: [id], onDelete: Restrict)
+  cancelledByUser    User     @relation("CancelledAudits", fields: [cancelledByUserId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId], name: "idx_cancellation_audits_tenant_id")
+  @@index([ticketId], name: "idx_cancellation_audits_ticket_id")
+  @@index([cancelledByUserId], name: "idx_cancellation_audits_user_id")
+  @@map("cancellation_audits")
+}
