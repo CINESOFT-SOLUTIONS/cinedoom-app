@@ -7,9 +7,10 @@ import { MODULE_NAME as ocupacao } from "@/modules/ocupacao";
 import { MODULE_NAME as portal } from "@/modules/portal";
 import { MODULE_NAME as compradores } from "@/modules/compradores";
 import { MODULE_NAME as notificacoes } from "@/modules/notificacoes";
+import { MODULE_NAME as crypto } from "@/modules/crypto";
 
 describe("Modular Architecture (Monolito Modular)", () => {
-  it("todos os 8 modulos de dominio devem ser exportados sem ciclos", () => {
+  it("todos os modulos de dominio e seguranca devem ser exportados sem ciclos", () => {
     expect(bilheteria).toBe("bilheteria");
     expect(backoffice).toBe("backoffice");
     expect(auth).toBe("auth");
@@ -18,5 +19,6 @@ describe("Modular Architecture (Monolito Modular)", () => {
     expect(portal).toBe("portal");
     expect(compradores).toBe("compradores");
     expect(notificacoes).toBe("notificacoes");
+    expect(crypto).toBe("crypto");
   });
 });
