@@ -1,3 +1,4 @@
-// Modulo: tenancy
-// Rastreabilidade: ISO/IEC/IEEE 12207:2021
+export * from "./tenancy-context";
+export * from "./prisma-tenancy-extension";
+
 export const MODULE_NAME = "tenancy";
