@@ -63,5 +63,13 @@ export const config = {
     "/api/gerente/:path*",
     "/bilheteria/:path*",
     "/api/bilheteria/:path*",
+    "/api/filmes/:path*",
+    "/api/filmes",
+    "/api/salas/:path*",
+    "/api/salas",
+    "/api/sessoes/:path*",
+    "/api/sessoes",
+    "/api/usuarios/:path*",
+    "/api/usuarios",
   ],
 };

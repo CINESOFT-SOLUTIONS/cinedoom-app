@@ -1,3 +1,5 @@
-// Modulo: backoffice
-// Rastreabilidade: ISO/IEC/IEEE 12207:2021
+// Modulo: backoffice (Componente C-10: BackofficeModule)
+// Rastreabilidade: ISO/IEC/IEEE 12207:2021, AC-5, AC-8, ADR-003
 export const MODULE_NAME = "backoffice";
+export * from "./film-schema";
+export * from "./film-service";
