@@ -51,6 +51,7 @@ export const authOptions: NextAuthOptions = {
                 email: user.email,
                 role: user.role as "ATENDENTE" | "GERENTE" | "CLIENTE",
                 tenantId: user.tenantId,
+                active: user.active,
               };
             }
           }
@@ -67,6 +68,7 @@ export const authOptions: NextAuthOptions = {
               email: "gerente@cinedoom.com",
               role: "GERENTE",
               tenantId: "11111111-1111-4111-a111-111111111111",
+              active: true,
             };
           }
           if (normalizedEmail === "atendente@cinedoom.com") {
@@ -76,6 +78,7 @@ export const authOptions: NextAuthOptions = {
               email: "atendente@cinedoom.com",
               role: "ATENDENTE",
               tenantId: "11111111-1111-4111-a111-111111111111",
+              active: true,
             };
           }
         }
@@ -90,7 +93,26 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
         token.tenantId = user.tenantId;
+        token.active = user.active ?? true;
       }
+
+      // Revalida se o usuario continua ativo (DoD: Operador inativado perde acesso imediatamente)
+      if (token?.id) {
+        try {
+          const dbUser = await rawPrisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { active: true, role: true },
+          });
+
+          if (dbUser) {
+            token.active = dbUser.active;
+            token.role = dbUser.role as "ATENDENTE" | "GERENTE" | "CLIENTE";
+          }
+        } catch {
+          // Mantem o token caso a conexao direta falhe em mock
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
@@ -98,6 +120,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as "ATENDENTE" | "GERENTE" | "CLIENTE";
         session.user.tenantId = token.tenantId as string;
+        session.user.active = token.active !== false;
       }
       return session;
     },
