@@ -1,0 +1,66 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Lint, Typecheck, Test & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: "postgresql://cinedoom_ci:cinedoom_ci@localhost:5432/cinedoom_test?sslmode=disable"
+      DATABASE_URL_UNPOOLED: "postgresql://cinedoom_ci:cinedoom_ci@localhost:5432/cinedoom_test?sslmode=disable"
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "cinedoom-ci-super-secret-key-at-least-32-chars-long"
+      CINEDOOM_CPF_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+      CINEDOOM_CPF_HMAC_KEY: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+      AXIOM_TOKEN: "mock-ci-axiom-token"
+      AXIOM_DATASET: "cinedoom-production-logs"
+      RESEND_API_KEY: "mock-resend-key"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm prisma generate
+
+      - name: TypeScript Typecheck
+        run: pnpm tsc --noEmit
+
+      - name: ESLint & No-Cycle Check
+        run: pnpm eslint
+
+      - name: Run Unit Tests
+        run: pnpm test
+
+      - name: Production Build Verification
+        run: pnpm build
