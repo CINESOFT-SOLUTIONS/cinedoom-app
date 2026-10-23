@@ -52,7 +52,8 @@ export function evaluateRouteAccess(pathname: string, userRole?: string): RouteA
   const isBilheteriaRoute =
     pathname.startsWith("/bilheteria") ||
     pathname.startsWith("/api/bilheteria") ||
-    pathname.startsWith("/api/vendas");
+    pathname.startsWith("/api/vendas") ||
+    pathname.startsWith("/api/ingressos");
 
   // Se nao requer perfil restrito, permite
   if (!isBackofficeRoute && !isBilheteriaRoute) {
