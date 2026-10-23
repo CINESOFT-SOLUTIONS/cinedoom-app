@@ -10,6 +10,7 @@ import {
 import { rawPrisma } from "@/shared/db/prisma";
 import { NextRequest } from "next/server";
 import { GET as getSalas, POST as postSalas } from "@/app/api/salas/route";
+import { GET as getRoomById } from "@/app/api/salas/[id]/route";
 import { getServerSession } from "next-auth";
 
 vi.mock("@/shared/db/prisma", () => {
@@ -309,6 +310,21 @@ describe("Módulo de Salas & Geração Física de Assentos (TASK-7 / AC-5 / AC-8
       const json = await response.json();
       expect(json).toHaveLength(1);
       expect(json[0].name).toBe("Sala Principal");
+    });
+
+    it("TC-5 / AC-5: ATENDENTE recebe HTTP 403 ao tentar GET /api/salas/[id]", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({
+        user: { id: "user-1", role: "ATENDENTE", tenantId },
+      } as any);
+
+      const request = new NextRequest("http://localhost:3000/api/salas/room-123", {
+        method: "GET",
+      });
+
+      const response = await getRoomById(request, { params: { id: "room-123" } });
+      expect(response.status).toBe(403);
+      const json = await response.json();
+      expect(json.error).toContain("Acesso negado");
     });
   });
 });

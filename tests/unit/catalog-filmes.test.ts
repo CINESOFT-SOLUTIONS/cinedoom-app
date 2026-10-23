@@ -10,6 +10,7 @@ import {
 import { rawPrisma } from "@/shared/db/prisma";
 import { NextRequest } from "next/server";
 import { GET as getFilmes, POST as postFilmes } from "@/app/api/filmes/route";
+import { GET as getFilmById } from "@/app/api/filmes/[id]/route";
 
 // Mock do prisma
 vi.mock("@/shared/db/prisma", () => {
@@ -333,6 +334,21 @@ describe("Catálogo de Filmes Backoffice (AC-5 / AC-8 / TC-8 / TC-16)", () => {
       const json = await response.json();
       expect(json).toHaveLength(1);
       expect(json[0].title).toBe("Filme A");
+    });
+
+    it("TC-5 / AC-5: ATENDENTE recebe HTTP 403 ao tentar GET /api/filmes/[id]", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({
+        user: { id: "user-1", role: "ATENDENTE", tenantId },
+      } as any);
+
+      const request = new NextRequest("http://localhost:3000/api/filmes/film-123", {
+        method: "GET",
+      });
+
+      const response = await getFilmById(request, { params: { id: "film-123" } });
+      expect(response.status).toBe(403);
+      const json = await response.json();
+      expect(json.error).toContain("Acesso negado");
     });
   });
 });
