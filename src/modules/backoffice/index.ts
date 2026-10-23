@@ -5,3 +5,5 @@ export * from "./film-schema";
 export * from "./film-service";
 export * from "./room-schema";
 export * from "./room-service";
+export * from "./session-schema";
+export * from "./session-service";
