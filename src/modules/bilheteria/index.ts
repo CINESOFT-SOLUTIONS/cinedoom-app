@@ -3,3 +3,4 @@
 export const MODULE_NAME = "bilheteria";
 
 export * from "./components/seating-grid";
+export * from "./hooks/use-session-seats";
