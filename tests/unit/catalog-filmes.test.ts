@@ -10,6 +10,7 @@ import {
 import { rawPrisma } from "@/shared/db/prisma";
 import { NextRequest } from "next/server";
 import { GET as getFilmes, POST as postFilmes } from "@/app/api/filmes/route";
+import { GET as getFilmById } from "@/app/api/filmes/[id]/route";
 
 // Mock do prisma
 vi.mock("@/shared/db/prisma", () => {
@@ -67,6 +68,22 @@ describe("Catálogo de Filmes Backoffice (AC-5 / AC-8 / TC-8 / TC-16)", () => {
       if (result.success) {
         expect(result.data.title).toBe("Duna: Parte Dois");
         expect(result.data.durationMinutes).toBe(166);
+      }
+    });
+
+    it("deve aceitar interoperabilidade com snake_case duration_minutes e poster_url", () => {
+      const snakePayload = {
+        title: "Oppenheimer",
+        duration_minutes: 180,
+        poster_url: "/posters/oppenheimer.jpg",
+      };
+
+      const result = createFilmSchema.safeParse(snakePayload);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.title).toBe("Oppenheimer");
+        expect(result.data.durationMinutes).toBe(180);
+        expect(result.data.posterUrl).toBe("/posters/oppenheimer.jpg");
       }
     });
 
@@ -202,7 +219,7 @@ describe("Catálogo de Filmes Backoffice (AC-5 / AC-8 / TC-8 / TC-16)", () => {
   });
 
   describe("Route Handlers /api/filmes (Controle de Acesso RBAC & HTTP Status)", () => {
-    it("TC-5 / AC-5: ATENDENTE recebe compulsoriamente HTTP 403 ao tentar criar filme", async () => {
+    it("TC-5 / AC-5: ATENDENTE recebe compulsoriamente HTTP 403 ao tentar POST /api/filmes", async () => {
       vi.mocked(getServerSession).mockResolvedValue({
         user: { id: "user-1", role: "ATENDENTE", tenantId },
       } as any);
@@ -221,6 +238,23 @@ describe("Catálogo de Filmes Backoffice (AC-5 / AC-8 / TC-8 / TC-16)", () => {
       const json = await response.json();
       expect(json.error).toContain("Acesso negado");
       expect(rawPrisma.film.create).not.toHaveBeenCalled();
+    });
+
+    it("TC-5 / AC-5: ATENDENTE recebe compulsoriamente HTTP 403 ao tentar GET /api/filmes", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({
+        user: { id: "user-1", role: "ATENDENTE", tenantId },
+      } as any);
+
+      const request = new NextRequest("http://localhost:3000/api/filmes", {
+        method: "GET",
+      });
+
+      const response = await getFilmes(request);
+      expect(response.status).toBe(403);
+
+      const json = await response.json();
+      expect(json.error).toContain("Acesso negado");
+      expect(rawPrisma.film.findMany).not.toHaveBeenCalled();
     });
 
     it("TC-16: POST retorna HTTP 422 Unprocessable Entity quando payload for inválido", async () => {
@@ -284,7 +318,7 @@ describe("Catálogo de Filmes Backoffice (AC-5 / AC-8 / TC-8 / TC-16)", () => {
       expect(json.title).toBe("O Poderoso Chefão");
     });
 
-    it("GET /api/filmes lista os filmes do tenant autenticado", async () => {
+    it("GET /api/filmes lista os filmes do tenant quando usuário for GERENTE", async () => {
       vi.mocked(getServerSession).mockResolvedValue({
         user: { id: "user-1", role: "GERENTE", tenantId },
       } as any);
@@ -300,6 +334,21 @@ describe("Catálogo de Filmes Backoffice (AC-5 / AC-8 / TC-8 / TC-16)", () => {
       const json = await response.json();
       expect(json).toHaveLength(1);
       expect(json[0].title).toBe("Filme A");
+    });
+
+    it("TC-5 / AC-5: ATENDENTE recebe HTTP 403 ao tentar GET /api/filmes/[id]", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({
+        user: { id: "user-1", role: "ATENDENTE", tenantId },
+      } as any);
+
+      const request = new NextRequest("http://localhost:3000/api/filmes/film-123", {
+        method: "GET",
+      });
+
+      const response = await getFilmById(request, { params: { id: "film-123" } });
+      expect(response.status).toBe(403);
+      const json = await response.json();
+      expect(json.error).toContain("Acesso negado");
     });
   });
 });

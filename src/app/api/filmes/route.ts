@@ -14,7 +14,16 @@ import {
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
   const headerTenantId = request.headers.get("x-tenant-id");
+  const userRole = session?.user?.role || (request.headers.get("x-user-role") as any);
   const tenantId = session?.user?.tenantId || headerTenantId;
+
+  // AC-5 / TC-5: Rota restrita ao GERENTE; ATENDENTE recebe compulsoriamente 403
+  if (userRole && userRole !== "GERENTE") {
+    return NextResponse.json(
+      { error: "Acesso negado: Perfil sem permissao para consultar catalogo gerencial (AC-5 / TC-5)." },
+      { status: 403 }
+    );
+  }
 
   if (!tenantId) {
     return NextResponse.json(

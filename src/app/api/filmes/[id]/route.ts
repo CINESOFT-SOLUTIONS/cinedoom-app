@@ -18,7 +18,15 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   const session = await getServerSession(authOptions);
   const headerTenantId = request.headers.get("x-tenant-id");
+  const userRole = session?.user?.role || (request.headers.get("x-user-role") as any);
   const tenantId = session?.user?.tenantId || headerTenantId;
+
+  if (userRole && userRole !== "GERENTE") {
+    return NextResponse.json(
+      { error: "Acesso negado: Perfil sem permissao para gerenciar filmes (AC-5, AC-8)." },
+      { status: 403 }
+    );
+  }
 
   if (!tenantId) {
     return NextResponse.json(

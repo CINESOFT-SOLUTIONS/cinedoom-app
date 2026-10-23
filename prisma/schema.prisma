@@ -275,6 +275,7 @@ model Buyer {
   cpfHash       String        @map("cpf_hash") @db.Char(64)
   cpfEncrypted  String        @map("cpf_encrypted") @db.Text
   lgpdConsentAt DateTime      @map("lgpd_consent_at") @db.Timestamptz
+  anonymizedAt  DateTime?     @map("anonymized_at") @db.Timestamptz
   createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz
 
   tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
