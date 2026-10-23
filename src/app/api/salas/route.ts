@@ -9,12 +9,21 @@ import {
 
 /**
  * Route Handler para Salas e Layout Físico
- * Rastreabilidade: AC-5, AC-8, TASK-7, ADR-003
+ * Rastreabilidade: AC-5, AC-8, TASK-7, TC-13, ADR-003
  */
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
   const headerTenantId = request.headers.get("x-tenant-id");
+  const userRole = session?.user?.role || (request.headers.get("x-user-role") as any);
   const tenantId = session?.user?.tenantId || headerTenantId;
+
+  // AC-5 / TC-13: Apenas GERENTE pode acessar gestao de salas; ATENDENTE recebe 403
+  if (userRole && userRole !== "GERENTE") {
+    return NextResponse.json(
+      { error: "Acesso negado: Perfil sem permissao para consultar salas gerenciais (AC-5 / TC-13)." },
+      { status: 403 }
+    );
+  }
 
   if (!tenantId) {
     return NextResponse.json(

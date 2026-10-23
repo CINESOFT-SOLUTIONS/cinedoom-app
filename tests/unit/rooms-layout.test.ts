@@ -58,7 +58,7 @@ vi.mock("next-auth", () => ({
   getServerSession: vi.fn(),
 }));
 
-describe("Módulo de Salas & Geração Física de Assentos (TASK-7 / AC-5 / AC-8)", () => {
+describe("Módulo de Salas & Geração Física de Assentos (TASK-7 / AC-5 / AC-8 / TC-13)", () => {
   const tenantId = "tenant-cinema-alphaville";
 
   beforeEach(() => {
@@ -207,7 +207,7 @@ describe("Módulo de Salas & Geração Física de Assentos (TASK-7 / AC-5 / AC-8
   });
 
   describe("Route Handlers /api/salas (Controle de Acesso RBAC)", () => {
-    it("AC-5: ATENDENTE recebe compulsoriamente HTTP 403 ao tentar criar sala", async () => {
+    it("AC-5: ATENDENTE recebe compulsoriamente HTTP 403 ao tentar POST /api/salas", async () => {
       vi.mocked(getServerSession).mockResolvedValue({
         user: { id: "user-1", role: "ATENDENTE", tenantId },
       } as any);
@@ -225,6 +225,22 @@ describe("Módulo de Salas & Geração Física de Assentos (TASK-7 / AC-5 / AC-8
       expect(response.status).toBe(403);
       const json = await response.json();
       expect(json.error).toContain("Acesso negado");
+    });
+
+    it("TC-13 / AC-5: ATENDENTE recebe compulsoriamente HTTP 403 ao tentar GET /api/salas", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({
+        user: { id: "user-1", role: "ATENDENTE", tenantId },
+      } as any);
+
+      const request = new NextRequest("http://localhost:3000/api/salas", {
+        method: "GET",
+      });
+
+      const response = await getSalas(request);
+      expect(response.status).toBe(403);
+      const json = await response.json();
+      expect(json.error).toContain("Acesso negado");
+      expect(rawPrisma.room.findMany).not.toHaveBeenCalled();
     });
 
     it("POST retorna HTTP 422 quando dados de sala forem inválidos", async () => {
@@ -277,7 +293,7 @@ describe("Módulo de Salas & Geração Física de Assentos (TASK-7 / AC-5 / AC-8
       expect(json.seatsGeneratedCount).toBe(50);
     });
 
-    it("GET /api/salas lista as salas do tenant autenticado", async () => {
+    it("GET /api/salas lista as salas do tenant quando usuário for GERENTE", async () => {
       vi.mocked(getServerSession).mockResolvedValue({
         user: { id: "user-1", role: "GERENTE", tenantId },
       } as any);
