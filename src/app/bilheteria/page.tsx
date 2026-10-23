@@ -103,6 +103,18 @@ export default function BilheteriaMapaAssentosPage() {
     setSelectedSeatIds([]);
   }, [selectedSessionId]);
 
+  // AC-2 / US-5: Remove automaticamente da selecao qualquer assento que tenha sido vendido ou reservado via polling
+  useEffect(() => {
+    if (liveSeats.length > 0) {
+      setSelectedSeatIds((prev) =>
+        prev.filter((id) => {
+          const seat = liveSeats.find((s) => s.id === id);
+          return seat ? seat.status === "AVAILABLE" : true;
+        })
+      );
+    }
+  }, [liveSeats]);
+
   const activeSession = sessions.find((s) => s.id === selectedSessionId);
   const displayedSeats = selectedSessionId && liveSeats.length > 0 ? liveSeats : generateFallbackSeats();
   const unitPrice = activeSession ? Number(activeSession.price) : 35.0;

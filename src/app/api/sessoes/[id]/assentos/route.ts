@@ -82,19 +82,31 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       ],
     });
 
-    // Mapeamento de payload enxuto compativel com AC-2 e SeatingGrid
-    const lightweightPayload = sessionSeats.map((ss) => ({
-      id: ss.id,
-      seat_id: ss.seatId,
-      seatId: ss.seatId,
-      row: ss.seat.rowLabel,
-      rowLabel: ss.seat.rowLabel,
-      number: ss.seat.columnNumber,
-      columnNumber: ss.seat.columnNumber,
-      seatCode: ss.seat.seatCode || `${ss.seat.rowLabel}${ss.seat.columnNumber}`,
-      status: ss.status,
-      price: Number(sessionData.price),
-    }));
+    const now = new Date();
+
+    // Mapeamento de payload enxuto compativel com AC-2, SeatingGrid e AD-9 (JIT expiration)
+    const lightweightPayload = sessionSeats.map((ss) => {
+      // AD-9 / ADR-012: Expiracao Just-in-Time de reservas no mapa de assentos
+      const isReservationExpired =
+        ss.status === "RESERVED" &&
+        ss.reservationExpiresAt &&
+        new Date(ss.reservationExpiresAt) <= now;
+
+      const effectiveStatus = isReservationExpired ? "AVAILABLE" : ss.status;
+
+      return {
+        id: ss.id,
+        seat_id: ss.seatId,
+        seatId: ss.seatId,
+        row: ss.seat.rowLabel,
+        rowLabel: ss.seat.rowLabel,
+        number: ss.seat.columnNumber,
+        columnNumber: ss.seat.columnNumber,
+        seatCode: ss.seat.seatCode || `${ss.seat.rowLabel}${ss.seat.columnNumber}`,
+        status: effectiveStatus,
+        price: Number(sessionData.price),
+      };
+    });
 
     // AC-2 / TC-10: Cabecalho mandatorio Cache-Control: no-store
     return NextResponse.json(lightweightPayload, {

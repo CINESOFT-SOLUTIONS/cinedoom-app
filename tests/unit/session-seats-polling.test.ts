@@ -153,6 +153,133 @@ describe("Polling do Mapa de Assentos (TASK-9 / TASK-10 / AC-2 / ADR-006 / TC-2 
       }
     });
 
+    it("TC-2: polling subsequente reflete venda de assento (AVAILABLE -> SOLD) dentro do ciclo", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({
+        user: { id: "user-1", role: "ATENDENTE", tenantId },
+      } as any);
+
+      vi.mocked(rawPrisma.session.findFirst).mockResolvedValue({
+        id: sessionId,
+        price: 35.0,
+      } as any);
+
+      // Ciclo 1 do polling: Assento A1 esta AVAILABLE
+      vi.mocked(rawPrisma.sessionSeat.findMany).mockResolvedValueOnce([
+        {
+          id: "ss-1",
+          seatId: "seat-1",
+          status: "AVAILABLE",
+          seat: { rowLabel: "A", columnNumber: 1, seatCode: "A1" },
+        },
+      ] as any);
+
+      const req1 = new NextRequest(`http://localhost:3000/api/sessoes/${sessionId}/assentos`);
+      const res1 = await getSessionSeats(req1, { params: { id: sessionId } });
+      const payload1 = await res1.json();
+      expect(payload1[0].status).toBe("AVAILABLE");
+
+      // Ciclo 2 do polling (apos venda em outro terminal): Assento A1 agora esta SOLD
+      vi.mocked(rawPrisma.sessionSeat.findMany).mockResolvedValueOnce([
+        {
+          id: "ss-1",
+          seatId: "seat-1",
+          status: "SOLD",
+          seat: { rowLabel: "A", columnNumber: 1, seatCode: "A1" },
+        },
+      ] as any);
+
+      const req2 = new NextRequest(`http://localhost:3000/api/sessoes/${sessionId}/assentos`);
+      const res2 = await getSessionSeats(req2, { params: { id: sessionId } });
+      const payload2 = await res2.json();
+      expect(payload2[0].status).toBe("SOLD");
+    });
+
+    it("TC-10: polling subsequente reflete cancelamento de ingresso (SOLD -> AVAILABLE)", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({
+        user: { id: "user-1", role: "ATENDENTE", tenantId },
+      } as any);
+
+      vi.mocked(rawPrisma.session.findFirst).mockResolvedValue({
+        id: sessionId,
+        price: 35.0,
+      } as any);
+
+      // Ciclo 1: Assento B3 esta SOLD
+      vi.mocked(rawPrisma.sessionSeat.findMany).mockResolvedValueOnce([
+        {
+          id: "ss-b3",
+          seatId: "seat-b3",
+          status: "SOLD",
+          seat: { rowLabel: "B", columnNumber: 3, seatCode: "B3" },
+        },
+      ] as any);
+
+      const req1 = new NextRequest(`http://localhost:3000/api/sessoes/${sessionId}/assentos`);
+      const res1 = await getSessionSeats(req1, { params: { id: sessionId } });
+      const payload1 = await res1.json();
+      expect(payload1[0].status).toBe("SOLD");
+
+      // Ciclo 2 (apos cancelamento de ingresso com trigger imutavel): Assento B3 liberado para AVAILABLE
+      vi.mocked(rawPrisma.sessionSeat.findMany).mockResolvedValueOnce([
+        {
+          id: "ss-b3",
+          seatId: "seat-b3",
+          status: "AVAILABLE",
+          seat: { rowLabel: "B", columnNumber: 3, seatCode: "B3" },
+        },
+      ] as any);
+
+      const req2 = new NextRequest(`http://localhost:3000/api/sessoes/${sessionId}/assentos`);
+      const res2 = await getSessionSeats(req2, { params: { id: sessionId } });
+      const payload2 = await res2.json();
+      expect(payload2[0].status).toBe("AVAILABLE");
+    });
+
+    it("AD-9 / ADR-012: reserva expirada (reservationExpiresAt <= NOW()) eh liberada Just-in-Time como AVAILABLE", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({
+        user: { id: "user-1", role: "ATENDENTE", tenantId },
+      } as any);
+
+      vi.mocked(rawPrisma.session.findFirst).mockResolvedValue({
+        id: sessionId,
+        price: 35.0,
+      } as any);
+
+      // Assento C1 esta RESERVED mas expirou ha 5 minutos
+      const expiredDate = new Date(Date.now() - 5 * 60 * 1000);
+      // Assento C2 esta RESERVED mas ainda valido por mais 20 minutos
+      const validDate = new Date(Date.now() + 20 * 60 * 1000);
+
+      vi.mocked(rawPrisma.sessionSeat.findMany).mockResolvedValue([
+        {
+          id: "ss-c1",
+          seatId: "seat-c1",
+          status: "RESERVED",
+          reservationExpiresAt: expiredDate,
+          seat: { rowLabel: "C", columnNumber: 1, seatCode: "C1" },
+        },
+        {
+          id: "ss-c2",
+          seatId: "seat-c2",
+          status: "RESERVED",
+          reservationExpiresAt: validDate,
+          seat: { rowLabel: "C", columnNumber: 2, seatCode: "C2" },
+        },
+      ] as any);
+
+      const req = new NextRequest(`http://localhost:3000/api/sessoes/${sessionId}/assentos`);
+      const res = await getSessionSeats(req, { params: { id: sessionId } });
+      const payload = await res.json();
+
+      // C1 expirou, portanto status avaliado JIT eh AVAILABLE
+      expect(payload[0].id).toBe("ss-c1");
+      expect(payload[0].status).toBe("AVAILABLE");
+
+      // C2 ainda dentro do prazo, status permanece RESERVED
+      expect(payload[1].id).toBe("ss-c2");
+      expect(payload[1].status).toBe("RESERVED");
+    });
+
     it("benchmark de latencia: endpoint responde em menos de 100ms", async () => {
       vi.mocked(getServerSession).mockResolvedValue({
         user: { id: "user-1", role: "ATENDENTE", tenantId },
