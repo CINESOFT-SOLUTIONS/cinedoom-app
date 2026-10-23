@@ -14,6 +14,18 @@ export async function middleware(request: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  // AC-5 / DoD: Operador inativado perde acesso a aplicacao imediatamente
+  if (token && token.active === false) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        { error: "Conta inativada pelo gerente. Acesso revogado imediatamente." },
+        { status: 403 }
+      );
+    }
+    const loginUrl = new URL("/auth/login?error=ContaInativa", request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
   const userRole = token?.role as string | undefined;
   const accessResult = evaluateRouteAccess(pathname, userRole);
 
