@@ -23,7 +23,7 @@ const config: Config = {
         borderDark: "#2A3B53",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "sans-serif"],
+        sans: ["var(--font-poppins)", "Poppins", "sans-serif"],
       },
     },
   },
