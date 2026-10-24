@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cinedoom-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cinedoom
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cinedoom"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    container_name: cinedoom-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/cinedoom?sslmode=disable"
+      DATABASE_URL_UNPOOLED: "postgresql://postgres:postgres@postgres:5432/cinedoom?sslmode=disable"
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "cinedoom-super-secret-key-at-least-32-chars-long"
+      CINEDOOM_CPF_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+      CINEDOOM_CPF_HMAC_KEY: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+      NODE_ENV: development
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./prisma:/app/prisma
+      - ./package.json:/app/package.json
+      - ./next.config.mjs:/app/next.config.mjs
+      - ./tailwind.config.ts:/app/tailwind.config.ts
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

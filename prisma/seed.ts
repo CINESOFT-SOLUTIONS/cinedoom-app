@@ -193,7 +193,7 @@ async function main() {
         roomId,
         startsAt,
         price,
-        status: "SCHEDULED",
+        status: "OPEN",
       },
     });
 
