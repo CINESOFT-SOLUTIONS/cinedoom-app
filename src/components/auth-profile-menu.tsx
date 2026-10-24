@@ -191,18 +191,18 @@ export function AuthProfileMenu() {
               {role === "GERENTE" && (
                 <>
                   <span className="px-2.5 pt-1 pb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Administracao Backoffice
+                    Painel de Gestao
                   </span>
                   <Link
-                    href="/backoffice"
+                    href="/gestao"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
                     <Briefcase className="w-4 h-4 text-cta" />
-                    <span>Visao Geral do Backoffice</span>
+                    <span>Visao Geral da Gestao</span>
                   </Link>
                   <Link
-                    href="/backoffice/filmes"
+                    href="/gestao/filmes"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
@@ -210,7 +210,7 @@ export function AuthProfileMenu() {
                     <span>Catalogo de Filmes</span>
                   </Link>
                   <Link
-                    href="/backoffice/salas"
+                    href="/gestao/salas"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
@@ -218,7 +218,7 @@ export function AuthProfileMenu() {
                     <span>Salas e Disposicao de Assentos</span>
                   </Link>
                   <Link
-                    href="/backoffice/sessoes"
+                    href="/gestao/sessoes"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
@@ -226,7 +226,7 @@ export function AuthProfileMenu() {
                     <span>Agendamento de Sessoes</span>
                   </Link>
                   <Link
-                    href="/backoffice/usuarios"
+                    href="/gestao/usuarios"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
@@ -234,7 +234,7 @@ export function AuthProfileMenu() {
                     <span>Gestao de Atendentes</span>
                   </Link>
                   <Link
-                    href="/backoffice/titulares"
+                    href="/gestao/titulares"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >

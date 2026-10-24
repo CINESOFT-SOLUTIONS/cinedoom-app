@@ -37,6 +37,8 @@ describe("Authentication & RBAC Control (AC-5 / TC-5 / TC-13 / TC-20)", () => {
   describe("RBAC Route Access Policy (AC-5)", () => {
     it("TC-20: GERENTE autenticado deve ter acesso irrestrito as rotas de gerenciamento", () => {
       const routes = [
+        "/gestao",
+        "/gestao/filmes",
         "/backoffice/filmes",
         "/api/backoffice/filmes",
         "/admin/salas",

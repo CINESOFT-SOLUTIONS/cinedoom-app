@@ -38,6 +38,8 @@ export function evaluateRouteAccess(pathname: string, userRole?: string): RouteA
   }
 
   const isBackofficeRoute =
+    pathname.startsWith("/gestao") ||
+    pathname.startsWith("/api/gestao") ||
     pathname.startsWith("/backoffice") ||
     pathname.startsWith("/api/backoffice") ||
     pathname.startsWith("/admin") ||
