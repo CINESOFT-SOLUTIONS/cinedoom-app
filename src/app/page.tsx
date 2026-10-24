@@ -204,14 +204,14 @@ export default function CinemarkStyleHomePage() {
 
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
-      {/* 1. Header CineDoom (Estrutura Inspirada no Cinemark) */}
-      <header className="sticky top-0 z-50 bg-[#141A2D]/95 backdrop-blur-md border-b border-borderDark/60 shadow-xl">
+      {/* 1. Faixa Superior CineDoom (Estilo White Liquid Glass) */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-2xl backdrop-saturate-150 border-b border-white/60 shadow-[0_10px_35px_-5px_rgba(0,0,0,0.15),inset_0_1px_2px_rgba(255,255,255,0.9)] transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logotipo Oficial CineDoom */}
             <div className="flex items-center gap-6">
               <Link href="/" className="flex items-center group">
-                <div className="relative h-10 w-44 md:h-12 md:w-52 transition-transform duration-200 group-hover:scale-105">
+                <div className="relative h-10 w-44 md:h-12 md:w-52 transition-transform duration-200 group-hover:scale-105 drop-shadow-sm">
                   <Image
                     src="/logos/cinedoom-logo-horizontal-color.png"
                     alt="CineDoom"
@@ -227,33 +227,33 @@ export default function CinemarkStyleHomePage() {
             <nav className="flex items-center gap-3 md:gap-5">
               <a
                 href="#programacao"
-                className="hidden sm:inline-flex text-xs font-bold text-slate-300 hover:text-white uppercase tracking-wider transition-colors"
+                className="hidden sm:inline-flex text-xs font-bold text-slate-700 hover:text-slate-950 uppercase tracking-wider transition-colors"
               >
                 Programação
               </a>
               <a
                 href="#salas"
-                className="hidden md:inline-flex text-xs font-bold text-slate-300 hover:text-white uppercase tracking-wider transition-colors"
+                className="hidden md:inline-flex text-xs font-bold text-slate-700 hover:text-slate-950 uppercase tracking-wider transition-colors"
               >
                 Salas
               </a>
 
               <Link
                 href="/portal/minhas-reservas"
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface/60 hover:bg-surface text-slate-300 hover:text-white border border-borderDark/60 text-xs font-semibold transition-all"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200 text-slate-800 border border-slate-200/90 text-xs font-bold shadow-sm transition-all"
               >
                 <Ticket className="w-4 h-4 text-cta" />
                 <span className="hidden sm:inline">Minhas Reservas</span>
               </Link>
 
               {session?.user ? (
-                <div className="flex items-center gap-2 pl-2 border-l border-borderDark">
-                  <div className="w-8 h-8 rounded-full bg-cta/20 border border-cta/40 text-cta flex items-center justify-center font-bold text-xs">
+                <div className="flex items-center gap-2 pl-2 border-l border-slate-300">
+                  <div className="w-8 h-8 rounded-full bg-cta/15 border border-cta/30 text-cta flex items-center justify-center font-bold text-xs">
                     {session.user.name?.charAt(0) || "U"}
                   </div>
                   <div className="hidden xl:block text-left text-xs leading-none">
-                    <span className="font-bold text-white block">{session.user.name}</span>
-                    <span className="text-[10px] text-slate-400">
+                    <span className="font-bold text-slate-900 block">{session.user.name}</span>
+                    <span className="text-[10px] text-slate-500 font-medium">
                       {session.user.role || "Cliente"}
                     </span>
                   </div>
@@ -262,7 +262,7 @@ export default function CinemarkStyleHomePage() {
                 <div className="flex items-center gap-2">
                   <Link
                     href="/auth/login"
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition-colors"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-950 transition-colors"
                   >
                     <LogIn className="w-4 h-4" />
                     <span>Entrar</span>
@@ -281,7 +281,7 @@ export default function CinemarkStyleHomePage() {
               <Link
                 href="/auth/login"
                 title="Acesso da Equipe (Bilheteria / Gestão)"
-                className="p-2 rounded-xl bg-surface/30 hover:bg-surface text-slate-400 hover:text-slate-200 border border-borderDark/40 transition-colors"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors"
               >
                 <Tv className="w-4 h-4" />
               </Link>
