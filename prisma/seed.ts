@@ -197,32 +197,29 @@ async function main() {
 
   // Gera assentos garantindo a matriz correta de capacidade
   async function ensureSeats(roomId: string, rows: number, cols: number) {
-    const targetCount = rows * cols;
-    const existing = await prisma.seat.count({ where: { roomId } });
-    if (existing === targetCount) return;
+    const existingSeats = await prisma.seat.findMany({ where: { roomId } });
+    const existingMap = new Set(existingSeats.map((s) => `${s.rowLabel}${s.columnNumber}`));
 
-    if (existing > 0 && existing !== targetCount) {
-      await prisma.sessionSeat.deleteMany({
-        where: { seat: { roomId } },
-      });
-      await prisma.seat.deleteMany({ where: { roomId } });
-    }
-
-    const seats = [];
+    const seatsToCreate = [];
     for (let r = 0; r < rows; r++) {
       const rowLabel = String.fromCharCode(65 + r);
       for (let c = 1; c <= cols; c++) {
-        seats.push({
-          roomId,
-          tenantId: tenant.id,
-          rowLabel,
-          columnNumber: c,
-          seatCode: `${rowLabel}${c}`,
-          status: "AVAILABLE" as any,
-        });
+        const code = `${rowLabel}${c}`;
+        if (!existingMap.has(code)) {
+          seatsToCreate.push({
+            roomId,
+            tenantId: tenant.id,
+            rowLabel,
+            columnNumber: c,
+            seatCode: code,
+            status: "AVAILABLE" as any,
+          });
+        }
       }
     }
-    await prisma.seat.createMany({ data: seats });
+    if (seatsToCreate.length > 0) {
+      await prisma.seat.createMany({ data: seatsToCreate });
+    }
   }
 
   await ensureSeats(sala1.id, 10, 12); // 120 assentos
