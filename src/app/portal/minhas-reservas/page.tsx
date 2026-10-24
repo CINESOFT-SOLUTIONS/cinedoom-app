@@ -99,7 +99,7 @@ export default async function MinhasReservasPage() {
                         <span>Código: <strong className="text-white font-mono tracking-wider">{res.code}</strong></span>
                       </div>
                       <div className="text-slate-300">
-                        Assentos: <strong className="text-white font-mono">{res.sessionSeats.map((s) => s.seat.seatCode).join(", ")}</strong>
+                        Assentos: <strong className="text-white font-mono">{res.sessionSeats.map((s: any) => s.seat.seatCode).join(", ")}</strong>
                       </div>
                     </div>
 

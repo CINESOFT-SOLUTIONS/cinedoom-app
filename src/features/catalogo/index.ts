@@ -10,3 +10,6 @@ export * from "./domain/session-repository.interface";
 export * from "./infrastructure/prisma-session.repository";
 export * from "./application/session.schema";
 export * from "./application/session.service";
+export * from "./domain/session-seats-repository.interface";
+export * from "./infrastructure/prisma-session-seats.repository";
+export * from "./application/session-seats.service";
