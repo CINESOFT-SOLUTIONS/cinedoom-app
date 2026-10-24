@@ -200,9 +200,6 @@ export default function SobreCineDoomPage() {
             <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
               4 Experiências Cinematográficas à Sua Escolha
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300">
-              De blockbusters monumentais a sessões familiares e exclusividade VIP: cada sala tem sua personalidade.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
