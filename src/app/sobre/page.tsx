@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { InteractiveGlowCard } from "@/components/interactive-glow-card";
 import {
   Sparkles,
   Film,
@@ -206,7 +207,13 @@ export default function SobreCineDoomPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {/* Categoria 1: Salas 1 e 2 Tradicionais Confort */}
-            <div className="rounded-3xl overflow-hidden liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-blue-400/40 transition-all">
+            <InteractiveGlowCard
+              className="rounded-3xl liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-blue-400/40"
+              contentClassName="flex flex-col h-full"
+              orb1Color="rgba(59, 130, 246, 0.28)"
+              orb2Color="rgba(99, 102, 241, 0.20)"
+              spotlightColor="rgba(59, 130, 246, 0.12)"
+            >
               <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
@@ -245,10 +252,16 @@ export default function SobreCineDoomPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </InteractiveGlowCard>
 
             {/* Categoria 2: Sala 3 IMAX Laser */}
-            <div className="rounded-3xl overflow-hidden liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-cta/40 transition-all">
+            <InteractiveGlowCard
+              className="rounded-3xl liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-cta/40"
+              contentClassName="flex flex-col h-full"
+              orb1Color="rgba(233, 69, 96, 0.32)"
+              orb2Color="rgba(168, 85, 247, 0.22)"
+              spotlightColor="rgba(233, 69, 96, 0.15)"
+            >
               <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
@@ -288,10 +301,16 @@ export default function SobreCineDoomPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </InteractiveGlowCard>
 
             {/* Categoria 3: Sala 4 VIP Prime */}
-            <div className="rounded-3xl overflow-hidden liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-amber-400/40 transition-all">
+            <InteractiveGlowCard
+              className="rounded-3xl liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-amber-400/40"
+              contentClassName="flex flex-col h-full"
+              orb1Color="rgba(245, 158, 11, 0.30)"
+              orb2Color="rgba(233, 69, 96, 0.20)"
+              spotlightColor="rgba(245, 158, 11, 0.14)"
+            >
               <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
@@ -331,12 +350,20 @@ export default function SobreCineDoomPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </InteractiveGlowCard>
           </div>
         </section>
 
         {/* ================= COMO FUNCIONA (EXPERIENCIA DESCOMPLICADA) ================= */}
-        <section className="p-8 sm:p-10 rounded-3xl liquid-glass-card border border-white/15 space-y-8 shadow-2xl">
+        <InteractiveGlowCard
+          as="section"
+          className="p-8 sm:p-10 rounded-3xl liquid-glass-card border border-white/15 shadow-2xl"
+          contentClassName="space-y-8"
+          orb1Color="rgba(233, 69, 96, 0.16)"
+          orb2Color="rgba(59, 130, 246, 0.12)"
+          spotlightColor="rgba(255, 255, 255, 0.05)"
+          orbSize="w-96 h-96"
+        >
           <div className="text-center max-w-xl mx-auto space-y-2">
             <span className="text-xs font-bold text-cta uppercase tracking-wider block">
               Sem Filas & Sem Taxas
@@ -351,7 +378,14 @@ export default function SobreCineDoomPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             {/* Passo 1 */}
-            <div className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-cta/30 transition-all duration-300 space-y-3 relative group">
+            <InteractiveGlowCard
+              className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-cta/40 transition-all duration-300 group"
+              contentClassName="space-y-3"
+              orb1Color="rgba(233, 69, 96, 0.30)"
+              orb2Color="rgba(147, 51, 234, 0.20)"
+              spotlightColor="rgba(233, 69, 96, 0.12)"
+              orbSize="w-56 h-56"
+            >
               <div className="w-10 h-10 rounded-full bg-cta text-white font-bold text-sm flex items-center justify-center shadow-lg shadow-cta/30 group-hover:scale-110 transition-transform">
                 1
               </div>
@@ -359,10 +393,17 @@ export default function SobreCineDoomPage() {
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Escolha a sessão e seus lugares favoritos.
               </p>
-            </div>
+            </InteractiveGlowCard>
 
             {/* Passo 2 */}
-            <div className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-amber-400/30 transition-all duration-300 space-y-3 relative group">
+            <InteractiveGlowCard
+              className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-amber-400/40 transition-all duration-300 group"
+              contentClassName="space-y-3"
+              orb1Color="rgba(245, 158, 11, 0.30)"
+              orb2Color="rgba(234, 88, 12, 0.20)"
+              spotlightColor="rgba(245, 158, 11, 0.12)"
+              orbSize="w-56 h-56"
+            >
               <div className="w-10 h-10 rounded-full bg-amber-400 text-slate-950 font-bold text-sm flex items-center justify-center shadow-lg shadow-amber-400/30 group-hover:scale-110 transition-transform">
                 2
               </div>
@@ -370,10 +411,17 @@ export default function SobreCineDoomPage() {
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Retire seus ingressos na bilheteria dentro do prazo informado.
               </p>
-            </div>
+            </InteractiveGlowCard>
 
             {/* Passo 3 */}
-            <div className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-emerald-400/30 transition-all duration-300 space-y-3 relative group">
+            <InteractiveGlowCard
+              className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-emerald-400/40 transition-all duration-300 group"
+              contentClassName="space-y-3"
+              orb1Color="rgba(16, 185, 129, 0.30)"
+              orb2Color="rgba(14, 165, 233, 0.20)"
+              spotlightColor="rgba(16, 185, 129, 0.12)"
+              orbSize="w-56 h-56"
+            >
               <div className="w-10 h-10 rounded-full bg-emerald-400 text-slate-950 font-bold text-sm flex items-center justify-center shadow-lg shadow-emerald-400/30 group-hover:scale-110 transition-transform">
                 3
               </div>
@@ -381,16 +429,21 @@ export default function SobreCineDoomPage() {
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 Compre sua pipoca e curta o filme.
               </p>
-            </div>
+            </InteractiveGlowCard>
           </div>
-        </section>
+        </InteractiveGlowCard>
 
         {/* ================= CHAMADA PARA AÇÃO (CTA) ================= */}
-        <section className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-[#1A2238] via-[#16213E] to-[#12182B] border border-white/15 text-center space-y-5 shadow-2xl relative overflow-hidden">
-          <div className="absolute -right-16 -top-16 w-64 h-64 bg-cta/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -left-16 -bottom-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 max-w-xl mx-auto space-y-4">
+        <InteractiveGlowCard
+          as="section"
+          className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-[#1A2238] via-[#16213E] to-[#12182B] border border-white/15 text-center shadow-2xl"
+          contentClassName="space-y-5"
+          orb1Color="rgba(233, 69, 96, 0.35)"
+          orb2Color="rgba(245, 158, 11, 0.25)"
+          spotlightColor="rgba(255, 255, 255, 0.10)"
+          orbSize="w-80 h-80"
+        >
+          <div className="max-w-xl mx-auto space-y-4">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
               Pronto para Viver o Cinema de Verdade?
             </h2>
@@ -407,7 +460,7 @@ export default function SobreCineDoomPage() {
               </Link>
             </div>
           </div>
-        </section>
+        </InteractiveGlowCard>
       </main>
 
       {/* ================= RODAPE OFICIAL ================= */}
