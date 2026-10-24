@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "CineDoom — Plataforma de Gestao de Cinemas e Bilheteria",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="min-h-screen bg-darkBg text-neutralBg antialiased">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

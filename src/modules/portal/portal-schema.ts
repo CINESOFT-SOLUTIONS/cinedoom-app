@@ -28,6 +28,39 @@ export const registerClientSchema = z.object({
 
 export type RegisterClientInput = z.infer<typeof registerClientSchema>;
 
+export const createReservationSchema = z.object({
+  sessionId: z
+    .string({ message: 'O campo "sessionId" e obrigatorio' })
+    .uuid("sessionId deve ser um UUID valido"),
+  sessionSeatIds: z
+    .array(z.string().uuid("Cada sessionSeatId deve ser um UUID valido"), {
+      message: 'O campo "sessionSeatIds" e obrigatorio',
+    })
+    .min(1, "Selecione ao menos um assento para efetuar a reserva"),
+  buyer: z.object({
+    name: z
+      .string({ message: 'O campo "name" e obrigatorio' })
+      .trim()
+      .min(1, "O nome e obrigatorio")
+      .max(255, "O nome nao pode ultrapassar 255 caracteres"),
+    email: z
+      .string({ message: 'O campo "email" e obrigatorio' })
+      .trim()
+      .toLowerCase()
+      .email("E-mail invalido"),
+    cpf: z
+      .string({ message: 'O campo "cpf" e obrigatorio' })
+      .trim()
+      .min(11, "CPF invalido"),
+    lgpdConsent: z.boolean().refine((val) => val === true, {
+      message: "O consentimento explicito com os termos da LGPD e obrigatorio.",
+    }),
+  }),
+  userId: z.string().uuid("userId deve ser um UUID valido").optional().nullable(),
+});
+
+export type CreateReservationInput = z.infer<typeof createReservationSchema>;
+
 export interface FieldError {
   field: string;
   message: string;
