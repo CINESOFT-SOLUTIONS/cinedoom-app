@@ -1,130 +1,22 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import Link from "next/link";
+import React, { useEffect, useState, useMemo } from "react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
-import Image from "next/image";
-import { useSession } from "next-auth/react";
-import {
-  Film,
-  Calendar,
-  Clock,
-  Ticket,
-  Search,
-  Sparkles,
-  ShieldCheck,
-  User,
-  LogIn,
-  CheckCircle2,
-  Play,
-  X,
-  MapPin,
-} from "lucide-react";
-
-interface SessionItem {
-  id: string;
-  startsAt: string;
-  price: number;
-  status: string;
-  room: {
-    id: string;
-    name: string;
-    capacity: number;
-  };
-}
-
-interface FilmItem {
-  id: string;
-  title: string;
-  director?: string;
-  synopsis?: string;
-  duration: number;
-  classification?: string;
-  genre?: string;
-  posterUrl?: string;
-  sessions: SessionItem[];
-}
-
-const GENRE_MAP: Record<string, string> = {
-  "Duna: Parte Dois": "Ficção Científica • Aventura",
-  "Oppenheimer": "Drama Histórico • Biografia",
-  "Vingadores: Ultimato": "Ação • Ficção Científica",
-  "Divertida Mente 2": "Animação • Família",
-};
-
-function AgeRatingBadge({ rating }: { rating?: string }) {
-  const r = (rating || "L").toUpperCase();
-
-  if (r === "L" || r === "LIVRE") {
-    return (
-      <span
-        title="Classificação Livre para todos os públicos"
-        className="w-6 h-6 rounded bg-[#00A859] text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
-      >
-        L
-      </span>
-    );
-  }
-  if (r === "10") {
-    return (
-      <span
-        title="Não recomendado para menores de 10 anos"
-        className="w-6 h-6 rounded bg-[#0099DA] text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
-      >
-        10
-      </span>
-    );
-  }
-  if (r === "12") {
-    return (
-      <span
-        title="Não recomendado para menores de 12 anos"
-        className="w-6 h-6 rounded bg-[#F7B500] text-neutral-900 font-bold text-xs flex items-center justify-center shadow-sm select-none"
-      >
-        12
-      </span>
-    );
-  }
-  if (r === "14") {
-    return (
-      <span
-        title="Não recomendado para menores de 14 anos"
-        className="w-6 h-6 rounded bg-[#F37021] text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
-      >
-        14
-      </span>
-    );
-  }
-  if (r === "16") {
-    return (
-      <span
-        title="Não recomendado para menores de 16 anos"
-        className="w-6 h-6 rounded bg-[#E94560] text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
-      >
-        16
-      </span>
-    );
-  }
-  return (
-    <span
-      title="Não recomendado para menores de 18 anos"
-      className="w-6 h-6 rounded bg-[#1C1C1C] border border-slate-600 text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
-    >
-      18
-    </span>
-  );
-}
+import { CineDoomFooter } from "@/components/cinedoom-footer";
+import { HeroBillboard } from "@/components/home/hero-billboard";
+import { FilmFilters } from "@/components/home/film-filters";
+import { FilmCard } from "@/components/home/film-card";
+import { InstitutionalBanner } from "@/components/home/institutional-banner";
+import type { FilmItem } from "@/components/home/types";
+import { Film } from "lucide-react";
 
 export default function CinemarkStyleHomePage() {
-  const { data: session } = useSession();
-
   const [films, setFilms] = useState<FilmItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFormat, setSelectedFormat] = useState<string>("TODOS");
   const [selectedDay, setSelectedDay] = useState<number>(0);
-  const [trailerModalFilm, setTrailerModalFilm] = useState<FilmItem | null>(null);
 
   // Carrega catálogo público do cinema CineDoom
   useEffect(() => {
@@ -153,8 +45,6 @@ export default function CinemarkStyleHomePage() {
     }, 8000);
     return () => clearInterval(interval);
   }, [films.length]);
-
-  const activeHeroFilm = films[heroIndex] || films[0];
 
   // Abas de datas no estilo Cinemark
   const dateTabs = useMemo(() => {
@@ -211,186 +101,26 @@ export default function CinemarkStyleHomePage() {
 
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
-      {/* 1. Faixa Superior CineDoom (White Liquid Glass) */}
+      {/* 1. Header CineDoom Liquid Glass */}
       <CineDoomHeader activePage="filmes" />
 
       {/* 2. Hero Billboard Cinematográfico */}
-      <section className="relative w-full bg-[#0B0F1C] overflow-hidden min-h-[460px] md:min-h-[560px] flex items-center">
-        {activeHeroFilm?.posterUrl ? (
-          <div className="absolute inset-0">
-            <Image
-              src={activeHeroFilm.posterUrl}
-              alt={activeHeroFilm.title}
-              fill
-              className="object-cover object-top opacity-25 md:opacity-35 scale-105 blur-sm md:blur-none transition-all duration-700"
-              priority
-              unoptimized
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0B0F1C] via-[#0B0F1C]/90 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F1C] via-transparent to-black/30" />
-          </div>
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary via-darkBg to-[#0B0F1C]" />
-        )}
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 w-full">
-          <div className="max-w-2xl space-y-5">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="px-2.5 py-1 rounded bg-cta text-white font-semibold text-[11px] tracking-wider uppercase shadow-md shadow-cta/30">
-                Em Destaque
-              </span>
-              <span className="px-2.5 py-1 rounded bg-surface/90 border border-borderDark text-amber-300 font-medium text-[11px] tracking-wide flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                Sala 3 IMAX Laser
-              </span>
-              <AgeRatingBadge rating={activeHeroFilm?.classification} />
-            </div>
-
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight leading-none drop-shadow-xl">
-              {activeHeroFilm?.title || "Duna: Parte Dois"}
-            </h1>
-
-            <div className="flex flex-wrap items-center gap-3 text-xs font-normal text-slate-300">
-              {activeHeroFilm?.duration && (
-                <span className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-cta" />
-                  {activeHeroFilm.duration} minutos
-                </span>
-              )}
-              <span className="text-slate-400 border-l border-borderDark pl-3">
-                {GENRE_MAP[activeHeroFilm?.title || ""] || "Filme em Cartaz"}
-              </span>
-              {activeHeroFilm?.director && (
-                <span className="text-slate-400 border-l border-borderDark pl-3 hidden sm:inline">
-                  Direção: {activeHeroFilm.director}
-                </span>
-              )}
-            </div>
-
-            <p className="text-sm md:text-base text-slate-300/90 leading-relaxed line-clamp-3 max-w-xl">
-              {activeHeroFilm?.synopsis ||
-                "Consulte a programação do CineDoom, selecione suas poltronas no mapa interativo e reserve seus ingressos com confirmação atômica ACID."}
-            </p>
-
-            <div className="pt-2 flex flex-wrap items-center gap-3.5">
-              <a
-                href="#programacao"
-                className="px-6 py-3.5 rounded-xl bg-cta hover:bg-cta-hover text-white font-semibold text-sm shadow-xl shadow-cta/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
-              >
-                <Ticket className="w-4 h-4" />
-                <span>Ver Sessões & Reservar</span>
-              </a>
-
-              {activeHeroFilm && (
-                <button
-                  type="button"
-                  onClick={() => setTrailerModalFilm(activeHeroFilm)}
-                  className="px-5 py-3.5 rounded-xl bg-surface/80 hover:bg-surface border border-borderDark text-white font-medium text-sm transition-all hover:border-slate-400 flex items-center gap-2"
-                >
-                  <Play className="w-4 h-4 text-cta fill-cta" />
-                  <span>Ver Detalhes</span>
-                </button>
-              )}
-
-              {activeHeroFilm?.sessions?.[0] && (
-                <Link
-                  href={`/portal/sessoes/${activeHeroFilm.sessions[0].id}`}
-                  className="px-4 py-3.5 rounded-xl bg-[#141A2D] hover:bg-surface border border-borderDark text-emerald-400 font-medium text-xs transition-all hidden sm:inline-flex items-center gap-1.5"
-                >
-                  <Clock className="w-3.5 h-3.5" />
-                  Próxima Sessão (
-                  {new Date(activeHeroFilm.sessions[0].startsAt).toLocaleTimeString("pt-BR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  )
-                </Link>
-              )}
-            </div>
-          </div>
-
-          {films.length > 1 && (
-            <div className="pt-10 flex items-center gap-2">
-              {films.map((f, idx) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setHeroIndex(idx)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    heroIndex === idx
-                      ? "w-8 bg-cta shadow-md shadow-cta/50"
-                      : "w-2.5 bg-slate-600 hover:bg-slate-400"
-                  }`}
-                  aria-label={`Ver destaque ${f.title}`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+      <HeroBillboard
+        films={films}
+        heroIndex={heroIndex}
+        onSelectHeroIndex={setHeroIndex}
+      />
 
       {/* 3. Barra de Programação por Data & Filtros */}
-      <section
-        id="programacao"
-        className="sticky top-16 md:top-20 z-40 bg-[#12182B]/98 backdrop-blur-md border-b border-borderDark/80 shadow-md scroll-mt-16 md:scroll-mt-20"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-3">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-            {/* Seletor de Datas em Pílulas */}
-            <div className="flex items-center gap-2 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0 scrollbar-none">
-              <span className="text-xs font-medium text-slate-400 uppercase tracking-wider mr-2 hidden sm:flex items-center gap-1 shrink-0">
-                <Calendar className="w-3.5 h-3.5 text-cta" /> Data:
-              </span>
-              {dateTabs.map((tab) => (
-                <button
-                  key={tab.index}
-                  type="button"
-                  onClick={() => setSelectedDay(tab.index)}
-                  className={`px-4 py-2 rounded-xl text-xs font-medium shrink-0 transition-all flex flex-col items-center leading-tight ${
-                    selectedDay === tab.index
-                      ? "bg-cta text-white shadow-lg shadow-cta/30"
-                      : "bg-surface/50 text-slate-400 hover:text-white hover:bg-surface border border-borderDark/50"
-                  }`}
-                >
-                  <span className="text-[10px] uppercase tracking-wider">{tab.dayName}</span>
-                  <span className="text-xs font-semibold">{tab.dayNumber}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Filtros de Formatos & Busca */}
-            <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
-              <div className="flex items-center gap-1.5 text-xs">
-                {["TODOS", "IMAX", "VIP", "CONFORT"].map((format) => (
-                  <button
-                    key={format}
-                    type="button"
-                    onClick={() => setSelectedFormat(format)}
-                    className={`px-3 py-1.5 rounded-lg font-medium text-[11px] transition-all ${
-                      selectedFormat === format
-                        ? "bg-surface text-cta border border-cta/50 shadow-sm"
-                        : "text-slate-400 hover:text-white bg-transparent"
-                    }`}
-                  >
-                    {format}
-                  </button>
-                ))}
-              </div>
-
-              <div className="relative w-full sm:w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar filme em cartaz..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full liquid-glass-input rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-400 transition-all"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <FilmFilters
+        dateTabs={dateTabs}
+        selectedDay={selectedDay}
+        onSelectDay={setSelectedDay}
+        selectedFormat={selectedFormat}
+        onSelectFormat={setSelectedFormat}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+      />
 
       {/* 4. Grade de Filmes & Sessões Agrupadas por Sala */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full flex-1 space-y-10">
@@ -424,261 +154,18 @@ export default function CinemarkStyleHomePage() {
           </div>
         ) : (
           <div className="space-y-8">
-            {filteredFilms.map((film) => {
-              const sessionsByRoom = film.sessions.reduce<Record<string, SessionItem[]>>(
-                (acc, s) => {
-                  const roomName = s.room.name;
-                  if (!acc[roomName]) acc[roomName] = [];
-                  acc[roomName].push(s);
-                  return acc;
-                },
-                {}
-              );
-
-              const genreText =
-                GENRE_MAP[film.title] || film.genre || "Filme em Cartaz";
-
-              return (
-                <div
-                  key={film.id}
-                  className="liquid-glass-card hover:border-white/25 rounded-3xl p-5 md:p-6 shadow-xl transition-all grid grid-cols-1 md:grid-cols-12 gap-6 items-start"
-                >
-                  {/* Poster 2:3 */}
-                  <div className="md:col-span-3 lg:col-span-2 relative aspect-[2/3] w-full max-w-[170px] mx-auto md:mx-0 rounded-xl overflow-hidden bg-black/40 shadow-lg group">
-                    {film.posterUrl ? (
-                      <Image
-                        src={film.posterUrl}
-                        alt={film.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-600">
-                        <Film className="w-10 h-10" />
-                      </div>
-                    )}
-                    <div className="absolute top-2.5 left-2.5">
-                      <AgeRatingBadge rating={film.classification} />
-                    </div>
-                  </div>
-
-                  {/* Informações do Filme & Sessões */}
-                  <div className="md:col-span-9 lg:col-span-10 flex flex-col justify-between h-full space-y-6">
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <h3 className="text-xl md:text-2xl font-semibold text-white leading-tight">
-                          {film.title}
-                        </h3>
-                        <span className="text-[11px] font-medium text-cta uppercase tracking-wider px-2 py-0.5 rounded bg-cta/10">
-                          {genreText.split("•")[0]?.trim()}
-                        </span>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 font-medium">
-                        {film.duration && <span>{film.duration} min</span>}
-                        <span>• {genreText}</span>
-                        {film.director && <span>• Direção: {film.director}</span>}
-                      </div>
-
-                      {film.synopsis && (
-                        <p className="text-xs text-slate-300/80 leading-relaxed line-clamp-2 max-w-3xl">
-                          {film.synopsis}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Sessões Agrupadas por Sala */}
-                    <div className="pt-4 border-t border-borderDark/60 space-y-4">
-                      {Object.keys(sessionsByRoom).length === 0 ? (
-                        <div className="text-xs text-slate-500 italic py-1">
-                          Nenhuma sessão programada para este filme na data selecionada.
-                        </div>
-                      ) : (
-                        Object.entries(sessionsByRoom).map(([roomName, roomSessions]) => {
-                          return (
-                            <div key={roomName} className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-semibold text-white uppercase tracking-wider">
-                                  {roomName}
-                                </span>
-                              </div>
-
-                              <div className="flex flex-wrap gap-2.5">
-                                {roomSessions.map((sess) => {
-                                  const time = new Date(sess.startsAt).toLocaleTimeString(
-                                    "pt-BR",
-                                    {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    }
-                                  );
-
-                                  return (
-                                    <Link
-                                      key={sess.id}
-                                      href={`/portal/sessoes/${sess.id}`}
-                                      className="group/pill flex flex-col items-center justify-center px-4 py-2 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white transition-all shadow-md hover:scale-[1.03] active:scale-[0.98]"
-                                    >
-                                      <span className="font-mono font-semibold text-sm block leading-none">
-                                        {time}
-                                      </span>
-                                      <span className="text-[10px] font-medium text-emerald-400 group-hover/pill:text-white mt-1">
-                                        R$ {sess.price.toFixed(2)}
-                                      </span>
-                                    </Link>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {filteredFilms.map((film) => (
+              <FilmCard key={film.id} film={film} />
+            ))}
           </div>
         )}
 
         {/* 5. Banner Institucional para a página Sobre o CineDoom */}
-        <section className="pt-12 border-t border-borderDark/60">
-          <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
-            <div className="space-y-2 text-center md:text-left">
-              <span className="text-xs font-semibold text-cta uppercase tracking-wider block">
-                Conheça Nossa História
-              </span>
-              <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                Sobre o CineDoom
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-                Cinema boutique independente com 4 salas de última geração (Salas 1 e 2 Confort, Sala 3 IMAX Laser e Sala 4 VIP Prime), 420 assentos no total, bilheteria presencial física e reserva online sem taxas.
-              </p>
-            </div>
-            <Link
-              href="/sobre"
-              title="Sobre o CineDoom"
-              className="shrink-0 transition-transform duration-300 hover:scale-105 active:scale-95 md:ml-auto"
-            >
-              <Image
-                src="/logos/cinedoom-icon.png"
-                alt="CineDoom"
-                width={120}
-                height={96}
-                className="w-24 h-auto sm:w-28 md:w-32 object-contain drop-shadow-2xl hover:brightness-110 transition-all"
-              />
-            </Link>
-          </div>
-        </section>
+        <InstitutionalBanner />
       </main>
 
-      {/* Modal de Detalhes do Filme */}
-      {trailerModalFilm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in">
-          <div className="liquid-glass-card rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-4 shadow-2xl relative">
-            <button
-              type="button"
-              onClick={() => setTrailerModalFilm(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
-              aria-label="Fechar"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="flex items-center gap-3">
-              <AgeRatingBadge rating={trailerModalFilm.classification} />
-              <h4 className="text-lg font-semibold text-white">{trailerModalFilm.title}</h4>
-            </div>
-
-            <div className="text-xs text-slate-400 space-y-1">
-              <div>
-                <strong>Duração:</strong> {trailerModalFilm.duration} minutos
-              </div>
-              <div>
-                <strong>Gênero:</strong> {GENRE_MAP[trailerModalFilm.title] || trailerModalFilm.genre}
-              </div>
-              {trailerModalFilm.director && (
-                <div>
-                  <strong>Direção:</strong> {trailerModalFilm.director}
-                </div>
-              )}
-            </div>
-
-            <p className="text-xs text-slate-300 leading-relaxed">
-              {trailerModalFilm.synopsis || "Sem sinopse disponível no momento."}
-            </p>
-
-            <div className="pt-3 border-t border-borderDark flex justify-end">
-              <a
-                href="#programacao"
-                onClick={() => setTrailerModalFilm(null)}
-                className="px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-semibold transition-all"
-              >
-                Ver Horários Disponíveis
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 6. Footer Oficial CineDoom Conforme Especificação */}
-      <footer className="bg-[#0B0F1C] border-t border-borderDark/80 pt-12 pb-8 mt-16 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="space-y-3">
-              <div className="relative h-9 w-40">
-                <Image
-                  src="/logos/cinedoom-logo-horizontal-white.png"
-                  alt="CineDoom"
-                  fill
-                  className="object-contain object-left"
-                />
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Cinema com reserva online e pagamento presencial na bilheteria física.
-              </p>
-            </div>
-
-            <div className="space-y-2.5">
-              <span className="font-semibold text-white text-xs uppercase tracking-wider block">
-                Bilheteria & Reservas Presenciais
-              </span>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                As reservas realizadas no portal garantem seus assentos até 1 hora antes do início da sessão. O pagamento e a emissão dos ingressos físicos são realizados diretamente no balcão da bilheteria.
-              </p>
-            </div>
-
-            <div className="space-y-2.5">
-              <span className="font-semibold text-white text-xs uppercase tracking-wider block">
-                Segurança & Conformidade
-              </span>
-              <p className="text-xs text-slate-400 leading-relaxed flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                Dados protegidos em conformidade com a LGPD (Lei nº 13.709/2018).
-              </p>
-              <p className="text-[11px] text-slate-500">
-                Reserva com trava transacional ACID e expiração automática de assentos.
-              </p>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-borderDark/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-            <p>© 2026 CineDoom. Todos os direitos reservados.</p>
-            <div className="flex items-center gap-2">
-              <span>Desenvolvido por</span>
-              <div className="relative h-7 w-32 opacity-90 hover:opacity-100 transition-opacity">
-                <Image
-                  src="/logos/cinesoft-logo-horizontal-white.png"
-                  alt="CineSoft Solutions"
-                  fill
-                  className="object-contain object-left"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* 6. Footer Oficial CineDoom */}
+      <CineDoomFooter />
     </div>
   );
 }
