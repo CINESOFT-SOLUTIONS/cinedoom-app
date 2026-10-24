@@ -371,9 +371,6 @@ export default function SobreCineDoomPage() {
             <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
               Como Funciona a Sua Visita ao CineDoom
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300">
-              Tudo pensado para você curtir seu filme sem estresse e sem custos ocultos.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
