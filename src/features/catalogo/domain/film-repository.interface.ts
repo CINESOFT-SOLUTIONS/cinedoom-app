@@ -27,4 +27,6 @@ export interface IFilmRepository {
   update(id: string, data: UpdateFilmInput): Promise<FilmWithSessionsCount>;
   delete(id: string): Promise<FilmWithSessionsCount>;
   countSessions(filmId: string, tenantId: string): Promise<number>;
+  findDefaultActiveTenantId(): Promise<string | null>;
+  findCatalogWithUpcomingSessions(tenantId: string): Promise<any[]>;
 }

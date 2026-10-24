@@ -102,6 +102,41 @@ export class PrismaFilmRepository implements IFilmRepository {
       },
     });
   }
+
+  async findDefaultActiveTenantId(): Promise<string | null> {
+    const defaultTenant = await rawPrisma.tenant.findFirst({
+      where: { active: true },
+      select: { id: true },
+    });
+    return defaultTenant?.id || null;
+  }
+
+  async findCatalogWithUpcomingSessions(tenantId: string): Promise<any[]> {
+    const now = new Date();
+    return rawPrisma.film.findMany({
+      where: {
+        tenantId,
+      },
+      include: {
+        sessions: {
+          where: {
+            tenantId,
+            status: { not: "CANCELLED" },
+            startsAt: { gt: now },
+          },
+          include: {
+            room: true,
+          },
+          orderBy: {
+            startsAt: "asc",
+          },
+        },
+      },
+      orderBy: {
+        title: "asc",
+      },
+    });
+  }
 }
 
 export const defaultFilmRepository = new PrismaFilmRepository();

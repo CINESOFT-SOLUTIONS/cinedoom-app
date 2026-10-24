@@ -187,6 +187,24 @@ export class PrismaSessionRepository implements ISessionRepository {
       return deletedSession as unknown as SessionWithRelations;
     });
   }
+
+  async findSessionPortalDetails(sessionId: string): Promise<any | null> {
+    return rawPrisma.session.findUnique({
+      where: {
+        id: sessionId,
+      },
+      include: {
+        film: true,
+        room: true,
+        tenant: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+  }
 }
 
 export const defaultSessionRepository = new PrismaSessionRepository();

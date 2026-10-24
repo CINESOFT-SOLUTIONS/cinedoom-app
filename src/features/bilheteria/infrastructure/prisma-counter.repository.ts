@@ -42,6 +42,33 @@ export class PrismaCounterRepository implements ICounterRepository {
     });
   }
 
+  async findReservationByCpfHash(cpfHash: string, tenantId: string) {
+    return rawPrisma.reservation.findFirst({
+      where: {
+        tenantId,
+        buyerCpfHash: cpfHash,
+        status: "PENDING",
+      },
+      include: {
+        session: {
+          include: {
+            film: true,
+            room: true,
+          },
+        },
+        sessionSeats: {
+          include: {
+            seat: true,
+          },
+        },
+        buyer: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
+
   async confirmReservationPayment(input: CounterSaleInput) {
     const { reservationCode, tenantId, soldByUserId } = input;
 

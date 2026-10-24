@@ -3,6 +3,7 @@ import { CryptoService, sanitizeCPF, maskCPF } from "@/modules/crypto";
 import type {
   IPublicReservationRepository,
   ExecuteReservationParams,
+  RegisterClientParams,
 } from "../domain/reservation-repository.interface";
 
 export class SessionNotFoundError extends Error {
@@ -340,6 +341,85 @@ export class PrismaPublicReservationRepository implements IPublicReservationRepo
       }
 
       return updatedReservation;
+    });
+  }
+
+  async findDefaultActiveTenantId(): Promise<string | null> {
+    const defaultTenant = await rawPrisma.tenant.findFirst({
+      where: { active: true },
+      select: { id: true },
+    });
+    return defaultTenant?.id || null;
+  }
+
+  async isTenantActive(tenantId: string): Promise<boolean> {
+    const tenant = await rawPrisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { active: true },
+    });
+    return Boolean(tenant?.active);
+  }
+
+  async findUserByEmail(tenantId: string, email: string): Promise<{ id: string } | null> {
+    return rawPrisma.user.findFirst({
+      where: { tenantId, email },
+      select: { id: true },
+    });
+  }
+
+  async findBuyerByCpfHash(tenantId: string, cpfHash: string): Promise<{ id: string } | null> {
+    return rawPrisma.buyer.findFirst({
+      where: { tenantId, cpfHash },
+      select: { id: true },
+    });
+  }
+
+  async registerClientTransaction(params: RegisterClientParams): Promise<{ user: any; buyerId: string }> {
+    const { tenantId, name, email, passwordHash, cpfHash, cpfEncrypted, lgpdConsentAt } = params;
+    return rawPrisma.$transaction(async (tx) => {
+      const existingBuyer = await tx.buyer.findFirst({
+        where: { tenantId, cpfHash },
+        select: { id: true },
+      });
+
+      let buyerId: string;
+      if (existingBuyer) {
+        const updatedBuyer = await tx.buyer.update({
+          where: { id: existingBuyer.id },
+          data: {
+            name,
+            email,
+            cpfEncrypted,
+            lgpdConsentAt,
+          },
+        });
+        buyerId = updatedBuyer.id;
+      } else {
+        const createdBuyer = await tx.buyer.create({
+          data: {
+            tenantId,
+            name,
+            email,
+            cpfHash,
+            cpfEncrypted,
+            lgpdConsentAt,
+          },
+        });
+        buyerId = createdBuyer.id;
+      }
+
+      const user = await tx.user.create({
+        data: {
+          tenantId,
+          email,
+          name,
+          passwordHash,
+          role: "CLIENTE",
+          active: true,
+        },
+      });
+
+      return { user, buyerId };
     });
   }
 }

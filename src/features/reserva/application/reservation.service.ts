@@ -1,4 +1,3 @@
-import { rawPrisma } from "@/shared/db/prisma";
 import { hashPassword } from "@/modules/auth/auth-service";
 import {
   CryptoService,
@@ -65,14 +64,11 @@ export class PublicReservationServiceClass {
     let tenantId = input.tenantId?.trim();
 
     if (!tenantId) {
-      const defaultTenant = await rawPrisma.tenant.findFirst({
-        where: { active: true },
-        select: { id: true },
-      });
-      if (!defaultTenant) {
+      const defaultTenantId = await this.reservationRepo.findDefaultActiveTenantId();
+      if (!defaultTenantId) {
         throw new PortalValidationError("Nenhum cinema ativo configurado no sistema.", "tenantId");
       }
-      tenantId = defaultTenant.id;
+      tenantId = defaultTenantId;
     }
 
     if (!validateCPF(input.cpf)) {
@@ -84,71 +80,26 @@ export class PublicReservationServiceClass {
     const cpfEncrypted = CryptoService.encryptCPF(sanitizedCpf);
     const lgpdConsentAt = new Date();
 
-    const tenant = await rawPrisma.tenant.findUnique({
-      where: { id: tenantId },
-    });
-    if (!tenant || !tenant.active) {
+    const isTenantActive = await this.reservationRepo.isTenantActive(tenantId);
+    if (!isTenantActive) {
       throw new PortalValidationError("Tenant invalido ou inativo.", "tenantId");
     }
 
-    const existingUser = await rawPrisma.user.findFirst({
-      where: {
-        tenantId,
-        email,
-      },
-    });
+    const existingUser = await this.reservationRepo.findUserByEmail(tenantId, email);
     if (existingUser) {
       throw new PortalValidationError("E-mail ja cadastrado para este tenant.", "email");
     }
 
-    const existingBuyer = await rawPrisma.buyer.findFirst({
-      where: {
-        tenantId,
-        cpfHash,
-      },
-    });
-
     const passwordHash = await hashPassword(input.password);
 
-    const result = await rawPrisma.$transaction(async (tx) => {
-      let buyerId: string;
-      if (existingBuyer) {
-        const updatedBuyer = await tx.buyer.update({
-          where: { id: existingBuyer.id },
-          data: {
-            name,
-            email,
-            cpfEncrypted,
-            lgpdConsentAt,
-          },
-        });
-        buyerId = updatedBuyer.id;
-      } else {
-        const createdBuyer = await tx.buyer.create({
-          data: {
-            tenantId,
-            name,
-            email,
-            cpfHash,
-            cpfEncrypted,
-            lgpdConsentAt,
-          },
-        });
-        buyerId = createdBuyer.id;
-      }
-
-      const user = await tx.user.create({
-        data: {
-          tenantId,
-          email,
-          name,
-          passwordHash,
-          role: "CLIENTE",
-          active: true,
-        },
-      });
-
-      return { user, buyerId };
+    const result = await this.reservationRepo.registerClientTransaction({
+      tenantId,
+      name,
+      email,
+      passwordHash,
+      cpfHash,
+      cpfEncrypted,
+      lgpdConsentAt,
     });
 
     return {

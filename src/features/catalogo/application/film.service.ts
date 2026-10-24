@@ -1,3 +1,4 @@
+import { getMockFilmsWithSessions } from "@/modules/portal/mock-cinema-data";
 import type { IFilmRepository } from "../domain/film-repository.interface";
 import { defaultFilmRepository } from "../infrastructure/prisma-film.repository";
 import type { CreateFilmInput, UpdateFilmInput } from "./film.schema";
@@ -73,6 +74,51 @@ export class FilmServiceClass {
 
     return this.filmRepo.delete(id);
   }
+
+  /**
+   * Retorna o catalogo de filmes com sessoes futuras para o portal publico
+   */
+  async getCatalogWithSessions(tenantId?: string | null) {
+    try {
+      let effectiveTenantId = tenantId;
+      if (!effectiveTenantId) {
+        effectiveTenantId = await this.filmRepo.findDefaultActiveTenantId();
+      }
+
+      if (!effectiveTenantId) {
+        return getMockFilmsWithSessions();
+      }
+
+      const films = await this.filmRepo.findCatalogWithUpcomingSessions(effectiveTenantId);
+      if (!films || films.length === 0) {
+        return getMockFilmsWithSessions();
+      }
+
+      return films.map((film: any) => ({
+        id: film.id,
+        title: film.title,
+        director: film.director,
+        synopsis: film.synopsis,
+        duration: film.durationMinutes,
+        classification: film.rating,
+        genre: film.director || "Cinema",
+        posterUrl: film.posterUrl,
+        sessions: (film.sessions || []).map((session: any) => ({
+          id: session.id,
+          startsAt: session.startsAt,
+          price: Number(session.price),
+          status: session.status,
+          room: {
+            id: session.room.id,
+            name: session.room.name,
+            capacity: session.room.capacity,
+          },
+        })),
+      }));
+    } catch {
+      return getMockFilmsWithSessions();
+    }
+  }
 }
 
 export const FilmService = new FilmServiceClass();
@@ -81,3 +127,4 @@ export const getFilmById = FilmService.getFilmById.bind(FilmService);
 export const createFilm = FilmService.createFilm.bind(FilmService);
 export const updateFilm = FilmService.updateFilm.bind(FilmService);
 export const deleteFilm = FilmService.deleteFilm.bind(FilmService);
+export const getCatalogWithSessions = FilmService.getCatalogWithSessions.bind(FilmService);

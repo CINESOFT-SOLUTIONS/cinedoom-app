@@ -7,6 +7,7 @@ export interface CounterSaleInput {
 
 export interface ICounterRepository {
   findReservationByCode(reservationCode: string, tenantId: string): Promise<any | null>;
+  findReservationByCpfHash(cpfHash: string, tenantId: string): Promise<any | null>;
   confirmReservationPayment(input: CounterSaleInput): Promise<{
     success: boolean;
     message: string;

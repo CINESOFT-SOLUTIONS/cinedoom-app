@@ -46,4 +46,5 @@ export interface ISessionRepository {
   ): Promise<SessionWithRelations>;
   update(id: string, data: any): Promise<SessionWithRelations>;
   deleteWithSeats(id: string, tenantId: string): Promise<SessionWithRelations>;
+  findSessionPortalDetails(sessionId: string): Promise<any | null>;
 }

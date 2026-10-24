@@ -1,54 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/modules/auth/auth-options";
-import { CounterService, ReservationNotFoundError } from "@/modules/bilheteria";
-import { CryptoService, maskCPF } from "@/modules/crypto";
-import { rawPrisma } from "@/shared/db/prisma";
+import { CounterService, ReservationNotFoundError } from "@/features/bilheteria";
 
-async function rawPrismaFindByCpfHash(tenantId: string, cpfHash: string) {
-  const reservation = await rawPrisma.reservation.findFirst({
-    where: {
-      tenantId,
-      buyerCpfHash: cpfHash,
-      status: "PENDING",
-    },
-    include: {
-      session: {
-        include: {
-          film: true,
-          room: true,
-        },
-      },
-      sessionSeats: {
-        include: {
-          seat: true,
-        },
-      },
-      buyer: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  if (!reservation) return null;
-
-  let buyerCpfMasked = "***.***.***-**";
-  try {
-    if (reservation.buyer?.cpfEncrypted) {
-      const plain = CryptoService.decryptCPF(reservation.buyer.cpfEncrypted);
-      buyerCpfMasked = maskCPF(plain);
-    }
-  } catch {
-    buyerCpfMasked = "***.***.***-**";
-  }
-
-  return {
-    ...reservation,
-    buyerCpfMasked,
-  };
-}
-
+/**
+ * Controller para Busca de Reserva no Balcao de Bilheteria
+ * Rastreabilidade: Controller-Service-Repository, ISO/IEC/IEEE 12207:2021
+ */
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
   const headerTenantId = request.headers.get("x-tenant-id");
@@ -80,12 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (cpf) {
-      const sanitized = cpf.replace(/\D/g, "");
-      const cpfHash = CryptoService.hashCPF(sanitized);
-      const reservation = await rawPrismaFindByCpfHash(tenantId, cpfHash);
-      if (!reservation) {
-        throw new ReservationNotFoundError();
-      }
+      const reservation = await CounterService.findReservationByCpf(cpf, tenantId);
       return NextResponse.json(reservation, { status: 200 });
     }
 
