@@ -2,7 +2,52 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/modules/auth/auth-options";
 import { CounterService, ReservationNotFoundError } from "@/modules/bilheteria";
-import { CryptoService } from "@/modules/crypto";
+import { CryptoService, maskCPF } from "@/modules/crypto";
+import { rawPrisma } from "@/shared/db/prisma";
+
+async function rawPrismaFindByCpfHash(tenantId: string, cpfHash: string) {
+  const reservation = await rawPrisma.reservation.findFirst({
+    where: {
+      tenantId,
+      buyerCpfHash: cpfHash,
+      status: "PENDING",
+    },
+    include: {
+      session: {
+        include: {
+          film: true,
+          room: true,
+        },
+      },
+      sessionSeats: {
+        include: {
+          seat: true,
+        },
+      },
+      buyer: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!reservation) return null;
+
+  let buyerCpfMasked = "***.***.***-**";
+  try {
+    if (reservation.buyer?.cpfEncrypted) {
+      const plain = CryptoService.decryptCPF(reservation.buyer.cpfEncrypted);
+      buyerCpfMasked = maskCPF(plain);
+    }
+  } catch {
+    buyerCpfMasked = "***.***.***-**";
+  }
+
+  return {
+    ...reservation,
+    buyerCpfMasked,
+  };
+}
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -57,53 +102,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-import { rawPrisma } from "@/shared/db/prisma";
-
-async function rawPrismaFindByCpfHash(tenantId: string, cpfHash: string) {
-  const reservation = await rawPrisma.reservation.findFirst({
-    where: {
-      tenantId,
-      buyerCpfHash: cpfHash,
-      status: "PENDING",
-    },
-    include: {
-      session: {
-        include: {
-          film: true,
-          room: true,
-        },
-      },
-      sessionSeats: {
-        include: {
-          seat: true,
-        },
-      },
-      buyer: true,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-
-  if (!reservation) return null;
-
-  return {
-    ...reservation,
-    buyerCpfMasked: reservation.buyer
-      ? (() => {
-          try {
-            return reservation.buyer.cpfEncrypted
-              ? (await import("@/modules/crypto")).maskCPF(
-                  (await import("@/modules/crypto")).CryptoService.decryptCPF(
-                    reservation.buyer.cpfEncrypted
-                  )
-                )
-              : "***.***.***-**";
-          } catch {
-            return "***.***.***-**";
-          }
-        })(),
-  };
 }
