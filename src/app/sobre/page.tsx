@@ -351,35 +351,35 @@ export default function SobreCineDoomPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             {/* Passo 1 */}
-            <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 relative">
-              <div className="w-10 h-10 rounded-full bg-cta text-white font-bold text-sm flex items-center justify-center shadow-lg shadow-cta/30">
+            <div className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-cta/30 transition-all duration-300 space-y-3 relative group">
+              <div className="w-10 h-10 rounded-full bg-cta text-white font-bold text-sm flex items-center justify-center shadow-lg shadow-cta/30 group-hover:scale-110 transition-transform">
                 1
               </div>
-              <h3 className="text-base font-bold text-white">Reserve Seus Assentos</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Consulte as sessões nas 4 salas e escolha suas poltronas favoritas no mapa interativo. <strong>Zero cobrança de taxa de conveniência.</strong>
+              <h3 className="text-base font-bold text-white tracking-tight">Reserve seus assentos</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Escolha a sessão e seus lugares favoritos.
               </p>
             </div>
 
             {/* Passo 2 */}
-            <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 relative">
-              <div className="w-10 h-10 rounded-full bg-amber-400 text-slate-950 font-bold text-sm flex items-center justify-center shadow-lg shadow-amber-400/30">
+            <div className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-amber-400/30 transition-all duration-300 space-y-3 relative group">
+              <div className="w-10 h-10 rounded-full bg-amber-400 text-slate-950 font-bold text-sm flex items-center justify-center shadow-lg shadow-amber-400/30 group-hover:scale-110 transition-transform">
                 2
               </div>
-              <h3 className="text-base font-bold text-white">Chegue Tranquilo</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Seus assentos reservados ficam garantidos para você até <strong>1 hora antes do início da sessão</strong>. Sem pressa e com vaga assegurada.
+              <h3 className="text-base font-bold text-white tracking-tight">Chegue com tranquilidade</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Retire seus ingressos na bilheteria dentro do prazo informado.
               </p>
             </div>
 
             {/* Passo 3 */}
-            <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 relative">
-              <div className="w-10 h-10 rounded-full bg-emerald-400 text-slate-950 font-bold text-sm flex items-center justify-center shadow-lg shadow-emerald-400/30">
+            <div className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-emerald-400/30 transition-all duration-300 space-y-3 relative group">
+              <div className="w-10 h-10 rounded-full bg-emerald-400 text-slate-950 font-bold text-sm flex items-center justify-center shadow-lg shadow-emerald-400/30 group-hover:scale-110 transition-transform">
                 3
               </div>
-              <h3 className="text-base font-bold text-white">Pipoca & Ingresso no Balcão</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Faça o pagamento rápido na bilheteria física (Pix, débito/crédito ou dinheiro), retire seu bilhete impresso, pegue sua pipoca quentinha e aproveite!
+              <h3 className="text-base font-bold text-white tracking-tight">Aproveite a experiência</h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Compre sua pipoca e curta o filme.
               </p>
             </div>
           </div>
