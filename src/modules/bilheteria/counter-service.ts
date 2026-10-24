@@ -1,5 +1,5 @@
 import { rawPrisma } from "@/shared/db/prisma";
-import { CryptoService, maskCPF, sanitizeCPF } from "@/modules/crypto";
+import { CryptoService, maskCPF } from "@/modules/crypto";
 
 export class ReservationNotFoundError extends Error {
   constructor(message = "Reserva nao encontrada.") {
@@ -49,11 +49,23 @@ export const CounterService = {
       throw new ReservationNotFoundError();
     }
 
+    let buyerCpfMasked = "***.***.***-**";
+
+    try {
+      if (reservation.buyer?.cpfEncrypted) {
+        const plainCpf = CryptoService.decryptCPF(reservation.buyer.cpfEncrypted);
+        buyerCpfMasked = maskCPF(plainCpf);
+      } else if (reservation.buyerCpfEncrypted) {
+        const plainCpf = CryptoService.decryptCPF(reservation.buyerCpfEncrypted);
+        buyerCpfMasked = maskCPF(plainCpf);
+      }
+    } catch {
+      buyerCpfMasked = "***.***.***-**";
+    }
+
     return {
       ...reservation,
-      buyerCpfMasked: reservation.buyer
-        ? maskCPF(CryptoService.decryptCPF(reservation.buyer.cpfEncrypted))
-        : maskCPF(sanitizeCPF(reservation.buyerCpf)),
+      buyerCpfMasked,
     };
   },
 
@@ -85,6 +97,12 @@ export const CounterService = {
         throw new ReservationNotCancellableError("Reserva expirada.");
       }
 
+      if (!reservation.buyerId) {
+        throw new ReservationNotCancellableError(
+          "Reserva sem comprador vinculado não pode ser confirmada no balcão."
+        );
+      }
+
       const updatedReservation = await tx.reservation.update({
         where: { id: reservation.id },
         data: {
@@ -107,16 +125,20 @@ export const CounterService = {
           },
         });
 
+        const totalPrice = Number(reservation.totalPrice);
+        const seatCount = reservation.sessionSeats.length;
+        const pricePerSeat = seatCount > 0 ? totalPrice / seatCount : totalPrice;
+
         for (const ss of reservation.sessionSeats) {
           await tx.ticket.create({
             data: {
               tenantId,
               sessionId: reservation.sessionId,
               seatId: ss.seatId,
-              buyerId: reservation.buyerId!,
+              buyerId: reservation.buyerId,
               soldByUserId,
               status: "SOLD",
-              price: reservation.totalPrice / reservation.sessionSeats.length,
+              price: pricePerSeat,
             },
           });
         }
