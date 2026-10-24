@@ -22,3 +22,132 @@ body {
   color: #F5F5F5;
   font-feature-settings: "rlig" 1, "calt" 1;
 }
+
+/* Efeito Apple Liquid Glass Branco Refinado */
+.liquid-glass-white {
+  /* Fallback para navegadores sem suporte a backdrop-filter */
+  background-color: #ffffff;
+  
+  /* Superfície de vidro branco luminosa com gradiente de luz vertical */
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.94) 0%,
+    rgba(255, 255, 255, 0.86) 45%,
+    rgba(255, 255, 255, 0.78) 100%
+  );
+  
+  /* Desfoque de alta fidelidade e saturação característica do vidro Apple */
+  -webkit-backdrop-filter: blur(28px) saturate(200%) contrast(102%);
+  backdrop-filter: blur(28px) saturate(200%) contrast(102%);
+  
+  /* Borda inferior elegante com brilho de vidro semitransparente */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  
+  /* Camadas de profundidade e realce especular (luz superior e base beveled) */
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 0 rgba(203, 213, 225, 0.45),
+    0 4px 20px -2px rgba(0, 0, 0, 0.05),
+    0 12px 32px -4px rgba(0, 0, 0, 0.09);
+}
+
+/* Reflexo especular superior de luz incidindo sobre o vidro (Apple Glare) */
+.liquid-glass-white::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 90% 80% at 50% -20%,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.25) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0.95;
+}
+
+/* Realce prismático na borda inferior do vidro */
+.liquid-glass-white::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.85) 25%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 0.85) 75%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+@supports not ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+  .liquid-glass-white {
+    background-color: #ffffff;
+    background: #ffffff;
+  }
+}
+
+/* Efeito Apple Liquid Glass Escuro para Cards e Painéis */
+.liquid-glass-card {
+  background: linear-gradient(
+    145deg,
+    rgba(26, 34, 56, 0.75) 0%,
+    rgba(18, 24, 43, 0.85) 100%
+  );
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Efeito Liquid Glass para Inputs */
+.liquid-glass-input {
+  background: rgba(14, 19, 34, 0.65);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+.liquid-glass-input:focus {
+  border-color: rgba(233, 69, 96, 0.7);
+  box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.25), inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  background: rgba(14, 19, 34, 0.85);
+}
+
+/* Efeito Apple Liquid Glass Claro para Painéis em Fundo Claro */
+.liquid-glass-card-light {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(248, 250, 252, 0.78) 100%
+  );
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 8px 24px -4px rgba(0, 0, 0, 0.06),
+    0 2px 6px -1px rgba(0, 0, 0, 0.03),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 1);
+}
+
+.liquid-glass-input-light {
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  color: #1e293b;
+  transition: all 0.2s ease-in-out;
+}
+.liquid-glass-input-light:focus {
+  border-color: rgba(233, 69, 96, 0.7);
+  box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2), inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.98);
+}

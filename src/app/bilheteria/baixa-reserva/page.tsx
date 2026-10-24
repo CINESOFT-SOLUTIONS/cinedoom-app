@@ -59,7 +59,7 @@ export default function BaixaReservaPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-primary via-darkBg to-primary text-white">
-      <header className="border-b border-borderDark/40 bg-surface/40 backdrop-blur">
+      <header className="border-b border-borderDark/40 liquid-glass-card">
         <div className="max-w-4xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-cta flex items-center justify-center font-bold shadow-lg shadow-cta/20">
@@ -70,7 +70,7 @@ export default function BaixaReservaPage() {
               <p className="text-xs text-slate-400">Bilheteria - Atendente/Gerente</p>
             </div>
           </div>
-          <Link href="/" className="text-sm px-3 py-2 rounded-lg hover:bg-surface/60">
+          <Link href="/" className="text-xs font-semibold px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white transition-colors">
             Início
           </Link>
         </div>
@@ -83,12 +83,12 @@ export default function BaixaReservaPage() {
             placeholder="Código da reserva"
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
-            className="flex-1 px-4 py-2.5 rounded-lg bg-darkBg border border-borderDark text-white placeholder-slate-500"
+            className="flex-1 px-4 py-2.5 rounded-xl liquid-glass-input text-white placeholder-slate-500"
           />
           <button
             onClick={buscar}
             disabled={loading || !code}
-            className="px-4 py-2.5 rounded-lg bg-cta hover:bg-cta-hover disabled:opacity-50 flex items-center gap-2"
+            className="px-5 py-2.5 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-bold shadow-lg shadow-cta/25 disabled:opacity-50 flex items-center gap-2 transition-all"
           >
             <Search className="w-4 h-4" />
             Buscar
@@ -110,7 +110,7 @@ export default function BaixaReservaPage() {
         )}
 
         {reservation && (
-          <div className="rounded-xl bg-surface border border-borderDark p-6 space-y-4">
+          <div className="rounded-2xl liquid-glass-card p-6 space-y-4 shadow-xl">
             <div className="flex items-center gap-2">
               <Ticket className="w-5 h-5 text-cta" />
               <h2 className="text-lg font-bold">Reserva {reservation.code}</h2>
@@ -149,7 +149,7 @@ export default function BaixaReservaPage() {
               <button
                 onClick={confirmar}
                 disabled={loading}
-                className="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 font-bold"
+                className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 font-bold text-sm shadow-lg shadow-emerald-600/25 transition-all"
               >
                 Confirmar Pagamento Presencial (Gerar Ingressos)
               </button>

@@ -217,7 +217,7 @@ export default function PortalSessionReservationPage() {
       if (!res.ok) {
         if (res.status === 409) {
           setErrorNotice(
-            "Um ou mais assentos selecionados acabaram de ser vendidos ou reservados por outro espectador. Por favor, escolha outros lugares."
+            "Um ou mais assentos selecionados acabaram de ser vendidos ou reservados por outro cliente. Por favor, escolha outros lugares."
           );
           fetchSeats();
         } else if (res.status === 422 && data.code === "ANTECEDENCE_VIOLATION") {
@@ -283,35 +283,38 @@ export default function PortalSessionReservationPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0F0F1B] text-gray-100 flex flex-col font-sans">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-[#16162A]/90 backdrop-blur-md border-b border-gray-800/80 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-lg shadow-black/30">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/portal"
-            className="w-9 h-9 rounded-xl bg-[#22223D] hover:bg-[#2B2B4E] border border-gray-700/60 flex items-center justify-center text-gray-300 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-black text-white text-base leading-none">
-                {sessionData.film.title}
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                Sala {sessionData.room.name}
-              </span>
+    <div className="min-h-screen bg-[#0E1322] text-neutralBg flex flex-col font-sans">
+      {/* Header White Liquid Glass */}
+      <header className="sticky top-0 z-40 h-16 md:h-20 liquid-glass-white transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 h-full flex items-center justify-between">
+          <div className="flex items-center gap-3.5">
+            <Link
+              href="/"
+              className="h-9 px-3 rounded-full bg-slate-900/[0.06] hover:bg-slate-900/[0.12] border border-slate-900/[0.08] flex items-center gap-1.5 text-slate-800 font-semibold text-xs transition-colors shrink-0"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Voltar</span>
+            </Link>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-slate-900 text-sm md:text-base leading-tight tracking-tight">
+                  {sessionData.film.title}
+                </span>
+                <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-cta/15 text-cta border border-cta/30 uppercase tracking-wider">
+                  Sala {sessionData.room.name}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 font-medium">
+                {formattedDate} às {formattedTime} • R$ {sessionData.price.toFixed(2)} por assento
+              </p>
             </div>
-            <p className="text-[11px] text-gray-400">
-              {formattedDate} às {formattedTime} • R$ {sessionData.price.toFixed(2)} por assento
-            </p>
           </div>
-        </div>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-gray-400 bg-[#1A1A30] px-3 py-1.5 rounded-lg border border-gray-800">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Atualização ao vivo a cada 2s</span>
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-slate-700 bg-white/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/80 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Mapa ao vivo</span>
+            </div>
           </div>
         </div>
       </header>
@@ -329,7 +332,7 @@ export default function PortalSessionReservationPage() {
       {/* Main Grid & Checkout Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Seating Map Area */}
-        <section className="lg:col-span-8 bg-[#16162A]/90 border border-gray-800/80 rounded-2xl p-6 shadow-xl space-y-6">
+        <section className="lg:col-span-8 liquid-glass-card rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
           <div className="flex items-center justify-between border-b border-gray-800 pb-3">
             <div>
               <h2 className="text-base font-black text-white flex items-center gap-2">
@@ -364,7 +367,7 @@ export default function PortalSessionReservationPage() {
         </section>
 
         {/* Reservation Sidebar */}
-        <aside className="lg:col-span-4 bg-[#16162A]/90 border border-gray-800/80 rounded-2xl p-6 shadow-xl space-y-5 sticky top-20">
+        <aside className="lg:col-span-4 liquid-glass-card rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 sticky top-20">
           <div className="border-b border-gray-800 pb-4">
             <h3 className="text-base font-black text-white">Resumo da Reserva</h3>
             <p className="text-xs text-gray-400">Pagamento presencial no balcão</p>
@@ -378,7 +381,7 @@ export default function PortalSessionReservationPage() {
           )}
 
           {/* Film & Seats Overview */}
-          <div className="bg-[#1F1F38] border border-gray-700/60 rounded-xl p-4 space-y-3 text-xs">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3 text-xs">
             <div className="flex justify-between">
               <span className="text-gray-400">Filme:</span>
               <span className="font-bold text-white text-right">{sessionData.film.title}</span>
@@ -416,7 +419,7 @@ export default function PortalSessionReservationPage() {
                   value={buyerName}
                   onChange={(e) => setBuyerName(e.target.value)}
                   disabled={!sessionData.canReserveOnline || isSubmitting}
-                  className="w-full bg-[#121224] border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#E94560] disabled:opacity-50"
+                  className="w-full liquid-glass-input rounded-xl px-3 py-2 text-white placeholder-gray-400 text-xs disabled:opacity-50"
                 />
               </div>
 
@@ -432,7 +435,7 @@ export default function PortalSessionReservationPage() {
                   value={buyerEmail}
                   onChange={(e) => setBuyerEmail(e.target.value)}
                   disabled={!sessionData.canReserveOnline || isSubmitting}
-                  className="w-full bg-[#121224] border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#E94560] disabled:opacity-50"
+                  className="w-full liquid-glass-input rounded-xl px-3 py-2 text-white placeholder-gray-400 text-xs disabled:opacity-50"
                 />
               </div>
 
@@ -448,7 +451,7 @@ export default function PortalSessionReservationPage() {
                   value={buyerCpf}
                   onChange={handleCpfChange}
                   disabled={!sessionData.canReserveOnline || isSubmitting}
-                  className="w-full bg-[#121224] border border-gray-700 rounded-xl px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#E94560] disabled:opacity-50"
+                  className="w-full liquid-glass-input rounded-xl px-3 py-2 text-white placeholder-gray-400 text-xs disabled:opacity-50"
                 />
               </div>
 

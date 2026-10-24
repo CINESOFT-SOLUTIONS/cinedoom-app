@@ -83,7 +83,7 @@ async function main() {
         durationMinutes: 166,
         rating: "14",
         synopsis: "Paul Atreides se une a Chani e aos Fremen.",
-        posterUrl: "https://image.tmdb.org/t/p/w500/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg",
+        posterUrl: "/posters/duna-2.jpg",
       },
     }),
     prisma.film.upsert({
@@ -97,7 +97,7 @@ async function main() {
         durationMinutes: 180,
         rating: "16",
         synopsis: "A história do físico J. Robert Oppenheimer.",
-        posterUrl: "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+        posterUrl: "/posters/oppenheimer.jpg",
       },
     }),
     prisma.film.upsert({
@@ -111,7 +111,7 @@ async function main() {
         durationMinutes: 181,
         rating: "12",
         synopsis: "Os Vingadores se reúnem para reverter o estalo.",
-        posterUrl: "https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",
+        posterUrl: "/posters/pobres-criaturas.jpg",
       },
     }),
     prisma.film.upsert({
@@ -125,40 +125,89 @@ async function main() {
         durationMinutes: 96,
         rating: "L",
         synopsis: "Riley enfrenta novas emoções na adolescência.",
-        posterUrl: "https://image.tmdb.org/t/p/w500/xeqXXTE1Cd3qNaAEOT6qbhhCsgJ.jpg",
+        posterUrl: "/posters/divertida-mente-2.jpg",
       },
     }),
   ]);
 
-  // 4) Salas
+  // 4) 4 Salas Oficiais CineDoom (Total: 420 assentos)
   const sala1 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000201" },
-    update: {},
+    update: {
+      name: "Sala 1 - Confort",
+      capacity: 120,
+      layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
+    },
     create: {
       id: "00000000-0000-4000-a000-000000000201",
       tenantId: tenant.id,
-      name: "Sala 1 - IMAX",
-      capacity: 50,
-      layoutMetadata: { rows: 5, columns: 10, totalSeats: 50 },
+      name: "Sala 1 - Confort",
+      capacity: 120,
+      layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
   });
 
   const sala2 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000202" },
-    update: {},
+    update: {
+      name: "Sala 2 - Confort",
+      capacity: 120,
+      layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
+    },
     create: {
       id: "00000000-0000-4000-a000-000000000202",
       tenantId: tenant.id,
-      name: "Sala 2 - VIP",
-      capacity: 40,
-      layoutMetadata: { rows: 4, columns: 10, totalSeats: 40 },
+      name: "Sala 2 - Confort",
+      capacity: 120,
+      layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
   });
 
-  // Gera assentos se não existirem
+  const sala3 = await prisma.room.upsert({
+    where: { id: "00000000-0000-4000-a000-000000000203" },
+    update: {
+      name: "Sala 3 - IMAX Laser",
+      capacity: 120,
+      layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
+    },
+    create: {
+      id: "00000000-0000-4000-a000-000000000203",
+      tenantId: tenant.id,
+      name: "Sala 3 - IMAX Laser",
+      capacity: 120,
+      layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
+    },
+  });
+
+  const sala4 = await prisma.room.upsert({
+    where: { id: "00000000-0000-4000-a000-000000000204" },
+    update: {
+      name: "Sala 4 - VIP Prime",
+      capacity: 60,
+      layoutMetadata: { rows: 6, columns: 10, totalSeats: 60 },
+    },
+    create: {
+      id: "00000000-0000-4000-a000-000000000204",
+      tenantId: tenant.id,
+      name: "Sala 4 - VIP Prime",
+      capacity: 60,
+      layoutMetadata: { rows: 6, columns: 10, totalSeats: 60 },
+    },
+  });
+
+  // Gera assentos garantindo a matriz correta de capacidade
   async function ensureSeats(roomId: string, rows: number, cols: number) {
+    const targetCount = rows * cols;
     const existing = await prisma.seat.count({ where: { roomId } });
-    if (existing > 0) return;
+    if (existing === targetCount) return;
+
+    if (existing > 0 && existing !== targetCount) {
+      await prisma.sessionSeat.deleteMany({
+        where: { seat: { roomId } },
+      });
+      await prisma.seat.deleteMany({ where: { roomId } });
+    }
+
     const seats = [];
     for (let r = 0; r < rows; r++) {
       const rowLabel = String.fromCharCode(65 + r);
@@ -176,8 +225,10 @@ async function main() {
     await prisma.seat.createMany({ data: seats });
   }
 
-  await ensureSeats(sala1.id, 5, 10);
-  await ensureSeats(sala2.id, 4, 10);
+  await ensureSeats(sala1.id, 10, 12); // 120 assentos
+  await ensureSeats(sala2.id, 10, 12); // 120 assentos
+  await ensureSeats(sala3.id, 10, 12); // 120 assentos
+  await ensureSeats(sala4.id, 6, 10);  // 60 assentos
 
   // 5) Sessoes do dia corrente
   const hoje = new Date();
@@ -209,8 +260,12 @@ async function main() {
     return session;
   }
 
-  const sessaoLotada = await criarSessao(filmes[0].id, sala1.id, 19, 39.9);
-  const sessaoNormal = await criarSessao(filmes[1].id, sala2.id, 21, 44.9);
+  // Sessoes nas 4 salas oficiais CineDoom
+  const sessaoLotada = await criarSessao(filmes[0].id, sala3.id, 19, 42.0); // Duna no IMAX
+  await criarSessao(filmes[0].id, sala3.id, 21, 42.0);                      // Duna no IMAX 21h
+  const sessaoNormal = await criarSessao(filmes[1].id, sala4.id, 20, 54.0); // Oppenheimer no VIP
+  await criarSessao(filmes[2].id, sala1.id, 18, 32.0);                      // Pobres Criaturas na Sala 1
+  await criarSessao(filmes[3].id, sala2.id, 16, 32.0);                      // Divertida Mente 2 na Sala 2
 
   // Pré-lotar ~90% da sessão lotada
   const ssLotados = await prisma.sessionSeat.findMany({

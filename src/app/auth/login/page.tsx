@@ -1,119 +1,41 @@
 "use client";
 
-import React, { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import { Lock, Mail, ShieldAlert, Film } from "lucide-react";
+import React, { useEffect } from "react";
+import { CineDoomHeader } from "@/components/cinedoom-header";
+import { AuthCard } from "@/components/auth-card";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  // Trava de rolagem total da janela (Zero Rolagem)
+  useEffect(() => {
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      const res = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (res?.error) {
-        setError("Credenciais invalidas ou conta inativa.");
-      } else {
-        router.push("/");
-        router.refresh();
-      }
-    } catch {
-      setError("Falha ao conectar com o servico de autenticacao.");
-    } finally {
-      setLoading(false);
-    }
-  }
+    return () => {
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+    };
+  }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-primary via-darkBg to-primary flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-surface border border-borderDark rounded-2xl shadow-2xl p-8 space-y-6">
-        <div className="text-center space-y-3">
-          <Link href="/" className="inline-block group">
-            <div className="relative h-12 w-48 mx-auto transition-transform group-hover:scale-105">
-              <Image
-                src="/logos/cinedoom-logo-horizontal-color.png"
-                alt="CineDoom"
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          </Link>
-          <p className="text-xs text-slate-400">Acesso Restrito: Gerentes e Operadores</p>
-        </div>
-
-        {error && (
-          <div className="p-3 rounded-lg bg-red-950/50 border border-red-800 text-xs text-red-200 flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4 shrink-0 text-red-400" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
-              E-mail Operacional
-            </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="operador@cinedoom.com"
-                required
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-darkBg border border-borderDark text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cta transition-colors"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
-              Senha
-            </label>
-            <div className="relative">
-              <Lock className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-darkBg border border-borderDark text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cta transition-colors"
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 rounded-lg bg-cta hover:bg-cta-hover text-white font-bold text-sm tracking-wide shadow-lg shadow-cta/20 disabled:opacity-50 transition-all"
-          >
-            {loading ? "Autenticando..." : "Entrar no Sistema"}
-          </button>
-        </form>
-
-        <div className="pt-4 border-t border-borderDark/50 text-center text-xs text-slate-400">
-          <Link href="/" className="hover:text-white transition-colors">
-            ← Voltar para a pagina inicial
-          </Link>
+    <div className="fixed inset-0 w-full h-[100dvh] overflow-hidden bg-[#0A0E1A] selection:bg-cta selection:text-white">
+      {/* Fundo Simulado da Tela Inicial com Desfoque Cinematográfico (Backdrop Blur) */}
+      <div className="absolute inset-0 pointer-events-none filter blur-xl opacity-40 scale-105">
+        <CineDoomHeader activePage="nenhum" />
+        <div className="max-w-7xl mx-auto px-6 pt-16 grid grid-cols-3 gap-6">
+          <div className="h-64 rounded-3xl bg-gradient-to-br from-indigo-900/60 to-purple-900/40" />
+          <div className="h-64 rounded-3xl bg-gradient-to-br from-rose-900/60 to-slate-900/40" />
+          <div className="h-64 rounded-3xl bg-gradient-to-br from-blue-900/60 to-slate-900/40" />
         </div>
       </div>
-    </main>
+
+      {/* Camada Escura com Desfoque Apple Glass */}
+      <div className="absolute inset-0 bg-black/65 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div className="my-auto w-full max-w-md">
+          <AuthCard initialView="login" isModal={false} />
+        </div>
+      </div>
+    </div>
   );
 }

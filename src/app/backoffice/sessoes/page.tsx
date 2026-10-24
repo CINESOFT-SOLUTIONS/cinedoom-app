@@ -224,7 +224,7 @@ export default function SessoesBackofficePage() {
     <div className="min-h-screen bg-[#1A1A2E] text-[#F5F5F5] p-6 lg:p-10">
       {/* Header com Navegacao */}
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-800 pb-6">
+        <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <Link href="/backoffice" className="hover:text-[#E94560] transition-colors">
@@ -245,7 +245,7 @@ export default function SessoesBackofficePage() {
           <div className="flex items-center gap-3">
             <Link
               href="/backoffice"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-sm font-medium transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-sm font-semibold transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Voltar
@@ -291,7 +291,7 @@ export default function SessoesBackofficePage() {
             Carregando sessoes...
           </div>
         ) : sessions.length === 0 ? (
-          <div className="text-center py-20 bg-[#16213E]/50 border border-gray-800 rounded-2xl p-8 space-y-4">
+          <div className="text-center py-20 liquid-glass-card rounded-3xl p-8 space-y-4">
             <Calendar className="w-16 h-16 text-gray-600 mx-auto" />
             <h2 className="text-xl font-bold text-gray-300">Nenhuma sessao agendada</h2>
             <p className="text-sm text-gray-500 max-w-md mx-auto">
@@ -315,7 +315,7 @@ export default function SessoesBackofficePage() {
               return (
                 <div
                   key={sess.id}
-                  className="bg-[#16213E] border border-gray-800 hover:border-gray-700 rounded-2xl p-5 flex flex-col justify-between space-y-4 shadow-xl transition-all"
+                  className="liquid-glass-card hover:border-white/25 rounded-3xl p-6 flex flex-col justify-between space-y-4 shadow-xl transition-all"
                 >
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-2">
@@ -373,7 +373,7 @@ export default function SessoesBackofficePage() {
       {/* Modal de Agendamento de Sessao */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#16213E] border border-gray-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-6">
+          <div className="liquid-glass-card rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative">
             <div className="flex items-center justify-between border-b border-gray-800 pb-4">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-[#E94560]" />
@@ -402,7 +402,7 @@ export default function SessoesBackofficePage() {
                 <select
                   value={filmId}
                   onChange={(e) => setFilmId(e.target.value)}
-                  className="w-full bg-[#1A1A2E] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#E94560]"
+                  className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
                 >
                   {films.map((f) => (
                     <option key={f.id} value={f.id}>
@@ -422,7 +422,7 @@ export default function SessoesBackofficePage() {
                 <select
                   value={roomId}
                   onChange={(e) => setRoomId(e.target.value)}
-                  className="w-full bg-[#1A1A2E] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#E94560]"
+                  className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
                 >
                   {rooms.map((r) => (
                     <option key={r.id} value={r.id}>
@@ -444,7 +444,7 @@ export default function SessoesBackofficePage() {
                     type="datetime-local"
                     value={startsAt}
                     onChange={(e) => setStartsAt(e.target.value)}
-                    className="w-full bg-[#1A1A2E] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#E94560]"
+                    className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
                   />
                   {formErrors.startsAt && (
                     <p className="text-xs text-red-400 mt-1">{formErrors.startsAt}</p>
@@ -461,7 +461,7 @@ export default function SessoesBackofficePage() {
                     min="1.00"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    className="w-full bg-[#1A1A2E] border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#E94560]"
+                    className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
                   />
                   {formErrors.price && (
                     <p className="text-xs text-red-400 mt-1">{formErrors.price}</p>

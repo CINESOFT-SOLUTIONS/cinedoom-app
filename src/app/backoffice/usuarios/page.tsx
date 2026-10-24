@@ -256,7 +256,7 @@ export default function GestaoUsuariosPage() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] text-[#2D2D2D] font-sans">
       {/* Top Header */}
-      <header className="bg-[#1A1A2E] text-white shadow-md">
+      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-xl">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -316,7 +316,7 @@ export default function GestaoUsuariosPage() {
         )}
 
         {/* Toolbar de Pesquisa */}
-        <div className="bg-white p-4 rounded-lg shadow-xs border border-gray-200 flex flex-wrap items-center justify-between gap-4">
+        <div className="liquid-glass-card-light p-4 rounded-2xl shadow-sm flex flex-wrap items-center justify-between gap-4">
           <div className="relative flex-1 min-w-[280px]">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -324,7 +324,7 @@ export default function GestaoUsuariosPage() {
               placeholder="Buscar operador por nome ou e-mail..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E94560]"
+              className="w-full pl-9 pr-4 py-2 text-sm liquid-glass-input-light rounded-xl focus:outline-none"
             />
           </div>
           <div className="text-xs text-gray-500 font-medium">
@@ -333,7 +333,7 @@ export default function GestaoUsuariosPage() {
         </div>
 
         {/* Tabela de Usuários */}
-        <div className="bg-white rounded-lg shadow-xs border border-gray-200 overflow-hidden">
+        <div className="liquid-glass-card-light rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -453,9 +453,9 @@ export default function GestaoUsuariosPage() {
       {/* Modal Cadastro de Atendente (FRAME-7) */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md border border-gray-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="liquid-glass-card-light rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="bg-[#1A1A2E] text-white px-6 py-4 flex items-center justify-between">
+            <div className="liquid-glass-card text-white px-6 py-4 flex items-center justify-between border-x-0 border-t-0 rounded-none">
               <div className="flex items-center gap-2.5">
                 <UserPlus className="w-5 h-5 text-[#E94560]" />
                 <h2 className="font-bold text-base">Novo Atendente (FRAME-7)</h2>
@@ -576,8 +576,8 @@ export default function GestaoUsuariosPage() {
       {/* Modal Redefinir Senha */}
       {isPasswordModalOpen && targetUser && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-sm border border-gray-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="bg-[#1A1A2E] text-white px-6 py-4 flex items-center justify-between">
+          <div className="liquid-glass-card-light rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="liquid-glass-card text-white px-6 py-4 flex items-center justify-between border-x-0 border-t-0 rounded-none">
               <div className="flex items-center gap-2">
                 <KeyRound className="w-5 h-5 text-[#E94560]" />
                 <h2 className="font-bold text-sm">Redefinir Senha</h2>

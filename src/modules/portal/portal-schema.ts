@@ -22,8 +22,9 @@ export const registerClientSchema = z.object({
     message: "O consentimento explicito com os termos da LGPD e obrigatorio.",
   }),
   tenantId: z
-    .string({ message: 'O campo "tenantId" e obrigatorio' })
-    .uuid("tenantId deve ser um UUID valido"),
+    .string()
+    .uuid("tenantId deve ser um UUID valido")
+    .optional(),
 });
 
 export type RegisterClientInput = z.infer<typeof registerClientSchema>;

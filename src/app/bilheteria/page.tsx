@@ -223,7 +223,7 @@ export default function BilheteriaMapaAssentosPage() {
     <div className="min-h-screen bg-[#1A1A2E] text-[#F5F5F5] p-6 lg:p-10">
       <div className="max-w-5xl mx-auto space-y-6">
         {/* Header Operacional (FRAME-2) */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-800 pb-6">
+        <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2.5">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-950/60 text-blue-400 border border-blue-500/30 flex items-center gap-1.5">
@@ -277,7 +277,7 @@ export default function BilheteriaMapaAssentosPage() {
               <select
                 value={selectedSessionId || ""}
                 onChange={(e) => setSelectedSessionId(e.target.value)}
-                className="bg-[#16213E] border border-gray-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#E94560]"
+                className="liquid-glass-input rounded-xl px-3 py-2 text-xs text-white"
               >
                 {sessions.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -290,14 +290,14 @@ export default function BilheteriaMapaAssentosPage() {
             <button
               onClick={() => refetch()}
               title="Forcar atualizacao manual"
-              className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white transition-colors"
+              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-gray-200 hover:text-white transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
 
             <Link
               href="/"
-              className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs font-medium transition-colors"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-xs font-semibold transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               Inicio
@@ -314,7 +314,7 @@ export default function BilheteriaMapaAssentosPage() {
         )}
 
         {/* Componente SeatingGrid com dados ao vivo */}
-        <div className="bg-[#16213E] border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-2xl relative">
+        <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 shadow-2xl relative">
           {isSeatsLoading && (
             <div className="absolute inset-0 bg-[#16213E]/60 backdrop-blur-[1px] flex items-center justify-center rounded-2xl z-10">
               <div className="flex items-center gap-2 text-xs text-gray-300">
@@ -336,7 +336,7 @@ export default function BilheteriaMapaAssentosPage() {
         </div>
 
         {/* Rodape de Acao para Checkout */}
-        <div className="bg-[#16213E]/80 border border-gray-800 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+        <div className="liquid-glass-card rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
           <div className="flex items-center gap-3 text-sm text-gray-300">
             <ShoppingCart className="w-5 h-5 text-[#E94560]" />
             <div>
@@ -384,10 +384,10 @@ export default function BilheteriaMapaAssentosPage() {
       {/* Modal de Finalizacao de Venda (FRAME-3 / AC-1 / AC-6) */}
       {isCheckoutModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#16213E] border border-gray-700 w-full max-w-lg rounded-2xl p-6 sm:p-8 shadow-2xl space-y-5 relative">
+          <div className="liquid-glass-card rounded-3xl w-full max-w-lg p-6 sm:p-8 shadow-2xl space-y-5 relative">
             <button
               onClick={handleCloseCheckout}
-              className="absolute top-5 right-5 text-gray-400 hover:text-white p-1 rounded-lg hover:bg-gray-800 transition-colors"
+              className="absolute top-5 right-5 text-gray-400 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -404,7 +404,7 @@ export default function BilheteriaMapaAssentosPage() {
                   </p>
                 </div>
 
-                <div className="bg-[#1A1A2E] border border-gray-800 rounded-xl p-4 text-left text-xs space-y-2">
+                <div className="bg-white/[0.04] backdrop-blur-md border border-white/10 rounded-2xl p-4 text-left text-xs space-y-2">
                   <div className="flex justify-between border-b border-gray-800 pb-2">
                     <span className="text-gray-400">Comprador:</span>
                     <span className="font-bold text-white">{saleSuccessResult.buyer.name}</span>
@@ -463,7 +463,7 @@ export default function BilheteriaMapaAssentosPage() {
                       placeholder="Ex: Carlos Eduardo da Silva"
                       value={buyerName}
                       onChange={(e) => setBuyerName(e.target.value)}
-                      className="w-full bg-[#1A1A2E] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#E94560]"
+                      className="w-full liquid-glass-input rounded-xl px-3 py-2 text-white placeholder-gray-400 text-xs"
                     />
                   </div>
 
@@ -478,7 +478,7 @@ export default function BilheteriaMapaAssentosPage() {
                         placeholder="000.000.000-00"
                         value={buyerCpf}
                         onChange={(e) => setBuyerCpf(e.target.value)}
-                        className="w-full bg-[#1A1A2E] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#E94560]"
+                        className="w-full liquid-glass-input rounded-xl px-3 py-2 text-white placeholder-gray-400 text-xs"
                       />
                     </div>
                     <div>
@@ -492,7 +492,7 @@ export default function BilheteriaMapaAssentosPage() {
                         placeholder="comprador@email.com"
                         value={buyerEmail}
                         onChange={(e) => setBuyerEmail(e.target.value)}
-                        className="w-full bg-[#1A1A2E] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#E94560]"
+                        className="w-full liquid-glass-input rounded-xl px-3 py-2 text-white placeholder-gray-400 text-xs"
                       />
                     </div>
                   </div>

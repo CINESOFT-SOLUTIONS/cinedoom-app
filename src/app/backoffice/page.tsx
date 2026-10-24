@@ -45,7 +45,7 @@ export default function BackofficeDashboardPage() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] text-[#2D2D2D] font-sans">
       {/* Top Header */}
-      <header className="bg-[#1A1A2E] text-white shadow-md">
+      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-xl">
         <div className="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-[#E94560] flex items-center justify-center font-bold text-white shadow-md">
@@ -61,7 +61,7 @@ export default function BackofficeDashboardPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/bilheteria"
-              className="text-xs font-semibold px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 transition-colors text-white"
+              className="text-xs font-semibold px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 transition-all text-white shadow-sm"
             >
               Ir para Bilheteria
             </Link>
@@ -92,7 +92,7 @@ export default function BackofficeDashboardPage() {
               <Link
                 key={m.href}
                 href={m.href}
-                className="group p-6 bg-white rounded-xl border border-gray-200 shadow-xs hover:border-[#E94560]/40 hover:shadow-md transition-all flex flex-col justify-between"
+                className="group p-6 liquid-glass-card-light hover:border-cta/40 hover:shadow-xl rounded-3xl transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">

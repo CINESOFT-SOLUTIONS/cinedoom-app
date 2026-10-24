@@ -220,7 +220,7 @@ export default function CatalogoFilmesPage() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] text-[#2D2D2D] font-sans">
       {/* Top Header */}
-      <header className="bg-[#1A1A2E] text-white shadow-md">
+      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-xl">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -280,7 +280,7 @@ export default function CatalogoFilmesPage() {
         )}
 
         {/* Filter & Search Bar */}
-        <div className="bg-white p-4 rounded-md shadow-sm border border-gray-200 flex items-center justify-between gap-4">
+        <div className="liquid-glass-card-light p-4 rounded-2xl shadow-sm flex items-center justify-between gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -288,7 +288,7 @@ export default function CatalogoFilmesPage() {
               placeholder="Buscar filme por título..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:border-transparent"
+              className="w-full pl-9 pr-4 py-2 text-sm liquid-glass-input-light rounded-xl focus:outline-none"
             />
           </div>
           <div className="text-xs text-gray-500">
@@ -297,7 +297,7 @@ export default function CatalogoFilmesPage() {
         </div>
 
         {/* Movies Table Card (FRAME-5) */}
-        <div className="bg-white rounded-md shadow-sm border border-gray-200 overflow-hidden">
+        <div className="liquid-glass-card-light rounded-2xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
@@ -402,9 +402,9 @@ export default function CatalogoFilmesPage() {
       {/* Modal de Cadastro / Edição de Filme */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg border border-gray-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="liquid-glass-card-light rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Modal Header */}
-            <div className="bg-[#1A1A2E] text-white px-6 py-4 flex items-center justify-between">
+            <div className="liquid-glass-card text-white px-6 py-4 flex items-center justify-between border-x-0 border-t-0 rounded-none">
               <div className="flex items-center gap-2.5">
                 <FilmIcon className="w-5 h-5 text-[#E94560]" />
                 <h2 className="font-bold text-base">

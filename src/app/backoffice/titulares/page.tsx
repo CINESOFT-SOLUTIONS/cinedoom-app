@@ -130,7 +130,7 @@ export default function ComplianceTitularesPage() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] text-[#2D2D2D] font-sans">
       {/* Top Header */}
-      <header className="bg-[#1A1A2E] text-white shadow-md">
+      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-xl">
         <div className="max-w-5xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -182,7 +182,7 @@ export default function ComplianceTitularesPage() {
         )}
 
         {/* Card Informativo ADR-009 */}
-        <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-xs flex items-start gap-3">
+        <div className="liquid-glass-card-light p-6 rounded-2xl shadow-sm flex items-start gap-3">
           <div className="p-2 bg-blue-50 text-blue-600 rounded shrink-0 mt-0.5">
             <FileText className="w-5 h-5" />
           </div>
@@ -200,7 +200,7 @@ export default function ComplianceTitularesPage() {
         </div>
 
         {/* Barra de Busca de Titular */}
-        <div className="bg-white p-6 rounded-lg shadow-xs border border-gray-200 space-y-4">
+        <div className="liquid-glass-card-light p-6 rounded-2xl shadow-sm space-y-4">
           <h2 className="text-sm font-bold text-gray-800">
             Localizar Titular para Atendimento de Direitos
           </h2>
@@ -212,7 +212,7 @@ export default function ComplianceTitularesPage() {
                 placeholder="Informe o CPF do titular (ex: 123.456.789-00 ou 12345678900)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E94560]"
+                className="w-full pl-9 pr-4 py-2.5 text-sm liquid-glass-input-light rounded-xl focus:outline-none"
               />
             </div>
             <button
@@ -227,7 +227,7 @@ export default function ComplianceTitularesPage() {
 
         {/* Resultado da Busca */}
         {titular && (
-          <div className="bg-white rounded-lg shadow-xs border border-gray-200 overflow-hidden animate-in fade-in duration-150">
+          <div className="liquid-glass-card-light rounded-3xl shadow-sm overflow-hidden animate-in fade-in duration-150">
             <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-base text-gray-900">Registro Cadastral do Titular</h3>

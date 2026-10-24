@@ -201,7 +201,7 @@ export default function SalasBackofficePage() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] text-[#2D2D2D] font-sans">
       {/* Header */}
-      <header className="bg-[#1A1A2E] text-white shadow-md">
+      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-xl">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
@@ -267,7 +267,7 @@ export default function SalasBackofficePage() {
               Carregando salas do cinema...
             </div>
           ) : rooms.length === 0 ? (
-            <div className="col-span-full bg-white p-12 rounded-lg border border-gray-200 text-center text-gray-500">
+            <div className="col-span-full liquid-glass-card-light p-12 rounded-3xl text-center text-gray-500">
               <LayoutGrid className="w-12 h-12 mx-auto text-gray-300 mb-3" />
               <p className="font-semibold text-base text-gray-800">
                 Nenhuma sala cadastrada no sistema.
@@ -284,7 +284,7 @@ export default function SalasBackofficePage() {
               return (
                 <div
                   key={room.id}
-                  className="bg-white rounded-lg border border-gray-200 shadow-xs hover:shadow-md transition-shadow p-5 flex flex-col justify-between"
+                  className="liquid-glass-card-light rounded-3xl shadow-sm hover:shadow-xl hover:border-cta/40 transition-all p-6 flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start justify-between">
@@ -348,8 +348,8 @@ export default function SalasBackofficePage() {
       {/* Modal: Nova Sala com Visual Seating Matrix Preview */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="bg-[#1A1A2E] text-white px-6 py-4 flex items-center justify-between">
+          <div className="liquid-glass-card-light rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="liquid-glass-card text-white px-6 py-4 flex items-center justify-between border-x-0 border-t-0 rounded-none">
               <div className="flex items-center gap-2.5">
                 <LayoutGrid className="w-5 h-5 text-[#E94560]" />
                 <h2 className="font-bold text-base">Cadastrar Nova Sala</h2>
@@ -498,8 +498,8 @@ export default function SalasBackofficePage() {
       {/* Modal: Visualizar Layout Completo */}
       {selectedRoomPreview && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl border border-gray-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="bg-[#1A1A2E] text-white px-6 py-4 flex items-center justify-between">
+          <div className="liquid-glass-card-light rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="liquid-glass-card text-white px-6 py-4 flex items-center justify-between border-x-0 border-t-0 rounded-none">
               <div className="flex items-center gap-2.5">
                 <LayoutGrid className="w-5 h-5 text-[#E94560]" />
                 <h2 className="font-bold text-base">

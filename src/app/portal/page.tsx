@@ -1,5 +1,7 @@
 "use client";
 
+import { CineDoomHeader } from "@/components/cinedoom-header";
+
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -79,65 +81,8 @@ export default function PortalCatalogPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0F0F1B] text-gray-100 flex flex-col font-sans selection:bg-[#E94560] selection:text-white">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-40 bg-[#16162A]/90 backdrop-blur-md border-b border-gray-800/80 px-4 lg:px-8 py-3.5 flex items-center justify-between shadow-lg shadow-black/30">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#E94560] to-[#533483] flex items-center justify-center shadow-lg shadow-[#E94560]/30">
-            <Film className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-black text-lg tracking-wider text-white">CINEDOOM</span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#E94560]/20 text-[#E94560] border border-[#E94560]/30 uppercase tracking-widest">
-                Portal
-              </span>
-            </div>
-            <p className="text-[11px] text-gray-400">Ingressos e Reservas Online com Garantia ACID</p>
-          </div>
-        </div>
-
-        <nav className="flex items-center gap-3">
-          <Link
-            href="/portal"
-            className="hidden sm:inline-flex text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#E94560]/20 text-[#E94560] border border-[#E94560]/40 transition-colors"
-          >
-            Programação
-          </Link>
-          {session?.user ? (
-            <div className="flex items-center gap-2.5">
-              <Link
-                href="/portal/minhas-reservas"
-                className="flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 rounded-xl bg-[#1F1F35] hover:bg-[#282846] text-gray-200 border border-gray-700/60 transition-all hover:border-gray-500"
-              >
-                <Ticket className="w-3.5 h-3.5 text-[#E94560]" />
-                Minhas Reservas
-              </Link>
-              <div className="hidden md:flex flex-col text-right">
-                <span className="text-xs font-bold text-white">{session.user.name}</span>
-                <span className="text-[10px] text-gray-400">{session.user.email}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/auth/login"
-                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-gray-300 hover:text-white transition-colors"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                Entrar
-              </Link>
-              <Link
-                href="/portal/cadastro"
-                className="flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-xl bg-gradient-to-r from-[#E94560] to-[#d63d56] text-white shadow-md shadow-[#E94560]/20 hover:brightness-110 transition-all"
-              >
-                <User className="w-3.5 h-3.5" />
-                Criar Conta
-              </Link>
-            </div>
-          )}
-        </nav>
-      </header>
+    <div className="min-h-screen bg-[#0E1322] text-gray-100 flex flex-col font-sans selection:bg-[#E94560] selection:text-white">
+      <CineDoomHeader activePage="filmes" />
 
       {/* Hero Banner */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#1A1A32] to-[#0F0F1B] border-b border-gray-800/60 px-4 lg:px-8 py-12 md:py-16">
@@ -215,7 +160,7 @@ export default function PortalCatalogPage() {
             {filteredFilms.map((film) => (
               <div
                 key={film.id}
-                className="group bg-[#16162A]/90 hover:bg-[#1C1C36] border border-gray-800/80 hover:border-gray-700/80 rounded-2xl overflow-hidden shadow-xl transition-all duration-300 flex flex-col"
+                className="group liquid-glass-card hover:border-white/20 rounded-3xl overflow-hidden shadow-xl transition-all duration-300 flex flex-col"
               >
                 {/* Poster / Header */}
                 <div className="relative aspect-video w-full bg-[#20203A] overflow-hidden">

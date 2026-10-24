@@ -1,3 +1,4 @@
+import { rawPrisma } from "@/shared/db/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import {
   registerClientSchema,
@@ -17,7 +18,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const parseResult = registerClientSchema.safeParse(body);
+  let payload = typeof body === "object" && body !== null ? { ...(body as Record<string, unknown>) } : {};
+  if (!payload.tenantId) {
+    const defaultTenant = await rawPrisma.tenant.findFirst({
+      where: { active: true },
+      select: { id: true },
+    });
+    if (defaultTenant) {
+      payload.tenantId = defaultTenant.id;
+    }
+  }
+
+  const parseResult = registerClientSchema.safeParse(payload);
   if (!parseResult.success) {
     return NextResponse.json(
       {

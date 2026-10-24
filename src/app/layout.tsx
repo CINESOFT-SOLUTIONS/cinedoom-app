@@ -14,9 +14,9 @@ export const metadata: Metadata = {
   title: "CineDoom — Plataforma de Gestao de Cinemas e Bilheteria",
   description: "Sistema SaaS multi-tenant para gestao de cinemas, bilheteria com trava ACID e Portal do Cliente.",
   icons: {
-    icon: "/logos/cinedoom-icon-favicon.png",
-    shortcut: "/logos/cinedoom-icon-favicon.png",
-    apple: "/logos/cinedoom-icon-favicon.png",
+    icon: "/logos/cinedoom-icon.png",
+    shortcut: "/logos/cinedoom-icon.png",
+    apple: "/logos/cinedoom-icon.png",
   },
 };
 

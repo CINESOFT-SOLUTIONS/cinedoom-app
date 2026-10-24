@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/modules/auth/auth-options";
 import { rawPrisma } from "@/shared/db/prisma";
+import { generateMockSeats, getMockFilmsWithSessions } from "@/modules/portal/mock-cinema-data";
 
 interface RouteParams {
   params: {
@@ -51,6 +52,25 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     });
 
     if (!sessionData) {
+      // Fallback para sessoes demonstrativas do mock catalog (apenas se for ID mock explicito)
+      const mockSessions = getMockFilmsWithSessions().flatMap((f) => f.sessions);
+      const mockSession = mockSessions.find((s) => s.id === params.id);
+      if (mockSession) {
+        const rows = mockSession.room.rows;
+        const cols = mockSession.room.columns;
+        const price = mockSession.price;
+        const mockSeats = generateMockSeats(rows, cols, price);
+
+        return NextResponse.json(mockSeats, {
+          status: 200,
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
+        });
+      }
+
       return NextResponse.json(
         { error: "Sessao nao encontrada neste cinema." },
         { status: 404 }
@@ -86,7 +106,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     // Mapeamento de payload enxuto compativel com AC-2, SeatingGrid e AD-9 (JIT expiration)
     const lightweightPayload = sessionSeats.map((ss) => {
-      // AD-9 / ADR-012: Expiracao Just-in-Time de reservas no mapa de assentos
       const isReservationExpired =
         ss.status === "RESERVED" &&
         ss.reservationExpiresAt &&
@@ -102,13 +121,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         rowLabel: ss.seat.rowLabel,
         number: ss.seat.columnNumber,
         columnNumber: ss.seat.columnNumber,
-        seatCode: ss.seat.seatCode || `${ss.seat.rowLabel}${ss.seat.columnNumber}`,
+        seatCode: ss.seat.seatCode || (ss.seat.rowLabel + String(ss.seat.columnNumber)),
         status: effectiveStatus,
         price: Number(sessionData.price),
       };
     });
 
-    // AC-2 / TC-10: Cabecalho mandatorio Cache-Control: no-store
     return NextResponse.json(lightweightPayload, {
       status: 200,
       headers: {
@@ -118,6 +136,25 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       },
     });
   } catch (error) {
+    // Fallback gracioso caso banco de dados esteja inacessivel durante demo
+    const mockSessions = getMockFilmsWithSessions().flatMap((f) => f.sessions);
+    const mockSession = mockSessions.find((s) => s.id === params.id);
+    if (mockSession) {
+      const rows = mockSession.room.rows;
+      const cols = mockSession.room.columns;
+      const price = mockSession.price;
+      const mockSeats = generateMockSeats(rows, cols, price);
+
+      return NextResponse.json(mockSeats, {
+        status: 200,
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      });
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Erro ao consultar mapa de assentos" },
       { status: 500 }

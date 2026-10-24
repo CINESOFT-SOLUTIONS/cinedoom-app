@@ -1,5 +1,7 @@
 "use client";
 
+import { CineDoomHeader } from "@/components/cinedoom-header";
+
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -144,8 +146,9 @@ export default function ReservationComprovantePage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0F0F1B] text-gray-100 flex flex-col font-sans py-8 px-4">
-      <div className="max-w-2xl mx-auto w-full space-y-6">
+    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
+      <CineDoomHeader activePage="nenhum" />
+      <div className="flex-1 max-w-2xl mx-auto w-full space-y-6 py-8 px-4">
         {/* Top Actions */}
         <div className="flex items-center justify-between">
           <Link
@@ -166,7 +169,7 @@ export default function ReservationComprovantePage() {
         </div>
 
         {/* Success Card */}
-        <div className="bg-[#16162A]/95 border border-gray-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-8 relative overflow-hidden">
+        <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 shadow-2xl space-y-8 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-[#E94560] to-[#533483]" />
 
           {/* Header Status */}
@@ -181,7 +184,7 @@ export default function ReservationComprovantePage() {
           </div>
 
           {/* Prominent Reservation Code Box */}
-          <div className="bg-gradient-to-br from-[#1E1E38] to-[#121226] border-2 border-dashed border-[#E94560]/60 rounded-2xl p-5 text-center space-y-2 shadow-inner">
+          <div className="bg-white/[0.04] backdrop-blur-md border-2 border-dashed border-[#E94560]/60 rounded-2xl p-5 text-center space-y-2 shadow-inner">
             <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest block">
               Código Identificador da Reserva
             </span>
@@ -217,7 +220,7 @@ export default function ReservationComprovantePage() {
           </div>
 
           {/* Session & Seats Details */}
-          <div className="bg-[#121222] border border-gray-800 rounded-2xl p-5 space-y-4 text-xs">
+          <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-5 space-y-4 text-xs">
             <div className="flex items-center gap-3 border-b border-gray-800 pb-3">
               <Film className="w-4 h-4 text-[#E94560]" />
               <div className="flex-1">

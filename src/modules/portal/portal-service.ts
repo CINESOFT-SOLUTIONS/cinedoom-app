@@ -65,7 +65,18 @@ export async function registerClient(
 ): Promise<ClientRegistrationResult> {
   const email = input.email.trim().toLowerCase();
   const name = input.name.trim();
-  const tenantId = input.tenantId.trim();
+  let tenantId = input.tenantId?.trim();
+
+  if (!tenantId) {
+    const defaultTenant = await rawPrisma.tenant.findFirst({
+      where: { active: true },
+      select: { id: true },
+    });
+    if (!defaultTenant) {
+      throw new PortalValidationError("Nenhum cinema ativo configurado no sistema.", "tenantId");
+    }
+    tenantId = defaultTenant.id;
+  }
 
   if (!validateCPF(input.cpf)) {
     throw new PortalValidationError("O CPF informado e invalido.", "cpf");
