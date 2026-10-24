@@ -6,3 +6,7 @@ export * from "./application/film.schema";
 export * from "./application/film.service";
 export * from "./application/room.schema";
 export * from "./application/room.service";
+export * from "./domain/session-repository.interface";
+export * from "./infrastructure/prisma-session.repository";
+export * from "./application/session.schema";
+export * from "./application/session.service";
