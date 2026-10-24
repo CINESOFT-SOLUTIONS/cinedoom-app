@@ -14,6 +14,10 @@
 
 body {
   font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   background-color: #16213E;
   color: #F5F5F5;
   font-feature-settings: "rlig" 1, "calt" 1;

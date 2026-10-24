@@ -59,7 +59,7 @@ function AgeRatingBadge({ rating }: { rating?: string }) {
     return (
       <span
         title="Classificação Livre para todos os públicos"
-        className="w-6 h-6 rounded bg-[#00A859] text-white font-black text-xs flex items-center justify-center shadow-md select-none"
+        className="w-6 h-6 rounded bg-[#00A859] text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
       >
         L
       </span>
@@ -69,7 +69,7 @@ function AgeRatingBadge({ rating }: { rating?: string }) {
     return (
       <span
         title="Não recomendado para menores de 10 anos"
-        className="w-6 h-6 rounded bg-[#0099DA] text-white font-black text-xs flex items-center justify-center shadow-md select-none"
+        className="w-6 h-6 rounded bg-[#0099DA] text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
       >
         10
       </span>
@@ -79,7 +79,7 @@ function AgeRatingBadge({ rating }: { rating?: string }) {
     return (
       <span
         title="Não recomendado para menores de 12 anos"
-        className="w-6 h-6 rounded bg-[#F7B500] text-neutral-900 font-black text-xs flex items-center justify-center shadow-md select-none"
+        className="w-6 h-6 rounded bg-[#F7B500] text-neutral-900 font-bold text-xs flex items-center justify-center shadow-sm select-none"
       >
         12
       </span>
@@ -89,7 +89,7 @@ function AgeRatingBadge({ rating }: { rating?: string }) {
     return (
       <span
         title="Não recomendado para menores de 14 anos"
-        className="w-6 h-6 rounded bg-[#F37021] text-white font-black text-xs flex items-center justify-center shadow-md select-none"
+        className="w-6 h-6 rounded bg-[#F37021] text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
       >
         14
       </span>
@@ -99,7 +99,7 @@ function AgeRatingBadge({ rating }: { rating?: string }) {
     return (
       <span
         title="Não recomendado para menores de 16 anos"
-        className="w-6 h-6 rounded bg-[#E94560] text-white font-black text-xs flex items-center justify-center shadow-md select-none"
+        className="w-6 h-6 rounded bg-[#E94560] text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
       >
         16
       </span>
@@ -108,7 +108,7 @@ function AgeRatingBadge({ rating }: { rating?: string }) {
   return (
     <span
       title="Não recomendado para menores de 18 anos"
-      className="w-6 h-6 rounded bg-[#1C1C1C] border border-slate-600 text-white font-black text-xs flex items-center justify-center shadow-md select-none"
+      className="w-6 h-6 rounded bg-[#1C1C1C] border border-slate-600 text-white font-bold text-xs flex items-center justify-center shadow-sm select-none"
     >
       18
     </span>
@@ -227,20 +227,20 @@ export default function CinemarkStyleHomePage() {
             <nav className="flex items-center gap-3 md:gap-5">
               <a
                 href="#programacao"
-                className="hidden sm:inline-flex text-xs font-bold text-slate-700 hover:text-slate-950 uppercase tracking-wider transition-colors"
+                className="hidden sm:inline-flex text-xs font-medium text-slate-700 hover:text-slate-950 uppercase tracking-wider transition-colors"
               >
                 Programação
               </a>
               <a
                 href="#salas"
-                className="hidden md:inline-flex text-xs font-bold text-slate-700 hover:text-slate-950 uppercase tracking-wider transition-colors"
+                className="hidden md:inline-flex text-xs font-medium text-slate-700 hover:text-slate-950 uppercase tracking-wider transition-colors"
               >
                 Salas
               </a>
 
               <Link
                 href="/portal/minhas-reservas"
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200 text-slate-800 border border-slate-200/90 text-xs font-bold shadow-sm transition-all"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100/90 hover:bg-slate-200 text-slate-800 border border-slate-200/90 text-xs font-medium shadow-sm transition-all"
               >
                 <Ticket className="w-4 h-4 text-cta" />
                 <span className="hidden sm:inline">Minhas Reservas</span>
@@ -252,7 +252,7 @@ export default function CinemarkStyleHomePage() {
                     {session.user.name?.charAt(0) || "U"}
                   </div>
                   <div className="hidden xl:block text-left text-xs leading-none">
-                    <span className="font-bold text-slate-900 block">{session.user.name}</span>
+                    <span className="font-semibold text-slate-900 block">{session.user.name}</span>
                     <span className="text-[10px] text-slate-500 font-medium">
                       {session.user.role || "Cliente"}
                     </span>
@@ -262,14 +262,14 @@ export default function CinemarkStyleHomePage() {
                 <div className="flex items-center gap-2">
                   <Link
                     href="/auth/login"
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 hover:text-slate-950 transition-colors"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-700 hover:text-slate-950 transition-colors"
                   >
                     <LogIn className="w-4 h-4" />
                     <span>Entrar</span>
                   </Link>
                   <Link
                     href="/portal/cadastro"
-                    className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-black shadow-lg shadow-cta/25 hover:brightness-110 transition-all"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-semibold shadow-lg shadow-cta/25 hover:brightness-110 transition-all"
                   >
                     <User className="w-3.5 h-3.5" />
                     <span>Cadastrar</span>
@@ -312,21 +312,21 @@ export default function CinemarkStyleHomePage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 w-full">
           <div className="max-w-2xl space-y-5">
             <div className="flex flex-wrap items-center gap-2.5">
-              <span className="px-2.5 py-1 rounded bg-cta text-white font-black text-[11px] tracking-wider uppercase shadow-md shadow-cta/30">
+              <span className="px-2.5 py-1 rounded bg-cta text-white font-semibold text-[11px] tracking-wider uppercase shadow-md shadow-cta/30">
                 Em Destaque
               </span>
-              <span className="px-2.5 py-1 rounded bg-surface/90 border border-borderDark text-amber-300 font-bold text-[11px] tracking-wide flex items-center gap-1">
+              <span className="px-2.5 py-1 rounded bg-surface/90 border border-borderDark text-amber-300 font-medium text-[11px] tracking-wide flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 Sala 1 IMAX
               </span>
               <AgeRatingBadge rating={activeHeroFilm?.classification} />
             </div>
 
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-none drop-shadow-xl">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight leading-none drop-shadow-xl">
               {activeHeroFilm?.title || "Duna: Parte Dois"}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-300">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-normal text-slate-300">
               {activeHeroFilm?.duration && (
                 <span className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-cta" />
@@ -351,7 +351,7 @@ export default function CinemarkStyleHomePage() {
             <div className="pt-2 flex flex-wrap items-center gap-3.5">
               <a
                 href="#programacao"
-                className="px-6 py-3.5 rounded-xl bg-cta hover:bg-cta-hover text-white font-black text-sm shadow-xl shadow-cta/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+                className="px-6 py-3.5 rounded-xl bg-cta hover:bg-cta-hover text-white font-semibold text-sm shadow-xl shadow-cta/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
               >
                 <Ticket className="w-4 h-4" />
                 <span>Ver Sessões & Reservar</span>
@@ -361,7 +361,7 @@ export default function CinemarkStyleHomePage() {
                 <button
                   type="button"
                   onClick={() => setTrailerModalFilm(activeHeroFilm)}
-                  className="px-5 py-3.5 rounded-xl bg-surface/80 hover:bg-surface border border-borderDark text-white font-bold text-sm transition-all hover:border-slate-400 flex items-center gap-2"
+                  className="px-5 py-3.5 rounded-xl bg-surface/80 hover:bg-surface border border-borderDark text-white font-medium text-sm transition-all hover:border-slate-400 flex items-center gap-2"
                 >
                   <Play className="w-4 h-4 text-cta fill-cta" />
                   <span>Ver Detalhes</span>
@@ -371,7 +371,7 @@ export default function CinemarkStyleHomePage() {
               {activeHeroFilm?.sessions?.[0] && (
                 <Link
                   href={`/portal/sessoes/${activeHeroFilm.sessions[0].id}`}
-                  className="px-4 py-3.5 rounded-xl bg-[#141A2D] hover:bg-surface border border-borderDark text-emerald-400 font-bold text-xs transition-all hidden sm:inline-flex items-center gap-1.5"
+                  className="px-4 py-3.5 rounded-xl bg-[#141A2D] hover:bg-surface border border-borderDark text-emerald-400 font-medium text-xs transition-all hidden sm:inline-flex items-center gap-1.5"
                 >
                   <Clock className="w-3.5 h-3.5" />
                   Próxima Sessão (
@@ -414,7 +414,7 @@ export default function CinemarkStyleHomePage() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
             {/* Seletor de Datas em Pílulas */}
             <div className="flex items-center gap-2 overflow-x-auto w-full lg:w-auto pb-1 lg:pb-0 scrollbar-none">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2 hidden sm:flex items-center gap-1 shrink-0">
+              <span className="text-xs font-medium text-slate-400 uppercase tracking-wider mr-2 hidden sm:flex items-center gap-1 shrink-0">
                 <Calendar className="w-3.5 h-3.5 text-cta" /> Data:
               </span>
               {dateTabs.map((tab) => (
@@ -422,14 +422,14 @@ export default function CinemarkStyleHomePage() {
                   key={tab.index}
                   type="button"
                   onClick={() => setSelectedDay(tab.index)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold shrink-0 transition-all flex flex-col items-center leading-tight ${
+                  className={`px-4 py-2 rounded-xl text-xs font-medium shrink-0 transition-all flex flex-col items-center leading-tight ${
                     selectedDay === tab.index
                       ? "bg-cta text-white shadow-lg shadow-cta/30"
                       : "bg-surface/50 text-slate-400 hover:text-white hover:bg-surface border border-borderDark/50"
                   }`}
                 >
                   <span className="text-[10px] uppercase tracking-wider">{tab.dayName}</span>
-                  <span className="text-xs font-black">{tab.dayNumber}</span>
+                  <span className="text-xs font-semibold">{tab.dayNumber}</span>
                 </button>
               ))}
             </div>
@@ -442,7 +442,7 @@ export default function CinemarkStyleHomePage() {
                     key={format}
                     type="button"
                     onClick={() => setSelectedFormat(format)}
-                    className={`px-3 py-1.5 rounded-lg font-bold text-[11px] transition-all ${
+                    className={`px-3 py-1.5 rounded-lg font-medium text-[11px] transition-all ${
                       selectedFormat === format
                         ? "bg-surface text-cta border border-cta/50 shadow-sm"
                         : "text-slate-400 hover:text-white bg-transparent"
@@ -472,7 +472,7 @@ export default function CinemarkStyleHomePage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full flex-1 space-y-10">
         <div className="flex items-center justify-between border-b border-borderDark/60 pb-4">
           <div>
-            <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
+            <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
               <Film className="w-6 h-6 text-cta" />
               Programação CineDoom
             </h2>
@@ -543,10 +543,10 @@ export default function CinemarkStyleHomePage() {
                   <div className="md:col-span-9 lg:col-span-10 flex flex-col justify-between h-full space-y-6">
                     <div className="space-y-2">
                       <div className="flex flex-wrap items-center gap-3">
-                        <h3 className="text-xl md:text-2xl font-black text-white leading-tight">
+                        <h3 className="text-xl md:text-2xl font-semibold text-white leading-tight">
                           {film.title}
                         </h3>
-                        <span className="text-[11px] font-bold text-cta uppercase tracking-wider px-2 py-0.5 rounded bg-cta/10">
+                        <span className="text-[11px] font-medium text-cta uppercase tracking-wider px-2 py-0.5 rounded bg-cta/10">
                           {genreText.split("•")[0]?.trim()}
                         </span>
                       </div>
@@ -575,7 +575,7 @@ export default function CinemarkStyleHomePage() {
                           return (
                             <div key={roomName} className="space-y-2">
                               <div className="flex items-center gap-2">
-                                <span className="text-xs font-black text-white uppercase tracking-wider">
+                                <span className="text-xs font-semibold text-white uppercase tracking-wider">
                                   {roomName}
                                 </span>
                               </div>
@@ -596,10 +596,10 @@ export default function CinemarkStyleHomePage() {
                                       href={`/portal/sessoes/${sess.id}`}
                                       className="group/pill flex flex-col items-center justify-center px-4 py-2 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white transition-all shadow-md hover:scale-[1.03] active:scale-[0.98]"
                                     >
-                                      <span className="font-mono font-black text-sm block leading-none">
+                                      <span className="font-mono font-semibold text-sm block leading-none">
                                         {time}
                                       </span>
-                                      <span className="text-[10px] font-bold text-emerald-400 group-hover/pill:text-white mt-1">
+                                      <span className="text-[10px] font-medium text-emerald-400 group-hover/pill:text-white mt-1">
                                         R$ {sess.price.toFixed(2)}
                                       </span>
                                     </Link>
@@ -621,7 +621,7 @@ export default function CinemarkStyleHomePage() {
         {/* 5. Seção de Salas do CineDoom */}
         <section id="salas" className="pt-12 border-t border-borderDark/60 space-y-6">
           <div className="text-center max-w-xl mx-auto space-y-1.5">
-            <h3 className="text-2xl font-black text-white tracking-tight">
+            <h3 className="text-2xl font-bold text-white tracking-tight">
               Salas do CineDoom
             </h3>
             <p className="text-xs text-slate-400">
@@ -632,14 +632,14 @@ export default function CinemarkStyleHomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 rounded-2xl bg-gradient-to-br from-[#1A2238] to-[#12182B] border border-borderDark shadow-xl space-y-4">
               <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-xl bg-cta/15 text-cta flex items-center justify-center font-black text-lg">
+                <div className="w-12 h-12 rounded-xl bg-cta/15 text-cta flex items-center justify-center font-semibold text-lg">
                   IMAX
                 </div>
-                <span className="text-[11px] font-bold text-cta bg-cta/10 px-2.5 py-1 rounded-full uppercase">
+                <span className="text-[11px] font-medium text-cta bg-cta/10 px-2.5 py-1 rounded-full uppercase">
                   50 Lugares
                 </span>
               </div>
-              <h4 className="text-lg font-black text-white">Sala 1 • IMAX</h4>
+              <h4 className="text-lg font-semibold text-white">Sala 1 • IMAX</h4>
               <p className="text-xs text-slate-300 leading-relaxed">
                 Tela de grande formato com projeção de alta definição e sistema de som imersivo.
               </p>
@@ -655,14 +655,14 @@ export default function CinemarkStyleHomePage() {
 
             <div className="p-6 rounded-2xl bg-gradient-to-br from-[#1A2238] to-[#12182B] border border-borderDark shadow-xl space-y-4">
               <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center font-black text-lg">
+                <div className="w-12 h-12 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center font-semibold text-lg">
                   VIP
                 </div>
-                <span className="text-[11px] font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full uppercase">
+                <span className="text-[11px] font-medium text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full uppercase">
                   40 Lugares
                 </span>
               </div>
-              <h4 className="text-lg font-black text-white">Sala 2 • VIP</h4>
+              <h4 className="text-lg font-semibold text-white">Sala 2 • VIP</h4>
               <p className="text-xs text-slate-300 leading-relaxed">
                 Ambiente intimista com poltronas reclináveis e maior espaçamento entre fileiras.
               </p>
@@ -694,7 +694,7 @@ export default function CinemarkStyleHomePage() {
 
             <div className="flex items-center gap-3">
               <AgeRatingBadge rating={trailerModalFilm.classification} />
-              <h4 className="text-lg font-black text-white">{trailerModalFilm.title}</h4>
+              <h4 className="text-lg font-semibold text-white">{trailerModalFilm.title}</h4>
             </div>
 
             <div className="text-xs text-slate-400 space-y-1">
@@ -719,7 +719,7 @@ export default function CinemarkStyleHomePage() {
               <a
                 href="#programacao"
                 onClick={() => setTrailerModalFilm(null)}
-                className="px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-bold transition-all"
+                className="px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-semibold transition-all"
               >
                 Ver Horários Disponíveis
               </a>
@@ -747,7 +747,7 @@ export default function CinemarkStyleHomePage() {
             </div>
 
             <div className="space-y-2.5">
-              <span className="font-bold text-white text-xs uppercase tracking-wider block">
+              <span className="font-semibold text-white text-xs uppercase tracking-wider block">
                 Bilheteria & Reservas Presenciais
               </span>
               <p className="text-xs text-slate-400 leading-relaxed">
@@ -756,7 +756,7 @@ export default function CinemarkStyleHomePage() {
             </div>
 
             <div className="space-y-2.5">
-              <span className="font-bold text-white text-xs uppercase tracking-wider block">
+              <span className="font-semibold text-white text-xs uppercase tracking-wider block">
                 Segurança & Conformidade
               </span>
               <p className="text-xs text-slate-400 leading-relaxed flex items-center gap-1.5">
