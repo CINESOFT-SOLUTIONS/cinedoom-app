@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Film, UserPlus, ShieldAlert, CheckCircle } from "lucide-react";
 
 export default function PortalCadastroPage() {
@@ -46,12 +47,19 @@ export default function PortalCadastroPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-primary via-darkBg to-primary flex items-center justify-center p-4">
       <div className="w-full max-w-lg bg-surface border border-borderDark rounded-2xl shadow-2xl p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-cta/10 text-cta mb-2 shadow-inner">
-            <Film className="w-6 h-6" />
-          </div>
-          <h1 className="text-2xl font-black text-white tracking-wide">CINEDOOM - PORTAL DO CLIENTE</h1>
-          <p className="text-xs text-slate-400">Cadastro de Espectador (Role: CLIENTE)</p>
+        <div className="text-center space-y-3">
+          <Link href="/" className="inline-block group">
+            <div className="relative h-12 w-48 mx-auto transition-transform group-hover:scale-105">
+              <Image
+                src="/logos/cinedoom-logo-horizontal-color.png"
+                alt="CineDoom"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </Link>
+          <p className="text-xs text-slate-400">Cadastro de Espectador no CineDoom</p>
         </div>
 
         {error && (

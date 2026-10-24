@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/modules/auth/auth-options";
@@ -26,13 +27,20 @@ export default async function MinhasReservasPage() {
     <main className="min-h-screen bg-gradient-to-b from-primary via-darkBg to-primary text-white">
       <header className="border-b border-borderDark/40 bg-surface/40 backdrop-blur">
         <div className="max-w-5xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-cta flex items-center justify-center font-bold shadow-lg shadow-cta/20">
-              CD
-            </div>
-            <div>
-              <h1 className="text-xl font-black tracking-wider">MINHAS RESERVAS</h1>
-              <p className="text-xs text-slate-400">Portal do Cliente</p>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="relative h-10 w-44 transition-transform hover:scale-105">
+              <Image
+                src="/logos/cinedoom-logo-horizontal-color.png"
+                alt="CineDoom"
+                fill
+                className="object-contain object-left"
+                priority
+              />
+            </Link>
+            <span className="hidden sm:inline-block h-6 w-[1px] bg-borderDark" />
+            <div className="hidden sm:block">
+              <h1 className="text-sm font-black tracking-wider text-white">MINHAS RESERVAS</h1>
+              <p className="text-[10px] text-slate-400">Portal do Cliente</p>
             </div>
           </div>
           <nav className="flex items-center gap-3 text-sm">

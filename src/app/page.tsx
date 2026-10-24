@@ -208,19 +208,17 @@ export default function CinemarkStyleHomePage() {
       <header className="sticky top-0 z-50 bg-[#141A2D]/95 backdrop-blur-md border-b border-borderDark/60 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logotipo da Unidade CineDoom */}
+            {/* Logotipo Oficial CineDoom */}
             <div className="flex items-center gap-6">
-              <Link href="/" className="flex items-center gap-2.5 group">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cta to-[#892CDC] flex items-center justify-center font-black text-white text-lg shadow-lg shadow-cta/25 group-hover:scale-105 transition-transform">
-                  CD
-                </div>
-                <div className="leading-tight">
-                  <span className="font-black text-xl tracking-wider text-white flex items-center gap-1.5">
-                    CINEDOOM
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-medium block">
-                    Cinema & Bilheteria
-                  </span>
+              <Link href="/" className="flex items-center group">
+                <div className="relative h-10 w-44 md:h-12 md:w-52 transition-transform duration-200 group-hover:scale-105">
+                  <Image
+                    src="/logos/cinedoom-logo-horizontal-color.png"
+                    alt="CineDoom"
+                    fill
+                    className="object-contain object-left"
+                    priority
+                  />
                 </div>
               </Link>
             </div>
@@ -735,13 +733,13 @@ export default function CinemarkStyleHomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-cta flex items-center justify-center font-black text-white text-sm">
-                  CD
-                </div>
-                <span className="font-black text-base text-white tracking-wider">
-                  CINEDOOM
-                </span>
+              <div className="relative h-9 w-40">
+                <Image
+                  src="/logos/cinedoom-logo-horizontal-color.png"
+                  alt="CineDoom"
+                  fill
+                  className="object-contain object-left"
+                />
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">
                 Cinema com reserva online e pagamento presencial na bilheteria física.
@@ -773,7 +771,17 @@ export default function CinemarkStyleHomePage() {
 
           <div className="pt-8 border-t border-borderDark/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
             <p>© 2026 CineDoom. Todos os direitos reservados.</p>
-            <p>Desenvolvido por CineSoft Solutions</p>
+            <div className="flex items-center gap-2">
+              <span>Desenvolvido por</span>
+              <div className="relative h-5 w-24 opacity-80 hover:opacity-100 transition-opacity">
+                <Image
+                  src="/logos/cinesoft-logo-horizontal-color.png"
+                  alt="CineSoft Solutions"
+                  fill
+                  className="object-contain object-left"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </footer>
