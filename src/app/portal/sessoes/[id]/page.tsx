@@ -330,9 +330,9 @@ export default function PortalSessionReservationPage() {
       )}
 
       {/* Main Grid & Checkout Content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-6 sm:py-8 grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
         {/* Seating Map Area */}
-        <section className="lg:col-span-8 liquid-glass-card rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <section className="lg:col-span-8 liquid-glass-card rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl space-y-4 sm:space-y-6">
           <div className="flex items-center justify-between border-b border-gray-800 pb-3">
             <div>
               <h2 className="text-base font-black text-white flex items-center gap-2">
@@ -367,7 +367,7 @@ export default function PortalSessionReservationPage() {
         </section>
 
         {/* Reservation Sidebar */}
-        <aside className="lg:col-span-4 liquid-glass-card rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 sticky top-20">
+        <aside className="lg:col-span-4 liquid-glass-card rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl space-y-4 sm:space-y-5 lg:sticky lg:top-20">
           <div className="border-b border-gray-800 pb-4">
             <h3 className="text-base font-black text-white">Resumo da Reserva</h3>
             <p className="text-xs text-gray-400">Pagamento presencial no balcão</p>

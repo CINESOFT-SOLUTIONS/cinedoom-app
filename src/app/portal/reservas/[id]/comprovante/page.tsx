@@ -148,48 +148,48 @@ export default function ReservationComprovantePage() {
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
       <CineDoomHeader activePage="nenhum" />
-      <div className="flex-1 max-w-2xl mx-auto w-full space-y-6 py-8 px-4">
+      <div className="flex-1 max-w-2xl mx-auto w-full space-y-5 sm:space-y-6 py-6 sm:py-8 px-3 sm:px-4">
         {/* Top Actions */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <Link
-            href="/portal"
-            className="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white transition-colors"
+            href="/"
+            className="flex items-center justify-center sm:justify-start gap-2 text-xs font-bold text-gray-400 hover:text-white transition-colors py-1"
           >
             <ArrowLeft className="w-4 h-4" />
-            Voltar à Programação
+            <span>Voltar à Programação</span>
           </Link>
 
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#1A1A32] hover:bg-[#252548] text-xs font-semibold text-gray-200 border border-gray-700/60 transition-colors"
+            className="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1A1A32] hover:bg-[#252548] text-xs font-semibold text-gray-200 border border-gray-700/60 transition-colors cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5 text-gray-400" />
-            Imprimir Comprovante
+            <span>Imprimir Comprovante</span>
           </button>
         </div>
 
         {/* Success Card */}
-        <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 shadow-2xl space-y-8 relative overflow-hidden">
+        <div className="liquid-glass-card rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl space-y-6 sm:space-y-8 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-[#E94560] to-[#533483]" />
 
           {/* Header Status */}
           <div className="text-center space-y-2">
-            <div className="w-14 h-14 rounded-full bg-emerald-950/70 border border-emerald-500/50 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
-              <CheckCircle2 className="w-8 h-8" />
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-950/70 border border-emerald-500/50 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+              <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8" />
             </div>
-            <h1 className="text-2xl font-black text-white">Reserva Confirmada com Sucesso!</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-white">Reserva Confirmada com Sucesso!</h1>
             <p className="text-xs text-gray-400">
               Seus assentos estão garantidos até 1 hora antes do início da sessão.
             </p>
           </div>
 
           {/* Prominent Reservation Code Box */}
-          <div className="bg-white/[0.04] backdrop-blur-md border-2 border-dashed border-[#E94560]/60 rounded-2xl p-5 text-center space-y-2 shadow-inner">
-            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest block">
+          <div className="bg-white/[0.04] backdrop-blur-md border-2 border-dashed border-[#E94560]/60 rounded-2xl p-4 sm:p-5 text-center space-y-2 shadow-inner">
+            <span className="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest block">
               Código Identificador da Reserva
             </span>
-            <div className="flex items-center justify-center gap-3">
-              <span className="text-3xl sm:text-4xl font-mono font-black text-white tracking-widest">
+            <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+              <span className="text-2xl sm:text-3xl md:text-4xl font-mono font-black text-white tracking-widest break-all">
                 {voucher.code}
               </span>
               <button

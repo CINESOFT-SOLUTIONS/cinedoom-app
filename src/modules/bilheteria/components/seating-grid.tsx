@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Monitor, Check } from "lucide-react";
+import { Monitor, Check, MoveHorizontal } from "lucide-react";
 
 /**
  * Estados cromaticos oficiais do mapa de assentos (ui-mockups / FRAME-2 / AC-1 / AC-2)
@@ -101,12 +101,12 @@ const SeatButton = React.memo(function SeatButton({
       data-testid={`seat-${code}`}
       data-seat-id={seat.id}
       data-status={effectiveStatus}
-      className={`w-8 h-8 sm:w-9 sm:h-9 rounded-md border flex items-center justify-center text-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#E94560] select-none ${style.base}`}
+      className={`w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-md border flex items-center justify-center text-[10px] sm:text-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#E94560] select-none ${style.base}`}
     >
       {effectiveStatus === "SELECTED" ? (
-        <Check className="w-4 h-4 stroke-[3]" />
+        <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" />
       ) : (
-        <span className="font-semibold text-[11px] leading-none">{seat.columnNumber}</span>
+        <span className="font-semibold text-[10px] sm:text-[11px] leading-none">{seat.columnNumber}</span>
       )}
     </button>
   );
@@ -180,22 +180,28 @@ export function SeatingGrid({
         </div>
       )}
 
+      {/* Dica de arraste horizontal no celular */}
+      <div className="md:hidden flex items-center justify-center gap-1.5 text-[11px] text-gray-400 py-1 px-3 rounded-full bg-white/5 border border-white/10 select-none">
+        <MoveHorizontal className="w-3.5 h-3.5 text-[#E94560] animate-pulse" />
+        <span>Arraste para os lados para visualizar todos os assentos</span>
+      </div>
+
       {/* Grid de Assentos com Fileiras */}
       <div
         role="grid"
         aria-label="Mapa interativo de assentos"
-        className="w-full overflow-x-auto pb-4 flex flex-col items-center"
+        className="w-full overflow-x-auto pb-4 flex flex-col items-center touch-pan-x"
       >
-        <div className="min-w-fit space-y-2.5 p-2">
+        <div className="min-w-fit space-y-2 sm:space-y-2.5 p-2">
           {groupedRows.map(({ label, seats: rowSeats }) => (
-            <div key={label} role="row" className="flex items-center gap-2 sm:gap-3">
+            <div key={label} role="row" className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
               {/* Rotulo da fileira a esquerda */}
-              <span className="w-6 text-center text-xs font-bold text-gray-400 select-none">
+              <span className="w-5 sm:w-6 text-center text-[10px] sm:text-xs font-bold text-gray-400 select-none">
                 {label}
               </span>
 
               {/* Botoes de assento */}
-              <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
                 {rowSeats.map((seat) => {
                   const isSelected = selectedSet.has(seat.id) && seat.status === "AVAILABLE";
                   const effectiveStatus: SeatChromaticStatus = isSelected
@@ -216,7 +222,7 @@ export function SeatingGrid({
               </div>
 
               {/* Rotulo da fileira a direita */}
-              <span className="w-6 text-center text-xs font-bold text-gray-400 select-none">
+              <span className="w-5 sm:w-6 text-center text-[10px] sm:text-xs font-bold text-gray-400 select-none">
                 {label}
               </span>
             </div>
@@ -226,8 +232,8 @@ export function SeatingGrid({
 
       {/* Legenda Cromatica */}
       {showLegend && (
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pt-3 border-t border-gray-800 text-xs text-gray-300">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 md:gap-6 pt-3 border-t border-gray-800 text-[11px] sm:text-xs text-gray-300">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="w-3.5 h-3.5 rounded bg-[#22C55E] border border-[#16A34A] shadow-sm shadow-[#22C55E]/30" />
             <span>Disponivel</span>
           </div>

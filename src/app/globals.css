@@ -12,6 +12,11 @@
   --dark-bg: #16213E;
 }
 
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font-poppins), 'Poppins', sans-serif;
   font-weight: 400;
@@ -21,6 +26,17 @@ body {
   background-color: #16213E;
   color: #F5F5F5;
   font-feature-settings: "rlig" 1, "calt" 1;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Ocultar barra de rolagem visual mantendo a navegação por toque fluida */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Efeito Apple Liquid Glass Branco Refinado */

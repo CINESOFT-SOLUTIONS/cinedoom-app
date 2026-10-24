@@ -24,7 +24,7 @@ export function HeroBillboard({
 
   return (
     <>
-      <section className="relative w-full bg-[#0B0F1C] overflow-hidden min-h-[460px] md:min-h-[560px] flex items-center">
+      <section className="relative w-full bg-[#0B0F1C] overflow-hidden min-h-[400px] sm:min-h-[460px] md:min-h-[540px] flex items-center">
         {activeHeroFilm?.posterUrl ? (
           <div className="absolute inset-0">
             <Image
@@ -42,49 +42,49 @@ export function HeroBillboard({
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-darkBg to-[#0B0F1C]" />
         )}
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 w-full">
-          <div className="max-w-2xl space-y-5">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="px-2.5 py-1 rounded bg-cta text-white font-semibold text-[11px] tracking-wider uppercase shadow-md shadow-cta/30">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 md:py-20 w-full">
+          <div className="max-w-2xl space-y-4 sm:space-y-5">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+              <span className="px-2.5 py-1 rounded bg-cta text-white font-semibold text-[10px] sm:text-[11px] tracking-wider uppercase shadow-md shadow-cta/30">
                 Em Destaque
               </span>
-              <span className="px-2.5 py-1 rounded bg-surface/90 border border-borderDark text-amber-300 font-medium text-[11px] tracking-wide flex items-center gap-1">
+              <span className="px-2.5 py-1 rounded bg-surface/90 border border-borderDark text-amber-300 font-medium text-[10px] sm:text-[11px] tracking-wide flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 Sala 3 IMAX Laser
               </span>
               <AgeRatingBadge rating={activeHeroFilm?.classification} />
             </div>
 
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight leading-none drop-shadow-xl">
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-tight sm:leading-none drop-shadow-xl">
               {activeHeroFilm?.title || "Duna: Parte Dois"}
             </h1>
 
-            <div className="flex flex-wrap items-center gap-3 text-xs font-normal text-slate-300">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs font-normal text-slate-300">
               {activeHeroFilm?.duration && (
                 <span className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-cta" />
                   {activeHeroFilm.duration} minutos
                 </span>
               )}
-              <span className="text-slate-400 border-l border-borderDark pl-3">
+              <span className="text-slate-400 border-l border-borderDark pl-2.5 sm:pl-3">
                 {GENRE_MAP[activeHeroFilm?.title || ""] || "Filme em Cartaz"}
               </span>
               {activeHeroFilm?.director && (
-                <span className="text-slate-400 border-l border-borderDark pl-3 hidden sm:inline">
+                <span className="text-slate-400 border-l border-borderDark pl-2.5 sm:pl-3 hidden sm:inline">
                   Direção: {activeHeroFilm.director}
                 </span>
               )}
             </div>
 
-            <p className="text-sm md:text-base text-slate-300/90 leading-relaxed line-clamp-3 max-w-xl">
+            <p className="text-xs sm:text-sm md:text-base text-slate-300/90 leading-relaxed line-clamp-3 max-w-xl">
               {activeHeroFilm?.synopsis ||
                 "Consulte a programação do CineDoom, selecione suas poltronas no mapa interativo e reserve seus ingressos com confirmação atômica ACID."}
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3.5">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5">
               <a
                 href="#programacao"
-                className="px-6 py-3.5 rounded-xl bg-cta hover:bg-cta-hover text-white font-semibold text-sm shadow-xl shadow-cta/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+                className="px-6 py-3 sm:py-3.5 rounded-xl bg-cta hover:bg-cta-hover text-white font-semibold text-xs sm:text-sm shadow-xl shadow-cta/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
               >
                 <Ticket className="w-4 h-4" />
                 <span>Ver Sessões & Reservar</span>
@@ -94,7 +94,7 @@ export function HeroBillboard({
                 <button
                   type="button"
                   onClick={() => setDetailModalFilm(activeHeroFilm)}
-                  className="px-5 py-3.5 rounded-xl bg-surface/80 hover:bg-surface border border-borderDark text-white font-medium text-sm transition-all hover:border-slate-400 flex items-center gap-2"
+                  className="px-5 py-3 sm:py-3.5 rounded-xl bg-surface/80 hover:bg-surface border border-borderDark text-white font-medium text-xs sm:text-sm transition-all hover:border-slate-400 flex items-center justify-center gap-2"
                 >
                   <Play className="w-4 h-4 text-cta fill-cta" />
                   <span>Ver Detalhes</span>
@@ -104,7 +104,7 @@ export function HeroBillboard({
               {activeHeroFilm?.sessions?.[0] && (
                 <Link
                   href={`/portal/sessoes/${activeHeroFilm.sessions[0].id}`}
-                  className="px-4 py-3.5 rounded-xl bg-[#141A2D] hover:bg-surface border border-borderDark text-emerald-400 font-medium text-xs transition-all hidden sm:inline-flex items-center gap-1.5"
+                  className="px-4 py-3 sm:py-3.5 rounded-xl bg-[#141A2D] hover:bg-surface border border-borderDark text-emerald-400 font-medium text-xs transition-all flex items-center justify-center gap-1.5"
                 >
                   <Clock className="w-3.5 h-3.5" />
                   Próxima Sessão (

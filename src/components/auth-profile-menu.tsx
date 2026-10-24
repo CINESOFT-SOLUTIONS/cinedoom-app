@@ -80,17 +80,17 @@ export function AuthProfileMenu() {
   // Botao unico "Entre ou Cadastre-se" que aciona o modal de login sobre o fundo borrado
   if (!session) {
     return (
-      <div className="relative ml-6 md:ml-10 lg:ml-14 shrink-0 flex items-center h-full">
+      <div className="relative ml-2 sm:ml-4 md:ml-8 lg:ml-10 shrink-0 flex items-center h-full">
         <button
           type="button"
           onClick={openLogin}
-          className="h-10 md:h-11 flex items-center gap-2.5 px-4 md:px-5 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] hover:from-[#133c6d] hover:to-[#1a2544] text-white border border-white/25 shadow-[0_4px_16px_rgba(15,52,96,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] hover:shadow-[0_6px_22px_rgba(15,52,96,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.5)] transition-all group cursor-pointer active:scale-95"
+          className="h-9 sm:h-10 md:h-11 flex items-center gap-1.5 sm:gap-2.5 px-3 sm:px-4 md:px-5 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] hover:from-[#133c6d] hover:to-[#1a2544] text-white border border-white/25 shadow-[0_4px_16px_rgba(15,52,96,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] hover:shadow-[0_6px_22px_rgba(15,52,96,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.5)] transition-all group cursor-pointer active:scale-95"
         >
-          <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-white/15 border border-white/25 flex items-center justify-center text-white group-hover:bg-cta group-hover:border-cta group-hover:shadow-[0_0_12px_rgba(233,69,96,0.5)] transition-all shrink-0">
-            <User className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+          <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full bg-white/15 border border-white/25 flex items-center justify-center text-white group-hover:bg-cta group-hover:border-cta group-hover:shadow-[0_0_12px_rgba(233,69,96,0.5)] transition-all shrink-0">
+            <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
           </div>
           <span className="font-semibold text-xs md:text-[13px] text-white tracking-wide whitespace-nowrap">
-            Entre ou Cadastre-se
+            <span className="hidden sm:inline">Entre ou </span>Cadastre-se
           </span>
         </button>
       </div>
@@ -108,7 +108,7 @@ export function AuthProfileMenu() {
       ref={containerRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="relative ml-6 md:ml-10 lg:ml-14 shrink-0 flex items-center h-full"
+      className="relative ml-2 sm:ml-4 md:ml-8 lg:ml-10 shrink-0 flex items-center h-full"
     >
       {/* Botao de Perfil: Navy Liquid Glass */}
       <button
@@ -116,26 +116,26 @@ export function AuthProfileMenu() {
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-haspopup="true"
-        className={`h-10 md:h-11 flex items-center justify-between gap-2.5 px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] hover:from-[#133c6d] hover:to-[#1a2544] text-white border transition-all group ${
+        className={`h-9 sm:h-10 md:h-11 flex items-center justify-between gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] hover:from-[#133c6d] hover:to-[#1a2544] text-white border transition-all group ${
           isOpen
             ? "border-white/40 shadow-[0_6px_22px_rgba(15,52,96,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.5)] from-[#0F3460] to-[#16213E]"
             : "border-white/25 shadow-[0_4px_16px_rgba(15,52,96,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] hover:shadow-[0_6px_22px_rgba(15,52,96,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.5)]"
         }`}
       >
         {/* Avatar / Icone com indicacao de perfil */}
-        <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-white/15 border border-white/25 flex items-center justify-center text-white group-hover:bg-cta group-hover:border-cta group-hover:shadow-[0_0_12px_rgba(233,69,96,0.5)] transition-all shrink-0">
+        <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full bg-white/15 border border-white/25 flex items-center justify-center text-white group-hover:bg-cta group-hover:border-cta group-hover:shadow-[0_0_12px_rgba(233,69,96,0.5)] transition-all shrink-0">
           {role === "GERENTE" ? (
-            <ShieldCheck className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-300" />
+            <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-amber-300" />
           ) : role === "ATENDENTE" ? (
-            <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-300" />
+            <Briefcase className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-blue-300" />
           ) : (
-            <User className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
+            <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
           )}
         </div>
 
         {/* Texto do Botao */}
-        <div className="flex items-center gap-1.5 text-left">
-          <span className="font-semibold text-xs md:text-[13px] text-white tracking-wide whitespace-nowrap max-w-[140px] md:max-w-[180px] truncate">
+        <div className="flex items-center gap-1 sm:gap-1.5 text-left">
+          <span className="font-semibold text-xs md:text-[13px] text-white tracking-wide whitespace-nowrap max-w-[70px] sm:max-w-[130px] md:max-w-[180px] truncate">
             {displayName}
           </span>
           {role === "GERENTE" && (
@@ -162,7 +162,7 @@ export function AuthProfileMenu() {
         <div
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className="absolute top-full mt-1 right-0 w-72 sm:w-80 z-50 animate-in fade-in slide-in-from-top-1 duration-150 before:content-[''] before:absolute before:-top-3 before:left-0 before:right-0 before:h-3"
+          className="absolute top-full mt-1 right-0 w-72 sm:w-80 max-w-[calc(100vw-1.5rem)] z-50 animate-in fade-in slide-in-from-top-1 duration-150 before:content-[''] before:absolute before:-top-3 before:left-0 before:right-0 before:h-3"
         >
           <div className="w-full bg-[#12182B] rounded-3xl p-3 border border-white/25 shadow-[0_20px_50px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.2)] space-y-3">
             {/* Card de Identificacao */}

@@ -59,17 +59,17 @@ export function FilmFilters({
           </div>
 
           {/* Filtros de Formatos & Busca */}
-          <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
-            <div className="flex items-center gap-1.5 text-xs">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full lg:w-auto justify-between lg:justify-end">
+            <div className="flex items-center gap-1.5 text-xs overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
               {["TODOS", "IMAX", "VIP", "CONFORT"].map((format) => (
                 <button
                   key={format}
                   type="button"
                   onClick={() => onSelectFormat(format)}
-                  className={`px-3 py-1.5 rounded-lg font-medium text-[11px] transition-all ${
+                  className={`px-3 py-1.5 rounded-lg font-medium text-[11px] shrink-0 transition-all ${
                     selectedFormat === format
                       ? "bg-surface text-cta border border-cta/50 shadow-sm"
-                      : "text-slate-400 hover:text-white bg-transparent"
+                      : "text-slate-400 hover:text-white bg-surface/40 sm:bg-transparent"
                   }`}
                 >
                   {format}
@@ -77,7 +77,7 @@ export function FilmFilters({
               ))}
             </div>
 
-            <div className="relative w-full sm:w-64">
+            <div className="relative w-full sm:w-64 shrink-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
               <input
                 type="text"

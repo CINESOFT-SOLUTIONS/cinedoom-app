@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -9,6 +9,13 @@ const poppins = Poppins({
   variable: "--font-poppins",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#0E1322",
+};
 
 export const metadata: Metadata = {
   title: "CineDoom — Plataforma de Gestao de Cinemas e Bilheteria",

@@ -82,7 +82,7 @@ export default function SobreCineDoomPage() {
       <CineDoomHeader activePage="sobre" />
 
       {/* Conteudo Principal */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 space-y-16 sm:space-y-20">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-14 space-y-12 sm:space-y-16 md:space-y-20">
         {/* ================= HERO PRINCIPAL ================= */}
         <section className="text-center max-w-3xl mx-auto space-y-4 pt-2">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cta/10 border border-cta/30 text-cta text-xs font-semibold uppercase tracking-wider shadow-sm animate-in fade-in duration-300">
@@ -90,7 +90,7 @@ export default function SobreCineDoomPage() {
             <span>O Cinema Como Ele Deve Ser</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-tight">
             A Magia da Tela Grande com o Conforto que Você Merece
           </h1>
 
@@ -110,7 +110,7 @@ export default function SobreCineDoomPage() {
               <span className="text-xs font-bold text-cta uppercase tracking-wider block">
                 Galeria dos Espaços
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
                 Conheça a Estrutura do CineDoom
               </h2>
             </div>
@@ -430,15 +430,15 @@ export default function SobreCineDoomPage() {
         {/* ================= CHAMADA PARA AÇÃO (CTA) ================= */}
         <InteractiveGlowCard
           as="section"
-          className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-[#1A2238] via-[#16213E] to-[#12182B] border border-white/15 text-center shadow-2xl"
-          contentClassName="space-y-5"
+          className="p-6 sm:p-10 md:p-12 rounded-3xl bg-gradient-to-r from-[#1A2238] via-[#16213E] to-[#12182B] border border-white/15 text-center shadow-2xl"
+          contentClassName="space-y-4 sm:space-y-5"
           orb1Color="rgba(233, 69, 96, 0.35)"
           orb2Color="rgba(245, 158, 11, 0.25)"
           spotlightColor="rgba(255, 255, 255, 0.10)"
           orbSize="w-80 h-80"
         >
-          <div className="max-w-xl mx-auto space-y-4">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
+          <div className="max-w-xl mx-auto space-y-3 sm:space-y-4">
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
               Pronto para Viver o Cinema de Verdade?
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
@@ -447,7 +447,7 @@ export default function SobreCineDoomPage() {
             <div className="pt-2">
               <Link
                 href="/#programacao"
-                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-cta hover:bg-cta-hover text-white text-xs sm:text-sm font-bold shadow-lg shadow-cta/30 hover:shadow-cta/40 hover:scale-105 active:scale-95 transition-all"
+                className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full bg-cta hover:bg-cta-hover text-white text-xs sm:text-sm font-bold shadow-lg shadow-cta/30 hover:shadow-cta/40 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto"
               >
                 <span>Ver Filmes e Programação em Cartaz</span>
                 <ArrowRight className="w-4 h-4" />
