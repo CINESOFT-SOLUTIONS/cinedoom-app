@@ -30,6 +30,15 @@ const SPACES_SLIDES = [
     image: "/images/sobre/lobby.jpg",
   },
   {
+    id: "classica",
+    title: "Salas 1 e 2 • Clássica",
+    subtitle: "A Experiência Tradicional do Cinema",
+    badge: "Salas 1 e 2 • 120 Lugares",
+    description:
+      "Experiência tradicional de cinema em tela panorâmica com som de qualidade e poltronas confortáveis, distribuídas em 120 lugares.",
+    image: "/images/sobre/sala-classica.jpg",
+  },
+  {
     id: "imax",
     title: "Sala 3 • IMAX",
     subtitle: "Experiência Audiovisual Imersiva",
@@ -44,7 +53,7 @@ const SPACES_SLIDES = [
     subtitle: "Experiência Premium com Maior Conforto",
     badge: "Sala 4 • 60 Lugares",
     description:
-      "Ambiente exclusivo com apenas 60 lugares, poltronas reclináveis individuais, mesas de apoio para alimentos e bebidas e acústica tratada para maior tranquilidade.",
+      "Ambiente exclusivo com apenas 60 lugares, poltronas reclináveis individuais, mesas de apoio para bebidas e petiscos e maior conforto.",
     image: "/images/sobre/sala-vip.jpg",
   },
 ];
@@ -226,7 +235,7 @@ export default function SobreCineDoomPage() {
                       Salas 1 e 2
                     </span>
                     <span className="text-xs font-bold text-blue-400">
-                      120 Lugares por sala
+                      120 Lugares
                     </span>
                   </div>
 
