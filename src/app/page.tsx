@@ -171,6 +171,7 @@ export default function CinemarkStyleHomePage() {
       <FilmModal
         film={selectedModalFilm}
         initialTab={modalInitialTab}
+        selectedDate={dateTabs[selectedDay]?.date}
         onClose={() => setSelectedModalFilm(null)}
       />
 

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { SeatingGrid, type GridSeatItem } from "@/modules/bilheteria/components/seating-grid";
 import { getRoomWithExperience } from "@/shared/experiences";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 
 interface SessionData {
   id: string;
@@ -514,6 +515,9 @@ export default function PortalSessionReservationPage() {
           </div>
         </aside>
       </main>
+
+      {/* Rodapé Oficial Padronizado */}
+      <CineDoomFooter />
     </div>
   );
 }

@@ -16,7 +16,7 @@ export function InstitutionalBanner() {
             Sobre o CineDoom
           </h3>
           <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-            Cinema boutique independente com 4 salas organizadas em 3 categorias de experiência (Salas 1 e 2 Clássica, Sala 3 IMAX e Sala 4 VIP), 420 assentos no total, bilheteria presencial física e reserva online sem taxas.
+            Mais do que assistir a um filme, ir ao cinema é reservar um momento para se desconectar da rotina e mergulhar em outras histórias. É sentir cada cena, compartilhar emoções e viver a experiência de uma forma que só a tela grande pode proporcionar.
           </p>
         </div>
         <Link

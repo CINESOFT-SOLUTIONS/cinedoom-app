@@ -2,24 +2,24 @@
  * Fonte única de verdade para Salas e Categorias de Experiência do CineDoom.
  *
  * Estrutura Oficial do Complexo (4 Salas em 3 Experiências):
- * - Salas 1 e 2 — Clássica: experiência tradicional de cinema, com 120 lugares, tela panorâmica, som de qualidade e poltronas confortáveis.
+ * - Salas 1 e 2 — CLÁSSICA: experiência tradicional de cinema, com 120 lugares, tela panorâmica, som de qualidade e poltronas confortáveis.
  * - Sala 3 — IMAX: experiência audiovisual imersiva, com 120 lugares, projeção IMAX a laser e sistema de som imersivo.
  * - Sala 4 — VIP: experiência premium, com 60 lugares, poltronas reclináveis, mesas de apoio individuais e maior conforto.
  */
 
-export type ExperienceCategory = "Clássica" | "IMAX" | "VIP";
+export type ExperienceCategory = "CLÁSSICA" | "IMAX" | "VIP";
 
-export type ProgramacaoFilter = "Todos" | "Clássica" | "IMAX" | "VIP";
+export type ProgramacaoFilter = "Todos" | "CLÁSSICA" | "IMAX" | "VIP";
 
 export const EXPERIENCE_CATEGORIES: readonly ExperienceCategory[] = [
-  "Clássica",
+  "CLÁSSICA",
   "IMAX",
   "VIP",
 ] as const;
 
 export const PROGRAMACAO_FILTERS: readonly ProgramacaoFilter[] = [
   "Todos",
-  "Clássica",
+  "CLÁSSICA",
   "IMAX",
   "VIP",
 ] as const;
@@ -48,10 +48,10 @@ export interface ExperienceInfo {
 }
 
 export const EXPERIENCES_DATA: Record<ExperienceCategory, ExperienceInfo> = {
-  Clássica: {
+  CLÁSSICA: {
     id: "classica",
-    category: "Clássica",
-    title: "Clássica",
+    category: "CLÁSSICA",
+    title: "CLÁSSICA",
     rooms: "Salas 1 e 2",
     roomsLabel: "Salas 1 e 2",
     roomsList: ["Sala 1", "Sala 2"],
@@ -136,12 +136,12 @@ export const EXPERIENCES_DATA: Record<ExperienceCategory, ExperienceInfo> = {
 
 /**
  * Identifica a categoria de experiência a partir do nome da sala.
- * Salas 1 e 2 -> Clássica
+ * Salas 1 e 2 -> CLÁSSICA
  * Sala 3 -> IMAX
  * Sala 4 -> VIP
  */
 export function getRoomExperienceCategory(roomName?: string | null): ExperienceCategory {
-  if (!roomName || typeof roomName !== "string") return "Clássica";
+  if (!roomName || typeof roomName !== "string") return "CLÁSSICA";
   const lower = roomName.toLowerCase().trim();
 
   // IMAX: Sala 3 ou menção a IMAX
@@ -164,8 +164,8 @@ export function getRoomExperienceCategory(roomName?: string | null): ExperienceC
     return "VIP";
   }
 
-  // Salas 1 e 2 -> Clássica
-  return "Clássica";
+  // Salas 1 e 2 -> CLÁSSICA
+  return "CLÁSSICA";
 }
 
 /**
@@ -191,7 +191,7 @@ export function getRoomDisplayName(roomName?: string | null): string {
 
 /**
  * Retorna a identificação completa e padronizada da sala com sua experiência:
- * Ex: "Sala 1 — Clássica", "Sala 2 — Clássica", "Sala 3 — IMAX", "Sala 4 — VIP"
+ * Ex: "Sala 1 — CLÁSSICA", "Sala 2 — CLÁSSICA", "Sala 3 — IMAX", "Sala 4 — VIP"
  */
 export function getRoomWithExperience(roomName?: string | null): string {
   const room = getRoomDisplayName(roomName);
@@ -207,8 +207,8 @@ export function matchesProgramacaoFilter(
   filter: ProgramacaoFilter | string
 ): boolean {
   if (!filter || filter === "Todos" || filter === "TODOS") return true;
-  if (filter === "Clássica" || filter === "CONFORT") {
-    return getRoomExperienceCategory(roomName) === "Clássica";
+  if (filter === "CLÁSSICA" || filter === "CONFORT") {
+    return getRoomExperienceCategory(roomName) === "CLÁSSICA";
   }
   return getRoomExperienceCategory(roomName) === filter;
 }

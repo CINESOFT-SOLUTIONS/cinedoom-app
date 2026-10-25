@@ -134,14 +134,14 @@ async function main() {
   const sala1 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000201" },
     update: {
-      name: "Sala 1 - Confort",
+      name: "Sala 1 - CLÁSSICA",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
     create: {
       id: "00000000-0000-4000-a000-000000000201",
       tenantId: tenant.id,
-      name: "Sala 1 - Confort",
+      name: "Sala 1 - CLÁSSICA",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
@@ -150,14 +150,14 @@ async function main() {
   const sala2 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000202" },
     update: {
-      name: "Sala 2 - Confort",
+      name: "Sala 2 - CLÁSSICA",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
     create: {
       id: "00000000-0000-4000-a000-000000000202",
       tenantId: tenant.id,
-      name: "Sala 2 - Confort",
+      name: "Sala 2 - CLÁSSICA",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
@@ -166,14 +166,14 @@ async function main() {
   const sala3 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000203" },
     update: {
-      name: "Sala 3 - IMAX Laser",
+      name: "Sala 3 - IMAX",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
     create: {
       id: "00000000-0000-4000-a000-000000000203",
       tenantId: tenant.id,
-      name: "Sala 3 - IMAX Laser",
+      name: "Sala 3 - IMAX",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
@@ -182,14 +182,14 @@ async function main() {
   const sala4 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000204" },
     update: {
-      name: "Sala 4 - VIP Prime",
+      name: "Sala 4 - VIP",
       capacity: 60,
       layoutMetadata: { rows: 6, columns: 10, totalSeats: 60 },
     },
     create: {
       id: "00000000-0000-4000-a000-000000000204",
       tenantId: tenant.id,
-      name: "Sala 4 - VIP Prime",
+      name: "Sala 4 - VIP",
       capacity: 60,
       layoutMetadata: { rows: 6, columns: 10, totalSeats: 60 },
     },

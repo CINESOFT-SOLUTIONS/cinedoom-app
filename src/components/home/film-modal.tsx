@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X, Ticket, Info, Clock, Film, MapPin, CheckCircle2, ChevronRight } from "lucide-react";
+import { X, Ticket, Info, Clock, Film, MapPin, Calendar } from "lucide-react";
 import type { FilmItem, SessionItem } from "./types";
 import { getPrimaryGenre, formatDuration } from "./film-utils";
 import { getRoomExperienceCategory, getRoomDisplayName } from "@/shared/experiences";
@@ -12,11 +12,18 @@ import { AgeRatingBadge } from "./age-rating-badge";
 interface FilmModalProps {
   film: FilmItem | null;
   initialTab?: "sessions" | "details";
+  selectedDate?: Date;
   onClose: () => void;
 }
 
-export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalProps) {
+export function FilmModal({
+  film,
+  initialTab = "sessions",
+  selectedDate,
+  onClose,
+}: FilmModalProps) {
   const [activeTab, setActiveTab] = useState<"sessions" | "details">(initialTab);
+  const [modalSelectedDay, setModalSelectedDay] = useState<number>(0);
 
   // Sincroniza a aba inicial sempre que o filme mudar
   useEffect(() => {
@@ -43,10 +50,61 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
     };
   }, [film, onClose]);
 
+  // Abas de datas para navegação direta de dias no modal
+  const modalDateTabs = useMemo(() => {
+    return Array.from({ length: 6 }).map((_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() + i);
+      const dayName =
+        i === 0
+          ? "Hoje"
+          : i === 1
+            ? "Amanhã"
+            : d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "").toUpperCase();
+      const dayNumber = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+      return {
+        index: i,
+        dayName,
+        dayNumber,
+        date: d,
+      };
+    });
+  }, []);
+
+  // Sincroniza a data inicial do modal com a data selecionada externamente
+  useEffect(() => {
+    if (selectedDate) {
+      const now = new Date();
+      const targetZero = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+      ).getTime();
+      const nowZero = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const diffDays = Math.round((targetZero - nowZero) / (1000 * 60 * 60 * 24));
+      if (diffDays >= 0 && diffDays < 6) {
+        setModalSelectedDay(diffDays);
+      }
+    }
+  }, [selectedDate, film]);
+
   if (!film) return null;
 
-  // Agrupa sessões por sala
-  const sessionsByRoom = (film.sessions || []).reduce<Record<string, SessionItem[]>>(
+  const currentTargetDate = modalDateTabs[modalSelectedDay]?.date || new Date();
+  const currentTabInfo = modalDateTabs[modalSelectedDay];
+
+  // Filtra as sessões do filme para a data selecionada no modal
+  const sessionsForSelectedDate = (film.sessions || []).filter((s) => {
+    const sDate = new Date(s.startsAt);
+    return (
+      sDate.getFullYear() === currentTargetDate.getFullYear() &&
+      sDate.getMonth() === currentTargetDate.getMonth() &&
+      sDate.getDate() === currentTargetDate.getDate()
+    );
+  });
+
+  // Agrupa sessões da data por sala e ordena por horário
+  const sessionsByRoom = sessionsForSelectedDate.reduce<Record<string, SessionItem[]>>(
     (acc, s) => {
       const roomName = s.room.name;
       if (!acc[roomName]) acc[roomName] = [];
@@ -55,6 +113,19 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
     },
     {}
   );
+
+  // Ordena as salas por número
+  const roomNames = Object.keys(sessionsByRoom).sort((a, b) => {
+    const numA = parseInt(a.replace(/\D/g, ""), 10) || 0;
+    const numB = parseInt(b.replace(/\D/g, ""), 10) || 0;
+    return numA - numB;
+  });
+
+  for (const r of roomNames) {
+    sessionsByRoom[r].sort(
+      (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+    );
+  }
 
   const primaryGenre = getPrimaryGenre(film.genre);
   const durationStr = formatDuration(film.duration);
@@ -68,7 +139,7 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
       aria-labelledby="film-modal-title"
     >
       <div
-        className="liquid-glass-card rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl relative border border-white/15 my-auto animate-in zoom-in-95 duration-200 overflow-hidden"
+        className="liquid-glass-card rounded-3xl max-w-3xl w-full p-5 sm:p-7 shadow-2xl relative border border-white/15 my-auto animate-in zoom-in-95 duration-200 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Botão Fechar */}
@@ -81,7 +152,7 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
           <X className="w-5 h-5" />
         </button>
 
-        {/* Cabeçalho do Filme */}
+        {/* Cabeçalho do Filme: Pôster à esquerda e dados ao lado */}
         <div className="flex gap-4 sm:gap-5 pb-5 border-b border-borderDark/60 pr-10">
           <div className="relative aspect-[2/3] w-20 sm:w-24 shrink-0 rounded-xl overflow-hidden bg-slate-900 border border-white/15 shadow-md">
             {film.posterUrl ? (
@@ -133,15 +204,14 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
         </div>
 
         {/* Abas de Navegação do Modal */}
-        <div className="flex gap-2 pt-4 pb-2 border-b border-borderDark/40">
+        <div className="flex gap-2 pt-4 pb-3 border-b border-borderDark/40">
           <button
             type="button"
             onClick={() => setActiveTab("sessions")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-              activeTab === "sessions"
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${activeTab === "sessions"
                 ? "bg-cta text-white shadow-lg shadow-cta/25"
                 : "bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white"
-            }`}
+              }`}
           >
             <Ticket className="w-4 h-4" />
             <span>Horários & Sessões</span>
@@ -150,99 +220,132 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
           <button
             type="button"
             onClick={() => setActiveTab("details")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
-              activeTab === "details"
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${activeTab === "details"
                 ? "bg-cta text-white shadow-lg shadow-cta/25"
                 : "bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white"
-            }`}
+              }`}
           >
             <Info className="w-4 h-4" />
             <span>Sinopse & Detalhes</span>
           </button>
         </div>
 
-        {/* Conteúdo da Aba 1: Horários & Sessões */}
+        {/* Conteúdo da Aba 1: Horários & Sessões (Organização estilo CineSIS no padrão CineDoom) */}
         {activeTab === "sessions" && (
           <div className="pt-4 space-y-4 max-h-[55vh] overflow-y-auto pr-1">
-            {Object.keys(sessionsByRoom).length === 0 ? (
-              <div className="py-10 text-center space-y-2">
-                <Ticket className="w-10 h-10 text-slate-600 mx-auto" />
-                <p className="text-sm font-semibold text-slate-300">
-                  Nenhuma sessão programada no momento
+            {/* Seletor de Datas Compacto */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              <Calendar className="w-4 h-4 text-cta shrink-0 mr-1" />
+              {modalDateTabs.map((tab) => {
+                const isSelected = modalSelectedDay === tab.index;
+                return (
+                  <button
+                    key={tab.index}
+                    type="button"
+                    onClick={() => setModalSelectedDay(tab.index)}
+                    className={`flex flex-col items-center px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 transition-all cursor-pointer ${isSelected
+                        ? "bg-cta text-white shadow-md shadow-cta/25 scale-[1.02]"
+                        : "bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/5"
+                      }`}
+                  >
+                    <span className="text-[10px] uppercase tracking-wider">{tab.dayName}</span>
+                    <span className="text-xs font-bold font-mono">{tab.dayNumber}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Cabeçalho da data ativa */}
+            <div className="flex items-center justify-between pb-1 pt-1 border-b border-borderDark/30">
+              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                Sessões de {modalSelectedDay === 0 ? "Hoje" : modalSelectedDay === 1 ? "Amanhã" : currentTabInfo.dayNumber}
+              </span>
+              <span className="text-[11px] text-slate-400">
+                {sessionsForSelectedDate.length} {sessionsForSelectedDate.length === 1 ? "sessão" : "sessões"}
+              </span>
+            </div>
+
+            {/* Listagem de Sessões Organizadas por Sala (Modelo CineSIS adaptado ao CineDoom) */}
+            {roomNames.length === 0 ? (
+              <div className="py-10 text-center space-y-2 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+                <Ticket className="w-8 h-8 text-slate-600 mx-auto opacity-70" />
+                <p className="text-sm font-semibold text-rose-400/90">
+                  Nenhuma sessão disponível para {modalSelectedDay === 0 ? "hoje" : currentTabInfo.dayNumber}
                 </p>
                 <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                  Novos horários para este filme serão disponibilizados em breve.
+                  Consulte os outros dias nas abas de data acima para encontrar os horários disponíveis.
                 </p>
               </div>
             ) : (
-              Object.entries(sessionsByRoom).map(([roomName, roomSessions]) => {
-                const category = getRoomExperienceCategory(roomName);
-                const displayName = getRoomDisplayName(roomName);
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {roomNames.map((roomName) => {
+                  const roomSessions = sessionsByRoom[roomName];
+                  const category = getRoomExperienceCategory(roomName);
+                  const displayName = getRoomDisplayName(roomName);
 
-                return (
-                  <div
-                    key={roomName}
-                    className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-cta shrink-0" />
-                        <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
-                          {displayName}
-                        </h3>
+                  return (
+                    <div
+                      key={roomName}
+                      className="p-3.5 rounded-2xl bg-[#0E1322]/80 border border-white/10 flex flex-col justify-between space-y-3 shadow-md hover:border-white/20 transition-all"
+                    >
+                      {/* Identificação da sala e categoria da experiência */}
+                      <div className="flex items-center justify-between gap-2 border-b border-white/5 pb-2">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <MapPin className="w-3.5 h-3.5 text-cta shrink-0" />
+                          <h3 className="text-xs font-bold text-white uppercase tracking-wider truncate">
+                            {displayName}
+                          </h3>
+                        </div>
+                        {category === "IMAX" ? (
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 shrink-0">
+                            IMAX
+                          </span>
+                        ) : category === "VIP" ? (
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">
+                            VIP
+                          </span>
+                        ) : (
+                          <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 shrink-0">
+                            CLÁSSICA
+                          </span>
+                        )}
                       </div>
-                      {category === "IMAX" ? (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                          IMAX
-                        </span>
-                      ) : category === "VIP" ? (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                          VIP
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                          Clássica
-                        </span>
-                      )}
-                    </div>
 
-                    <div className="flex flex-wrap gap-2.5">
-                      {roomSessions.map((sess) => {
-                        const time = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        });
+                      {/* Blocos individuais compactos dos horários (sem preço, clique direto para assentos) */}
+                      <div className="flex flex-wrap gap-2">
+                        {roomSessions.map((sess) => {
+                          const time = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          });
 
-                        return (
-                          <Link
-                            key={sess.id}
-                            href={`/portal/sessoes/${sess.id}`}
-                            onClick={onClose}
-                            className="group/btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white transition-all shadow-md hover:scale-[1.02] active:scale-[0.98]"
-                          >
-                            <span className="font-mono font-bold text-sm leading-none">
+                          return (
+                            <Link
+                              key={sess.id}
+                              href={`/portal/sessoes/${sess.id}`}
+                              onClick={onClose}
+                              className="px-3 py-2 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white font-mono font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm hover:shadow-cta/30 hover:scale-105 active:scale-95 text-center flex-1 min-w-[70px] max-w-[100px] flex items-center justify-center cursor-pointer"
+                              title={`Reservar assento para sessão das ${time} na ${displayName}`}
+                              aria-label={`Sessão às ${time} na ${displayName}`}
+                            >
                               {time}
-                            </span>
-                            <span className="text-xs font-semibold text-emerald-400 group-hover/btn:text-white pl-2 border-l border-white/10">
-                              R$ {sess.price.toFixed(2)}
-                            </span>
-                            <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover/btn:text-white transition-transform group-hover/btn:translate-x-0.5" />
-                          </Link>
-                        );
-                      })}
+                            </Link>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })
+                  );
+                })}
+              </div>
             )}
 
             <p className="text-[11px] text-slate-400 text-center pt-2">
-              Clique no horário desejado para escolher suas poltronas no mapa de assentos.
+              Selecione o horário desejado para escolher suas poltronas no mapa de assentos.
             </p>
           </div>
         )}
 
-        {/* Conteúdo da Aba 2: Sinopse & Detalhes */}
+        {/* Conteúdo da Aba 2: Sinopse & Detalhes (Sem o botão redundante 'Ver Horários e Reservar') */}
         {activeTab === "details" && (
           <div className="pt-4 space-y-4 max-h-[55vh] overflow-y-auto pr-1">
             <div className="space-y-2">
@@ -284,17 +387,6 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
                   </span>
                 </span>
               </div>
-            </div>
-
-            <div className="pt-3 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setActiveTab("sessions")}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-bold shadow-lg shadow-cta/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
-              >
-                <Ticket className="w-4 h-4" />
-                <span>Ver Horários e Reservar</span>
-              </button>
             </div>
           </div>
         )}

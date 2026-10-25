@@ -1,6 +1,7 @@
 "use client";
 
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { getRoomWithExperience } from "@/shared/experiences";
 
 import React, { useEffect, useState } from "react";
@@ -279,6 +280,9 @@ export default function ReservationComprovantePage() {
           </div>
         </div>
       </div>
+
+      {/* Rodapé Oficial Padronizado */}
+      <CineDoomFooter />
     </div>
   );
 }

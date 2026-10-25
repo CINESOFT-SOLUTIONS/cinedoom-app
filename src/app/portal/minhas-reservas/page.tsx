@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { listMyReservations } from "@/modules/portal/portal-service";
 import { Film, Clock, MapPin, Ticket, ShieldCheck, ArrowRight, ExternalLink } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { getRoomWithExperience } from "@/shared/experiences";
 
 function formatDate(date: Date) {
@@ -137,10 +138,8 @@ export default async function MinhasReservasPage() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-[#0B0F1C] border-t border-borderDark/80 pt-8 pb-6 mt-16 text-center text-xs text-slate-500">
-        <p>© 2026 CineDoom. Dados protegidos com conformidade à LGPD (Lei nº 13.709/2018).</p>
-      </footer>
+      {/* Rodapé Oficial Padronizado */}
+      <CineDoomFooter />
     </div>
   );
 }

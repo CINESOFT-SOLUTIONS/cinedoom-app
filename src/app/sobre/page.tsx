@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { InteractiveGlowCard } from "@/components/interactive-glow-card";
 import {
   Sparkles,
@@ -11,7 +12,6 @@ import {
   Volume2,
   Tv,
   Armchair,
-  ShieldCheck,
   ChevronLeft,
   ChevronRight,
   ArrowRight,
@@ -31,7 +31,7 @@ const SPACES_SLIDES = [
   },
   {
     id: "classica",
-    title: "Salas 1 e 2 • Clássica",
+    title: "Salas 1 e 2 • CLÁSSICA",
     subtitle: "O Cinema Tradicional na Tela Grande",
     badge: "Salas 1 e 2 • 120 Lugares por sala",
     description:
@@ -103,12 +103,13 @@ export default function SobreCineDoomPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-            O CineDoom reúne 4 salas de última geração projetadas para quem ama a sétima arte: projeção 4K Laser, acústica de estúdio, 420 poltronas ergonômicas de alto padrão, pipoca artesanal na manteiga e zero cobrança de taxas de conveniência.
+            Quatro salas, tecnologia de ponta e conforto em cada detalhe. Da imagem ao som, das poltronas à pipoca na manteiga, tudo se une para tornar sua ida ao cinema especial. E o melhor: sem taxas de conveniência.
           </p>
         </section>
 
         {/* ================= CARROSSEL DE AMBIENTES REAIS ================= */}
         <section
+          id="espacos"
           className="space-y-4"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
@@ -119,7 +120,7 @@ export default function SobreCineDoomPage() {
                 Galeria dos Espaços
               </span>
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
-                Conheça a Estrutura do CineDoom
+                Conheça nossa Estrutura
               </h2>
             </div>
             <div className="flex items-center gap-2 self-end sm:self-auto">
@@ -187,8 +188,8 @@ export default function SobreCineDoomPage() {
                   type="button"
                   onClick={() => setCurrentSlide(idx)}
                   className={`h-2 rounded-full transition-all cursor-pointer ${idx === currentSlide
-                      ? "w-7 bg-cta shadow-[0_0_10px_rgba(233,69,96,0.8)]"
-                      : "w-2 bg-white/40 hover:bg-white/70"
+                    ? "w-7 bg-cta shadow-[0_0_10px_rgba(233,69,96,0.8)]"
+                    : "w-2 bg-white/40 hover:bg-white/70"
                     }`}
                   aria-label={`Ir para slide ${idx + 1}`}
                 />
@@ -198,7 +199,7 @@ export default function SobreCineDoomPage() {
         </section>
 
         {/* ================= AS 4 SALAS DO COMPLEXO ================= */}
-        <section className="space-y-6">
+        <section id="experiencias" className="space-y-6">
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <span className="text-xs font-bold text-cta uppercase tracking-wider block">
               Complexo com 4 Salas
@@ -212,7 +213,7 @@ export default function SobreCineDoomPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {/* Categoria 1: Salas 1 e 2 — Clássica */}
+            {/* Categoria 1: Salas 1 e 2 — CLÁSSICA */}
             <InteractiveGlowCard
               className="rounded-3xl liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-blue-400/40"
               contentClassName="flex flex-col h-full"
@@ -224,7 +225,7 @@ export default function SobreCineDoomPage() {
                 <div className="space-y-3">
                   {/* 1. Nome da experiência */}
                   <h3 className="text-xl font-bold text-white tracking-tight">
-                    Clássica
+                    CLÁSSICA
                   </h3>
 
                   {/* 2. Identificação das salas e capacidade */}
@@ -469,62 +470,7 @@ export default function SobreCineDoomPage() {
       </main>
 
       {/* ================= RODAPE OFICIAL ================= */}
-      <footer className="bg-[#070A12] border-t border-white/10 pt-12 pb-8 text-xs text-slate-400 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="space-y-3">
-              <div className="relative h-10 w-44">
-                <Image
-                  src="/logos/cinedoom-logo-horizontal-white.png"
-                  alt="CineDoom"
-                  fill
-                  className="object-contain object-left"
-                />
-              </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Cinema boutique com 4 salas de última geração (420 assentos), reservas online sem taxas e bilheteria física acolhedora.
-              </p>
-            </div>
-
-            <div className="space-y-2.5">
-              <span className="font-bold text-white text-xs uppercase tracking-wider block">
-                Bilheteria & Reservas Presenciais
-              </span>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                A bilheteria abre diariamente 1 hora antes da primeira sessão. Suas reservas pelo portal garantem seus assentos até 1 hora antes do início do filme.
-              </p>
-            </div>
-
-            <div className="space-y-2.5">
-              <span className="font-bold text-white text-xs uppercase tracking-wider block">
-                Privacidade & Segurança
-              </span>
-              <p className="text-xs text-slate-400 leading-relaxed flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                Conformidade total com a Lei Geral de Proteção de Dados (LGPD).
-              </p>
-              <p className="text-[11px] text-slate-500">
-                Sistema com travas de integridade para evitar reservas duplicadas.
-              </p>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
-            <p>© 2026 CineDoom Cinema. Todos os direitos reservados.</p>
-            <div className="flex items-center gap-2">
-              <span>Tecnologia por</span>
-              <div className="relative h-7 w-32 opacity-90 hover:opacity-100 transition-opacity">
-                <Image
-                  src="/logos/cinesoft-logo-horizontal-white.png"
-                  alt="CineSoft Solutions"
-                  fill
-                  className="object-contain object-left"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <CineDoomFooter />
     </div>
   );
 }
