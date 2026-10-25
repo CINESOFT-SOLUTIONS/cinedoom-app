@@ -37,9 +37,13 @@ describe("Padronização de Experiências de Salas e Filtros (CineDoom)", () => 
       expect(classica.roomNumbers).toEqual([1, 2]);
       expect(classica.capacityPerRoom).toBe(120);
       expect(classica.totalCapacity).toBe(240);
-      expect(classica.features).toContain("Tela Panorâmica Digital");
-      expect(classica.features).toContain("Som de Qualidade");
-      expect(classica.features).toContain("Poltronas Confortáveis com Amplo Espaçamento");
+      expect(classica.features).toHaveLength(3);
+      expect(classica.features).toContain("Tela panorâmica digital");
+      expect(classica.features).toContain("Som surround de qualidade");
+      expect(classica.features).toContain("Poltronas confortáveis com amplo espaçamento");
+      expect(classica.shortDescription).toBe(
+        "Experiência tradicional de cinema com tela panorâmica, som de qualidade e poltronas confortáveis."
+      );
     });
 
     it("deve mapear corretamente a experiência IMAX para a Sala 3 com 120 lugares", () => {
@@ -49,8 +53,13 @@ describe("Padronização de Experiências de Salas e Filtros (CineDoom)", () => 
       expect(imax.roomNumbers).toEqual([3]);
       expect(imax.capacityPerRoom).toBe(120);
       expect(imax.totalCapacity).toBe(120);
-      expect(imax.features).toContain("Projeção IMAX a Laser");
-      expect(imax.features).toContain("Sistema de Som Imersivo");
+      expect(imax.features).toHaveLength(3);
+      expect(imax.features).toContain("Projeção IMAX a laser");
+      expect(imax.features).toContain("Sistema de som imersivo");
+      expect(imax.features).toContain("Tela monumental de chão ao teto");
+      expect(imax.shortDescription).toBe(
+        "Experiência audiovisual imersiva com projeção IMAX a laser e sistema de som imersivo."
+      );
     });
 
     it("deve mapear corretamente a experiência VIP para a Sala 4 com 60 lugares", () => {
@@ -60,9 +69,13 @@ describe("Padronização de Experiências de Salas e Filtros (CineDoom)", () => 
       expect(vip.roomNumbers).toEqual([4]);
       expect(vip.capacityPerRoom).toBe(60);
       expect(vip.totalCapacity).toBe(60);
-      expect(vip.features).toContain("Poltronas Reclináveis com Acionamento Individual");
-      expect(vip.features).toContain("Mesas de Apoio Individuais");
-      expect(vip.features).toContain("Ambiente Intimista com Maior Conforto");
+      expect(vip.features).toHaveLength(3);
+      expect(vip.features).toContain("Poltronas reclináveis individuais");
+      expect(vip.features).toContain("Mesas de apoio para bebidas e petiscos");
+      expect(vip.features).toContain("Ambiente intimista com maior conforto");
+      expect(vip.shortDescription).toBe(
+        "Experiência premium com poltronas reclináveis, mesas de apoio individuais e maior conforto."
+      );
     });
   });
 

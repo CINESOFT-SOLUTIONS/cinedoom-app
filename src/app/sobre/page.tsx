@@ -216,39 +216,40 @@ export default function SobreCineDoomPage() {
             >
               <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
+                  {/* 1. Nome da experiência */}
+                  <h3 className="text-xl font-bold text-white tracking-tight">
+                    Clássica
+                  </h3>
+
+                  {/* 2. Identificação das salas e capacidade */}
                   <div className="flex items-center justify-between gap-2">
                     <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[11px] font-bold uppercase tracking-wider">
                       Salas 1 e 2
                     </span>
                     <span className="text-xs font-bold text-slate-300">
-                      120 Lugares
+                      120 Lugares por sala
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white tracking-tight">
-                    Clássica
-                  </h3>
+                  {/* 3. Descrição breve, em uma única frase */}
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    A experiência tradicional de cinema em tela grande. As Salas 1 e 2 contam com 120 lugares por sala, tela panorâmica, som de qualidade e poltronas confortáveis para você aproveitar os grandes lançamentos com a família e amigos.
+                    Experiência tradicional de cinema com tela panorâmica, som de qualidade e poltronas confortáveis.
                   </p>
                 </div>
 
+                {/* 4. Lista de três características */}
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Tela Panorâmica Digital</span>
+                    <span>Tela panorâmica digital</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Som de Qualidade Multicanal</span>
+                    <span>Som surround de qualidade</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Poltronas Confortáveis com Amplo Espaçamento</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>120 Lugares por Sala (240 no Total)</span>
+                    <span>Poltronas confortáveis com amplo espaçamento</span>
                   </div>
                 </div>
               </div>
@@ -264,6 +265,12 @@ export default function SobreCineDoomPage() {
             >
               <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
+                  {/* 1. Nome da experiência */}
+                  <h3 className="text-xl font-bold text-white tracking-tight">
+                    IMAX
+                  </h3>
+
+                  {/* 2. Identificação das salas e capacidade */}
                   <div className="flex items-center justify-between gap-2">
                     <span className="px-3 py-1 rounded-full bg-cta text-white text-[11px] font-bold uppercase tracking-wider shadow-md">
                       Sala 3
@@ -273,31 +280,25 @@ export default function SobreCineDoomPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                    <span>IMAX</span>
-                    <span className="text-[10px] font-semibold text-cta bg-cta/15 px-2 py-0.5 rounded-full">Imersiva</span>
-                  </h3>
+                  {/* 3. Descrição breve, em uma única frase */}
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Experiência audiovisual imersiva com tela monumental de chão ao teto, projeção IMAX a laser e sistema de som imersivo com 120 lugares stadium para imersão completa em cada cena.
+                    Experiência audiovisual imersiva com projeção IMAX a laser e sistema de som imersivo.
                   </p>
                 </div>
 
+                {/* 4. Lista de três características */}
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <Tv className="w-4 h-4 text-cta shrink-0" />
-                    <span>Projeção IMAX a Laser</span>
+                    <span>Projeção IMAX a laser</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Volume2 className="w-4 h-4 text-cta shrink-0" />
-                    <span>Sistema de Som Imersivo Multicanal</span>
+                    <span>Sistema de som imersivo</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Eye className="w-4 h-4 text-cta shrink-0" />
-                    <span>Tela Monumental de Chão ao Teto</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Armchair className="w-4 h-4 text-cta shrink-0" />
-                    <span>120 Lugares em Disposição Stadium</span>
+                    <span>Tela monumental de chão ao teto</span>
                   </div>
                 </div>
               </div>
@@ -313,6 +314,12 @@ export default function SobreCineDoomPage() {
             >
               <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
+                  {/* 1. Nome da experiência */}
+                  <h3 className="text-xl font-bold text-white tracking-tight">
+                    VIP
+                  </h3>
+
+                  {/* 2. Identificação das salas e capacidade */}
                   <div className="flex items-center justify-between gap-2">
                     <span className="px-3 py-1 rounded-full bg-amber-500 text-slate-950 text-[11px] font-bold uppercase tracking-wider shadow-md">
                       Sala 4
@@ -322,31 +329,25 @@ export default function SobreCineDoomPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                    <span>VIP</span>
-                    <span className="text-[10px] font-semibold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full">Premium</span>
-                  </h3>
+                  {/* 3. Descrição breve, em uma única frase */}
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Experiência premium com maior comodidade e privacidade. Ambiente intimista limitado a apenas 60 lugares, com poltronas reclináveis individuais, mesas de apoio para bebidas e petiscos e maior conforto.
+                    Experiência premium com poltronas reclináveis, mesas de apoio individuais e maior conforto.
                   </p>
                 </div>
 
+                {/* 4. Lista de três características */}
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <Armchair className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Poltronas Reclináveis Individuais</span>
+                    <span>Poltronas reclináveis individuais</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Mesas de Apoio para Bebidas e Petiscos</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Volume2 className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Ambiente Intimista e Silencioso</span>
+                    <span>Mesas de apoio para bebidas e petiscos</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Apenas 60 Lugares no Total</span>
+                    <span>Ambiente intimista com maior conforto</span>
                   </div>
                 </div>
               </div>

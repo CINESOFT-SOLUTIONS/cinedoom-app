@@ -59,16 +59,15 @@ export const EXPERIENCES_DATA: Record<ExperienceCategory, ExperienceInfo> = {
     capacityPerRoom: 120,
     totalSeats: 240,
     totalCapacity: 240,
-    badge: "Salas 1 e 2 • 120 Lugares",
+    badge: "Salas 1 e 2 • 120 Lugares por sala",
     shortDescription:
       "Experiência tradicional de cinema com tela panorâmica, som de qualidade e poltronas confortáveis.",
     description:
-      "Experiência tradicional de cinema nas Salas 1 e 2, equipadas com tela panorâmica digital, sistema de som surround de qualidade e 120 poltronas ergonômicas e confortáveis por sala.",
+      "Experiência tradicional de cinema nas Salas 1 e 2, equipadas com tela panorâmica digital, som surround de qualidade e 120 poltronas ergonômicas e confortáveis por sala.",
     features: [
-      "Tela Panorâmica Digital",
-      "Som de Qualidade",
-      "Poltronas Confortáveis com Amplo Espaçamento",
-      "120 Lugares por Sala",
+      "Tela panorâmica digital",
+      "Som surround de qualidade",
+      "Poltronas confortáveis com amplo espaçamento",
     ],
     specs: {
       projection: "Projeção 4K Digital Panorâmica",
@@ -90,14 +89,13 @@ export const EXPERIENCES_DATA: Record<ExperienceCategory, ExperienceInfo> = {
     totalCapacity: 120,
     badge: "Sala 3 • 120 Lugares",
     shortDescription:
-      "Experiência audiovisual imersiva, com 120 lugares, projeção IMAX a laser e sistema de som imersivo.",
+      "Experiência audiovisual imersiva com projeção IMAX a laser e sistema de som imersivo.",
     description:
       "Experiência audiovisual imersiva na Sala 3, com 120 lugares stadium, projeção IMAX a laser de altíssimo contraste e sistema de som imersivo multicanal de máxima fidelidade sonora.",
     features: [
-      "Projeção IMAX a Laser",
-      "Sistema de Som Imersivo",
-      "Tela Monumental de Chão ao Teto",
-      "120 Lugares em Disposição Stadium",
+      "Projeção IMAX a laser",
+      "Sistema de som imersivo",
+      "Tela monumental de chão ao teto",
     ],
     specs: {
       projection: "Projeção IMAX a Laser 4K",
@@ -119,14 +117,13 @@ export const EXPERIENCES_DATA: Record<ExperienceCategory, ExperienceInfo> = {
     totalCapacity: 60,
     badge: "Sala 4 • 60 Lugares",
     shortDescription:
-      "Experiência premium, com 60 lugares, poltronas reclináveis, mesas de apoio individuais e maior conforto.",
+      "Experiência premium com poltronas reclináveis, mesas de apoio individuais e maior conforto.",
     description:
       "Experiência premium na Sala 4 com capacidade exclusiva para 60 pessoas, equipada com poltronas reclináveis com acionamento individual, mesas de apoio para bebidas e petiscos e maior conforto.",
     features: [
-      "Poltronas Reclináveis com Acionamento Individual",
-      "Mesas de Apoio Individuais",
-      "Ambiente Intimista com Maior Conforto",
-      "Apenas 60 Lugares no Total",
+      "Poltronas reclináveis individuais",
+      "Mesas de apoio para bebidas e petiscos",
+      "Ambiente intimista com maior conforto",
     ],
     specs: {
       projection: "Projeção Digital de Alta Definição",
