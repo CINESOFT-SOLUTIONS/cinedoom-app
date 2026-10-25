@@ -214,7 +214,7 @@ export default function ReservationComprovantePage() {
               </span>
               <p className="leading-relaxed">
                 Você deve comparecer à bilheteria e quitar a reserva até{" "}
-                <strong>{formattedExpiresDate} às {formattedExpiresTime}</strong> (1 hora antes do início do filme). Após esse horário, os assentos serão liberados automaticamente para o balcão (Critério AC-14).
+                <strong>{formattedExpiresDate} às {formattedExpiresTime}</strong> (1 hora antes do início do filme). Após esse horário, os assentos serão liberados automaticamente para a bilheteria presencial.
               </p>
             </div>
           </div>

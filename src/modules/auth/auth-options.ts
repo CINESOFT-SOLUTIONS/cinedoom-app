@@ -124,5 +124,26 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Permite redirecionamento relativo (ex: /portal, /gestao) sem forçar http://localhost:3000
+      if (url.startsWith("/")) return url;
+      try {
+        const urlObj = new URL(url);
+        const baseObj = new URL(baseUrl);
+        if (urlObj.origin === baseObj.origin) return url;
+        // Permite hosts de rede local (LAN / Wi-Fi)
+        if (
+          urlObj.hostname === "localhost" ||
+          urlObj.hostname.startsWith("192.168.") ||
+          urlObj.hostname.startsWith("10.") ||
+          urlObj.hostname.startsWith("172.")
+        ) {
+          return url;
+        }
+      } catch {
+        // fallback
+      }
+      return baseUrl;
+    },
   },
 };

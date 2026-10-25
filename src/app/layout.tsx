@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "CineDoom — Plataforma de Gestao de Cinemas e Bilheteria",
-  description: "Sistema SaaS multi-tenant para gestao de cinemas, bilheteria com trava ACID e Portal do Cliente.",
+  description: "Plataforma de gestão de cinemas, bilheteria presencial e reservas online para clientes.",
   icons: {
     icon: "/logos/cinedoom-icon.png",
     shortcut: "/logos/cinedoom-icon.png",

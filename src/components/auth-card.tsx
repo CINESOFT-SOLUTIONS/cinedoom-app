@@ -749,10 +749,10 @@ export function AuthCard({
 
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
                 <span className="font-bold text-slate-900 block text-[13px]">
-                  2. Segurança e Criptografia
+                  2. Segurança e Proteção dos Dados
                 </span>
                 <p className="text-slate-600 leading-relaxed">
-                  Seu CPF é armazenado sob criptografia de ponta a ponta (AES-256-GCM) e indexado via hash cego seguro (HMAC-SHA256). Seus dados nunca são comercializados ou compartilhados com terceiros para publicidade.
+                  Seu CPF é protegido por criptografia de ponta a ponta e armazenado de forma confidencial. Seus dados nunca são comercializados ou compartilhados com terceiros para publicidade.
                 </p>
               </div>
 

@@ -199,24 +199,24 @@ export default function SalasGestãoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] text-[#2D2D2D] font-sans">
+    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
       {/* Header */}
-      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-xl">
+      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-2xl">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
               href="/gestao"
-              className="p-2 rounded hover:bg-white/10 text-gray-300 transition-colors"
+              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
               title="Voltar ao Painel"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="p-2 bg-[#E94560]/20 rounded text-[#E94560]">
-              <LayoutGrid className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl bg-cta/15 text-cta border border-cta/30 flex items-center justify-center shadow-lg shadow-cta/10">
+              <LayoutGrid className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Salas e Disposição de Assentos</h1>
-              <p className="text-xs text-gray-400">
+              <h1 className="text-xl font-bold tracking-tight text-white">Salas e Disposição de Assentos</h1>
+              <p className="text-xs text-slate-400">
                 Gerenciamento físico das salas e geração automática da matriz de poltronas
               </p>
             </div>
@@ -224,7 +224,7 @@ export default function SalasGestãoPage() {
 
           <button
             onClick={openCreateModal}
-            className="flex items-center gap-2 bg-[#E94560] hover:bg-[#d63d56] text-white text-sm font-semibold px-4 py-2.5 rounded-md shadow transition-colors"
+            className="flex items-center gap-2 bg-cta hover:bg-cta-hover text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-cta/25 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Nova Sala</span>
@@ -233,27 +233,27 @@ export default function SalasGestãoPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+      <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 flex-1 w-full">
         {/* Status Toast */}
         {statusMessage && (
           <div
-            className={`flex items-center justify-between p-4 rounded-md border text-sm ${
+            className={`flex items-center justify-between p-4 rounded-xl border text-sm shadow-md ${
               statusMessage.type === "success"
-                ? "bg-green-50 border-green-200 text-green-800"
-                : "bg-red-50 border-red-200 text-red-800"
+                ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
+                : "bg-rose-950/60 border-rose-500/40 text-rose-300"
             }`}
           >
             <div className="flex items-center gap-2">
               {statusMessage.type === "success" ? (
-                <CheckCircle className="w-5 h-5 text-green-600" />
+                <CheckCircle className="w-5 h-5 text-emerald-400" />
               ) : (
-                <AlertCircle className="w-5 h-5 text-red-600" />
+                <AlertCircle className="w-5 h-5 text-rose-400" />
               )}
               <span>{statusMessage.text}</span>
             </div>
             <button
               onClick={() => setStatusMessage(null)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-slate-400 hover:text-white transition-colors p-1"
             >
               <X className="w-4 h-4" />
             </button>
@@ -263,16 +263,17 @@ export default function SalasGestãoPage() {
         {/* Rooms Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {isLoading ? (
-            <div className="col-span-full py-12 text-center text-gray-500">
+            <div className="col-span-full py-12 text-center text-slate-400">
+              <div className="w-8 h-8 border-2 border-cta border-t-transparent rounded-full animate-spin mx-auto mb-3" />
               Carregando salas do cinema...
             </div>
           ) : rooms.length === 0 ? (
-            <div className="col-span-full liquid-glass-card-light p-12 rounded-3xl text-center text-gray-500">
-              <LayoutGrid className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-              <p className="font-semibold text-base text-gray-800">
+            <div className="col-span-full liquid-glass-card p-12 rounded-3xl text-center border border-white/10">
+              <LayoutGrid className="w-12 h-12 mx-auto text-slate-600 mb-3" />
+              <p className="font-semibold text-base text-white">
                 Nenhuma sala cadastrada no sistema.
               </p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-slate-400 mt-1">
                 Clique no botão &ldquo;Nova Sala&rdquo; acima para configurar o layout da primeira sala.
               </p>
             </div>
@@ -284,47 +285,47 @@ export default function SalasGestãoPage() {
               return (
                 <div
                   key={room.id}
-                  className="liquid-glass-card-light rounded-3xl shadow-sm hover:shadow-xl hover:border-cta/40 transition-all p-6 flex flex-col justify-between"
+                  className="liquid-glass-card rounded-3xl shadow-xl hover:shadow-2xl hover:border-cta/50 transition-all p-6 flex flex-col justify-between border border-white/10 group"
                 >
                   <div>
                     <div className="flex items-start justify-between">
                       <div>
-                        <h2 className="font-bold text-gray-900 text-base">{room.name}</h2>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
-                          <Users className="w-3.5 h-3.5 text-gray-400" />
-                          <span>Capacidade: <strong>{room.capacity} poltronas</strong></span>
+                        <h2 className="font-bold text-white text-lg group-hover:text-cta transition-colors">{room.name}</h2>
+                        <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
+                          <Users className="w-3.5 h-3.5 text-cta" />
+                          <span>Capacidade: <strong className="text-white">{room.capacity} poltronas</strong></span>
                         </div>
                       </div>
-                      <span className="px-2.5 py-1 text-xs font-semibold rounded bg-[#1A1A2E]/5 text-[#1A1A2E] border border-gray-200">
+                      <span className="px-3 py-1 text-xs font-semibold rounded-full bg-white/5 text-slate-300 border border-white/10">
                         {rowsCount} × {colsCount}
                       </span>
                     </div>
 
                     {/* Mini layout preview diagram */}
-                    <div className="my-5 p-3 bg-gray-50 rounded border border-gray-200">
-                      <div className="text-[10px] uppercase font-bold tracking-widest text-center text-gray-400 mb-2 border-b border-gray-200 pb-1">
+                    <div className="my-5 p-4 bg-[#0A0E1A]/80 rounded-2xl border border-borderDark/60">
+                      <div className="text-[10px] uppercase font-bold tracking-widest text-center text-slate-400 mb-2.5 border-b border-borderDark/60 pb-1.5">
                         Tela de Projeção
                       </div>
                       <div className="grid gap-1 justify-center" style={{ gridTemplateColumns: `repeat(${Math.min(colsCount, 12)}, minmax(0, 1fr))` }}>
                         {Array.from({ length: Math.min(room.capacity, 36) }).map((_, i) => (
                           <div
                             key={i}
-                            className="w-3 h-3 rounded-xs bg-[#22C55E]/60 border border-[#22C55E]"
+                            className="w-3 h-3 rounded-xs bg-[#22C55E]/80 border border-[#22C55E]"
                           />
                         ))}
                       </div>
                       {room.capacity > 36 && (
-                        <p className="text-[10px] text-center text-gray-400 mt-2">
+                        <p className="text-[10px] text-center text-slate-400 mt-2.5">
                           + {room.capacity - 36} assentos configurados
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                  <div className="pt-4 border-t border-borderDark/60 flex items-center justify-between">
                     <button
                       onClick={() => handleViewLayout(room)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-400 hover:text-sky-300 transition-colors"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>Ver Mapa Completo</span>
@@ -332,7 +333,7 @@ export default function SalasGestãoPage() {
 
                     <button
                       onClick={() => handleDeleteRoom(room)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-800 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Excluir</span>
@@ -347,16 +348,18 @@ export default function SalasGestãoPage() {
 
       {/* Modal: Nova Sala com Visual Seating Matrix Preview */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="liquid-glass-card-light rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="liquid-glass-card text-white px-6 py-4 flex items-center justify-between border-x-0 border-t-0 rounded-none">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-6 py-4.5 flex items-center justify-between border-b border-borderDark/60">
               <div className="flex items-center gap-2.5">
-                <LayoutGrid className="w-5 h-5 text-[#E94560]" />
-                <h2 className="font-bold text-base">Cadastrar Nova Sala</h2>
+                <div className="w-8 h-8 rounded-lg bg-cta/15 text-cta flex items-center justify-center">
+                  <LayoutGrid className="w-4 h-4" />
+                </div>
+                <h2 className="font-bold text-base text-white">Cadastrar Nova Sala</h2>
               </div>
               <button
                 onClick={closeCreateModal}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -364,7 +367,7 @@ export default function SalasGestãoPage() {
 
             <form onSubmit={handleCreateRoom} className="p-6 space-y-6">
               {errors.general && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded text-red-700 text-xs flex items-center gap-2">
+                <div className="p-3 bg-rose-950/60 border border-rose-500/50 rounded-xl text-rose-200 text-xs flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{errors.general}</span>
                 </div>
@@ -373,8 +376,8 @@ export default function SalasGestãoPage() {
               {/* Informações Básicas */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="sm:col-span-1">
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Nome da Sala <span className="text-red-500">*</span>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Nome da Sala <span className="text-cta">*</span>
                   </label>
                   <input
                     type="text"
@@ -382,16 +385,16 @@ export default function SalasGestãoPage() {
                     placeholder="Ex: Sala 1 VIP"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E94560]"
+                    className="w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border border-borderDark focus:border-cta focus:outline-none"
                   />
                   {errors.name && (
-                    <p className="text-red-600 text-xs mt-1">{errors.name}</p>
+                    <p className="text-rose-400 text-xs mt-1">{errors.name}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Fileiras (Letras A-Z) <span className="text-red-500">*</span>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Fileiras (Letras A-Z) <span className="text-cta">*</span>
                   </label>
                   <input
                     type="number"
@@ -400,16 +403,16 @@ export default function SalasGestãoPage() {
                     max={26}
                     value={rows}
                     onChange={(e) => setRows(Number(e.target.value))}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E94560]"
+                    className="w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border border-borderDark focus:border-cta focus:outline-none"
                   />
                   {errors.rows && (
-                    <p className="text-red-600 text-xs mt-1">{errors.rows}</p>
+                    <p className="text-rose-400 text-xs mt-1">{errors.rows}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Poltronas por Fileira <span className="text-red-500">*</span>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                    Poltronas por Fileira <span className="text-cta">*</span>
                   </label>
                   <input
                     type="number"
@@ -418,27 +421,27 @@ export default function SalasGestãoPage() {
                     max={30}
                     value={columns}
                     onChange={(e) => setColumns(Number(e.target.value))}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E94560]"
+                    className="w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border border-borderDark focus:border-cta focus:outline-none"
                   />
                   {errors.columns && (
-                    <p className="text-red-600 text-xs mt-1">{errors.columns}</p>
+                    <p className="text-rose-400 text-xs mt-1">{errors.columns}</p>
                   )}
                 </div>
               </div>
 
               {/* Live Interactive Preview */}
-              <div className="bg-gray-900 p-5 rounded-lg border border-gray-800 text-white">
+              <div className="bg-[#0A0E1A] p-5 rounded-2xl border border-borderDark text-white">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                     Pré-visualização da Planta Física
                   </span>
-                  <span className="text-xs font-semibold bg-[#E94560]/20 text-[#E94560] px-2.5 py-0.5 rounded border border-[#E94560]/30">
+                  <span className="text-xs font-semibold bg-cta/15 text-cta px-3 py-1 rounded-full border border-cta/30">
                     Total: {rows * columns} assentos
                   </span>
                 </div>
 
                 {/* Projection Screen */}
-                <div className="w-3/4 mx-auto py-1.5 mb-6 text-center text-[10px] font-bold tracking-widest bg-gray-800 border-b-2 border-[#E94560] text-gray-300 rounded-t-sm shadow-inner">
+                <div className="w-3/4 mx-auto py-1.5 mb-6 text-center text-[10px] font-bold tracking-widest bg-[#12182B] border-b-2 border-cta text-slate-300 rounded-t-lg shadow-md">
                   TELA DE PROJEÇÃO
                 </div>
 
@@ -449,7 +452,7 @@ export default function SalasGestãoPage() {
                       const rowLetter = String.fromCharCode(65 + rIdx);
                       return (
                         <div key={rowLetter} className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-gray-500 w-4 text-center">
+                          <span className="text-[10px] font-bold text-slate-500 w-4 text-center">
                             {rowLetter}
                           </span>
                           <div className="flex gap-1">
@@ -463,7 +466,7 @@ export default function SalasGestãoPage() {
                               </div>
                             ))}
                           </div>
-                          <span className="text-[10px] font-bold text-gray-500 w-4 text-center">
+                          <span className="text-[10px] font-bold text-slate-500 w-4 text-center">
                             {rowLetter}
                           </span>
                         </div>
@@ -474,18 +477,18 @@ export default function SalasGestãoPage() {
               </div>
 
               {/* Modal Actions */}
-              <div className="pt-4 border-t border-gray-200 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-borderDark/60 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={closeCreateModal}
-                  className="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                  className="px-4 py-2.5 text-xs font-semibold text-slate-300 hover:text-white bg-white/10 hover:bg-white/15 rounded-xl transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-5 py-2 text-sm font-semibold text-white bg-[#E94560] hover:bg-[#d63d56] rounded-md shadow disabled:opacity-50 transition-colors"
+                  className="px-5 py-2.5 text-xs font-bold text-white bg-cta hover:bg-cta-hover rounded-xl shadow-lg shadow-cta/25 disabled:opacity-50 transition-all"
                 >
                   {isPending ? "Criando Sala..." : "Criar Sala & Gerar Assentos"}
                 </button>
@@ -497,31 +500,33 @@ export default function SalasGestãoPage() {
 
       {/* Modal: Visualizar Layout Completo */}
       {selectedRoomPreview && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="liquid-glass-card-light rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="liquid-glass-card text-white px-6 py-4 flex items-center justify-between border-x-0 border-t-0 rounded-none">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+          <div className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150">
+            <div className="px-6 py-4.5 flex items-center justify-between border-b border-borderDark/60">
               <div className="flex items-center gap-2.5">
-                <LayoutGrid className="w-5 h-5 text-[#E94560]" />
-                <h2 className="font-bold text-base">
+                <div className="w-8 h-8 rounded-lg bg-cta/15 text-cta flex items-center justify-center">
+                  <LayoutGrid className="w-4 h-4" />
+                </div>
+                <h2 className="font-bold text-base text-white">
                   Planta Física: {selectedRoomPreview.name}
                 </h2>
               </div>
               <button
                 onClick={() => setSelectedRoomPreview(null)}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="p-6 space-y-6">
-              <div className="flex items-center justify-between text-xs text-gray-600 bg-gray-50 p-3 rounded border border-gray-200">
-                <span>Total de assentos registrados no banco: <strong>{selectedRoomPreview.seats?.length || selectedRoomPreview.capacity}</strong></span>
-                <span>Status de todos os assentos fixos: <strong className="text-green-600">ATIVOS (AVAILABLE)</strong></span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-300 bg-[#0A0E1A] p-4 rounded-xl border border-borderDark/60 gap-2">
+                <span>Capacidade total da sala: <strong className="text-white font-bold">{selectedRoomPreview.seats?.length || selectedRoomPreview.capacity} poltronas</strong></span>
+                <span>Status das poltronas: <strong className="text-emerald-400 font-bold">Disponíveis para sessões</strong></span>
               </div>
 
-              <div className="bg-gray-950 p-6 rounded-lg text-white">
-                <div className="w-3/4 mx-auto py-1.5 mb-8 text-center text-xs font-bold tracking-widest bg-gray-800 border-b-2 border-[#E94560] text-gray-300 rounded-t-sm">
+              <div className="bg-[#0A0E1A] p-6 rounded-2xl border border-borderDark/60 text-white">
+                <div className="w-3/4 mx-auto py-2 mb-8 text-center text-xs font-bold tracking-widest bg-[#12182B] border-b-2 border-cta text-slate-300 rounded-t-lg shadow-md">
                   TELA DE PROJEÇÃO
                 </div>
 
@@ -539,7 +544,7 @@ export default function SalasGestãoPage() {
                       )
                     ).map(([row, rowSeats]) => (
                       <div key={row} className="flex items-center gap-2.5">
-                        <span className="text-xs font-bold text-gray-400 w-4 text-center">
+                        <span className="text-xs font-bold text-slate-500 w-4 text-center">
                           {row}
                         </span>
                         <div className="flex gap-1.5">
@@ -548,14 +553,14 @@ export default function SalasGestãoPage() {
                             .map((seat) => (
                               <div
                                 key={seat.id}
-                                className="w-7 h-7 rounded bg-[#22C55E]/90 text-gray-900 font-bold text-[10px] flex items-center justify-center shadow-xs"
+                                className="w-7 h-7 rounded-lg bg-[#22C55E]/90 text-gray-900 font-bold text-[10px] flex items-center justify-center shadow-xs"
                                 title={`Assento ${seat.seatCode}`}
                               >
                                 {seat.columnNumber}
                               </div>
                             ))}
                         </div>
-                        <span className="text-xs font-bold text-gray-400 w-4 text-center">
+                        <span className="text-xs font-bold text-slate-500 w-4 text-center">
                           {row}
                         </span>
                       </div>
@@ -567,7 +572,7 @@ export default function SalasGestãoPage() {
               <div className="flex justify-end">
                 <button
                   onClick={() => setSelectedRoomPreview(null)}
-                  className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                  className="px-5 py-2.5 text-xs font-bold text-white bg-white/10 hover:bg-white/20 rounded-xl transition-colors"
                 >
                   Fechar
                 </button>

@@ -324,7 +324,7 @@ export default function PortalSessionReservationPage() {
         <div className="bg-amber-950/70 border-b border-amber-500/40 px-4 py-3 text-amber-200 text-xs flex items-center justify-center gap-2.5 shadow-md">
           <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
           <span>
-            <strong>Reservas online encerradas:</strong> Falta menos de 60 minutos para o início desta sessão (Critério AC-14). Para assistir a este filme, adquira seus ingressos diretamente na bilheteria física do cinema.
+            <strong>Reservas online encerradas:</strong> Falta menos de 60 minutos para o início desta sessão. Para assistir a este filme, adquira seus ingressos diretamente na bilheteria física do cinema.
           </span>
         </div>
       )}
@@ -484,7 +484,7 @@ export default function PortalSessionReservationPage() {
               {isSubmitting ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>Garantindo Assentos na Transação ACID...</span>
+                  <span>Garantindo seus assentos...</span>
                 </>
               ) : (
                 <>

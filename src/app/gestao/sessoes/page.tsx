@@ -169,7 +169,7 @@ export default function SessoesGestãoPage() {
         if (res.status === 201) {
           setIsCreateModalOpen(false);
           setActionSuccess(
-            `Sessao agendada com sucesso! ${data.seatsGeneratedCount ?? 0} assentos foram pre-populados.`
+            `Sessão agendada com sucesso! Mapa com ${data.seatsGeneratedCount ?? 0} poltronas liberado para venda.`
           );
           fetchData();
         } else if (res.status === 409) {
@@ -189,7 +189,7 @@ export default function SessoesGestãoPage() {
           setFormErrors({ general: data.error || "Erro ao agendar sessao." });
         }
       } catch {
-        setFormErrors({ general: "Erro inesperado de conexao com a API." });
+        setFormErrors({ general: "Erro inesperado de conexão com o servidor." });
       }
     });
   };
@@ -221,45 +221,42 @@ export default function SessoesGestãoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#1A1A2E] text-[#F5F5F5] p-6 lg:p-10">
-      {/* Header com Navegacao */}
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-xl">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <Link href="/gestao" className="hover:text-[#E94560] transition-colors">
-                Gestão
-              </Link>
-              <ChevronRight className="w-4 h-4" />
-              <span className="text-[#E94560] font-medium">Sessoes Cinematograficas</span>
-            </div>
-            <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-3">
-              <Calendar className="w-8 h-8 text-[#E94560]" />
-              Agendamento de Sessoes
-            </h1>
-            <p className="text-gray-400 text-sm">
-              Gestao de programacao cinematografica com pre-populacao atomica de assentos (ADR-007 / AC-8).
-            </p>
-          </div>
-
+    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
+      {/* Top Header */}
+      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-2xl">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link
               href="/gestao"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-sm font-semibold transition-colors"
+              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
+              title="Voltar ao Painel"
             >
-              <ArrowLeft className="w-4 h-4" />
-              Voltar
+              <ArrowLeft className="w-5 h-5" />
             </Link>
-            <button
-              onClick={handleOpenCreateModal}
-              disabled={films.length === 0 || rooms.length === 0}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#E94560] hover:bg-[#d63d56] text-white text-sm font-bold shadow-lg shadow-[#E94560]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Plus className="w-4 h-4" />
-              Nova Sessao
-            </button>
+            <div className="w-10 h-10 rounded-xl bg-cta/15 text-cta border border-cta/30 flex items-center justify-center shadow-lg shadow-cta/10">
+              <Calendar className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-white">Programação & Sessões</h1>
+              <p className="text-xs text-slate-400">
+                Agendamento e gerenciamento de sessões e horários das salas
+              </p>
+            </div>
           </div>
+
+          <button
+            onClick={handleOpenCreateModal}
+            disabled={films.length === 0 || rooms.length === 0}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cta hover:bg-cta-hover text-white text-sm font-semibold shadow-lg shadow-cta/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Nova Sessão</span>
+          </button>
         </div>
+      </header>
+
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-4 py-8 space-y-6 flex-1 w-full">
 
         {/* Alerta de Sucesso */}
         {actionSuccess && (
@@ -295,7 +292,7 @@ export default function SessoesGestãoPage() {
             <Calendar className="w-16 h-16 text-gray-600 mx-auto" />
             <h2 className="text-xl font-bold text-gray-300">Nenhuma sessao agendada</h2>
             <p className="text-sm text-gray-500 max-w-md mx-auto">
-              Clique em &quot;Nova Sessao&quot; para programar um filme em uma de suas salas com pre-populacao automatica de assentos.
+              Clique em &quot;Nova Sessão&quot; para programar um filme em uma de suas salas e disponibilizar as poltronas para venda.
             </p>
           </div>
         ) : (
@@ -368,12 +365,12 @@ export default function SessoesGestãoPage() {
             })}
           </div>
         )}
-      </div>
+      </main>
 
       {/* Modal de Agendamento de Sessao */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="liquid-glass-card rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="liquid-glass-card bg-[#161F36] rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative border border-borderDark">
             <div className="flex items-center justify-between border-b border-gray-800 pb-4">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-[#E94560]" />
@@ -469,8 +466,8 @@ export default function SessoesGestãoPage() {
                 </div>
               </div>
 
-              <div className="p-3 bg-[#0F3460]/40 border border-[#0F3460] rounded-xl text-xs text-gray-300">
-                <span className="font-semibold text-[#E94560]">Nota de Engenharia (ADR-007):</span> Ao confirmar, o sistema validara conflitos de sala e gerara atomicamente todos os assentos com status <code>AVAILABLE</code>.
+              <div className="p-3 bg-sky-950/30 border border-sky-500/20 rounded-xl text-xs text-slate-300">
+                <span className="font-semibold text-sky-400">Aviso:</span> Ao confirmar o agendamento, o sistema verifica a disponibilidade do horário da sala e disponibiliza automaticamente o mapa de poltronas para venda.
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-gray-800">

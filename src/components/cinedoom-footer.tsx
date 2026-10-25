@@ -39,7 +39,7 @@ export function CineDoomFooter() {
               Dados protegidos em conformidade com a LGPD (Lei nº 13.709/2018).
             </p>
             <p className="text-[11px] text-slate-500">
-              Reserva com trava transacional ACID e expiração automática de assentos.
+              Reserva garantida com confirmação de assentos em tempo real.
             </p>
           </div>
         </div>

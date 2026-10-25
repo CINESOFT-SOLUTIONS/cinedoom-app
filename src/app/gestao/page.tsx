@@ -21,21 +21,21 @@ export default function GestãoDashboardPage() {
     },
     {
       title: "Programação & Sessões",
-      description: "Agendamento de sessões com prevenção de conflitos e pré-população de assentos.",
+      description: "Agendamento e gerenciamento de sessões, salas e horários.",
       href: "/gestao/sessoes",
       icon: Calendar,
       badge: "Programação",
     },
     {
       title: "Gestão de Atendentes",
-      description: "Cadastro, ativação e redefinição de senhas para operadores da bilheteria (FRAME-7).",
+      description: "Cadastro, ativação e redefinição de senhas para operadores da bilheteria.",
       href: "/gestao/usuarios",
       icon: Users,
       badge: "Equipe",
     },
     {
       title: "Compliance LGPD (Art. 18)",
-      description: "Atendimento a titulares, consulta cadastral e anonimização in-place sem quebra de FK (ADR-009).",
+      description: "Atendimento aos direitos do titular e anonimização com preservação fiscal.",
       href: "/gestao/titulares",
       icon: ShieldCheck,
       badge: "Segurança & LGPD",
@@ -43,25 +43,33 @@ export default function GestãoDashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] text-[#2D2D2D] font-sans">
+    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-xl">
+      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-2xl">
         <div className="max-w-6xl mx-auto px-4 py-4 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#E94560] flex items-center justify-center font-bold text-white shadow-md shrink-0">
+            <Link href="/" className="w-10 h-10 rounded-xl bg-cta flex items-center justify-center font-bold text-white shadow-lg shadow-cta/25 shrink-0 hover:scale-105 transition-transform" title="Ir para a Página Inicial">
               CD
-            </div>
+            </Link>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight">Painel Administrativo do Gerente</h1>
-              <p className="text-xs text-gray-400">
-                Gestão de controle do cinema — CineDoom SaaS
+              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                Painel Administrativo do Gerente
+              </h1>
+              <p className="text-xs text-slate-400">
+                Gestão central e governança do cinema — CineDoom
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+            <Link
+              href="/"
+              className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 transition-all text-slate-200 hover:text-white shadow-sm"
+            >
+              Início
+            </Link>
             <Link
               href="/bilheteria"
-              className="text-xs font-semibold px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 transition-all text-white shadow-sm"
+              className="text-xs font-semibold px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover transition-all text-white shadow-lg shadow-cta/25"
             >
               Ir para Bilheteria
             </Link>
@@ -70,16 +78,16 @@ export default function GestãoDashboardPage() {
       </header>
 
       {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-4 py-6 sm:py-10 space-y-6 sm:space-y-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+      <main className="max-w-6xl mx-auto px-4 py-6 sm:py-10 space-y-6 sm:space-y-8 flex-1 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-borderDark/60 pb-5">
           <div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-[#1A1A2E]">Módulos de Gerenciamento</h2>
-            <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
-              Selecione o módulo para configurar as operações do seu cinema.
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Módulos de Gerenciamento</h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              Selecione o módulo para configurar as operações e a conformidade do seu cinema.
             </p>
           </div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold rounded-full self-start sm:self-auto">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-semibold rounded-full self-start sm:self-auto shadow-sm">
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>Perfil Autenticado: GERENTE</span>
           </div>
         </div>
@@ -92,34 +100,39 @@ export default function GestãoDashboardPage() {
               <Link
                 key={m.href}
                 href={m.href}
-                className="group p-6 liquid-glass-card-light hover:border-cta/40 hover:shadow-xl rounded-3xl transition-all flex flex-col justify-between"
+                className="group p-6 liquid-glass-card hover:border-cta/50 hover:shadow-2xl rounded-3xl transition-all duration-300 flex flex-col justify-between border border-white/10"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded-lg bg-[#E94560]/10 text-[#E94560] flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="w-12 h-12 rounded-2xl bg-cta/15 text-cta border border-cta/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-cta group-hover:text-white transition-all shadow-lg shadow-cta/10">
                       <Icon className="w-6 h-6" />
                     </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300 bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
                       {m.badge}
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#E94560] transition-colors">
+                  <h3 className="text-lg font-bold text-white group-hover:text-cta transition-colors">
                     {m.title}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                  <p className="text-sm text-slate-400 mt-2 leading-relaxed">
                     {m.description}
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-[#E94560]">
+                <div className="mt-6 pt-4 border-t border-borderDark/60 flex items-center justify-between text-xs font-semibold text-cta">
                   <span>Acessar Módulo</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
                 </div>
               </Link>
             );
           })}
         </div>
       </main>
+
+      {/* Footer minimalista */}
+      <footer className="border-t border-borderDark/40 py-6 text-center text-xs text-slate-500">
+        CineDoom Cinema Management &bull; Painel Administrativo
+      </footer>
     </div>
   );
 }

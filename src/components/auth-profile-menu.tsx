@@ -263,7 +263,7 @@ export function AuthProfileMenu() {
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
                     <Ticket className="w-4 h-4 text-emerald-400" />
-                    <span>Balcao de Vendas (FRAME-2)</span>
+                    <span>Balcão de Vendas</span>
                   </Link>
                   <Link
                     href="/bilheteria/baixa-reserva"

@@ -78,7 +78,7 @@ export function HeroBillboard({
 
             <p className="text-xs sm:text-sm md:text-base text-slate-300/90 leading-relaxed line-clamp-3 max-w-xl">
               {activeHeroFilm?.synopsis ||
-                "Consulte a programação do CineDoom, selecione suas poltronas no mapa interativo e reserve seus ingressos com confirmação atômica ACID."}
+                "Consulte a programação do CineDoom, selecione suas poltronas no mapa interativo e garanta seus ingressos em tempo real."}
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5">
