@@ -15,7 +15,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowRight,
-  CheckCircle2,
   Heart,
   Eye,
 } from "lucide-react";
@@ -223,10 +222,10 @@ export default function SobreCineDoomPage() {
 
                   {/* 2. Identificação das salas e capacidade */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[11px] font-bold uppercase tracking-wider">
+                    <span className="px-3 py-1 rounded-full bg-blue-600 text-white text-[11px] font-bold uppercase tracking-wider shadow-md">
                       Salas 1 e 2
                     </span>
-                    <span className="text-xs font-bold text-slate-300">
+                    <span className="text-xs font-bold text-blue-400">
                       120 Lugares por sala
                     </span>
                   </div>
@@ -240,15 +239,15 @@ export default function SobreCineDoomPage() {
                 {/* 4. Lista de três características */}
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                    <Tv className="w-4 h-4 text-blue-400 shrink-0" />
                     <span>Tela panorâmica digital</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                    <Volume2 className="w-4 h-4 text-blue-400 shrink-0" />
                     <span>Som surround de qualidade</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
+                    <Armchair className="w-4 h-4 text-blue-400 shrink-0" />
                     <span>Poltronas confortáveis com amplo espaçamento</span>
                   </div>
                 </div>
