@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Sparkles, Clock, Ticket, Play, X } from "lucide-react";
 import type { FilmItem } from "./types";
-import { GENRE_MAP } from "./types";
+import { getPrimaryGenre, formatDuration } from "./film-utils";
 import { AgeRatingBadge } from "./age-rating-badge";
 
 interface HeroBillboardProps {
@@ -63,12 +63,14 @@ export function HeroBillboard({
               {activeHeroFilm?.duration && (
                 <span className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-cta" />
-                  {activeHeroFilm.duration} minutos
+                  {formatDuration(activeHeroFilm.duration)}
                 </span>
               )}
-              <span className="text-slate-400 border-l border-borderDark pl-2.5 sm:pl-3">
-                {GENRE_MAP[activeHeroFilm?.title || ""] || "Filme em Cartaz"}
-              </span>
+              {getPrimaryGenre(activeHeroFilm?.genre) && (
+                <span className="text-slate-400 border-l border-borderDark pl-2.5 sm:pl-3">
+                  {getPrimaryGenre(activeHeroFilm?.genre)}
+                </span>
+              )}
               {activeHeroFilm?.director && (
                 <span className="text-slate-400 border-l border-borderDark pl-2.5 sm:pl-3 hidden sm:inline">
                   Direção: {activeHeroFilm.director}
@@ -157,12 +159,16 @@ export function HeroBillboard({
             </div>
 
             <div className="text-xs text-slate-400 space-y-1">
-              <div>
-                <strong>Duração:</strong> {detailModalFilm.duration} minutos
-              </div>
-              <div>
-                <strong>Gênero:</strong> {GENRE_MAP[detailModalFilm.title] || detailModalFilm.genre}
-              </div>
+              {detailModalFilm.duration && (
+                <div>
+                  <strong>Duração:</strong> {formatDuration(detailModalFilm.duration)}
+                </div>
+              )}
+              {detailModalFilm.genre && (
+                <div>
+                  <strong>Gênero:</strong> {detailModalFilm.genre}
+                </div>
+              )}
               {detailModalFilm.director && (
                 <div>
                   <strong>Direção:</strong> {detailModalFilm.director}

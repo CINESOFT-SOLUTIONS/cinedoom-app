@@ -179,7 +179,7 @@ export class SessionServiceClass {
             synopsis: session.film.synopsis,
             duration: session.film.durationMinutes,
             classification: session.film.rating,
-            genre: session.film.director || "Cinema",
+            genre: (session.film as any).genre || undefined,
             posterUrl: session.film.posterUrl,
           },
           room: {

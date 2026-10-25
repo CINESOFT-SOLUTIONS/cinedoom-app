@@ -25,8 +25,9 @@ export interface FilmItem {
 }
 
 export const GENRE_MAP: Record<string, string> = {
-  "Duna: Parte Dois": "Ficção Científica • Aventura • IMAX Laser",
-  "Oppenheimer": "Drama Histórico • Biografia • 70mm",
-  "Pobres Criaturas": "Fantasia • Romance • Sala Confort",
-  "Interestelar": "Ficção Científica • Aventura • IMAX Laser",
+  "Duna: Parte Dois": "Ficção Científica • Aventura",
+  "Oppenheimer": "Drama Histórico • Biografia",
+  "Pobres Criaturas": "Fantasia • Romance",
+  "Interestelar": "Ficção Científica • Aventura",
 };
+

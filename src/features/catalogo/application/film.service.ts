@@ -101,7 +101,7 @@ export class FilmServiceClass {
         synopsis: film.synopsis,
         duration: film.durationMinutes,
         classification: film.rating,
-        genre: film.director || "Cinema",
+        genre: (film as any).genre || undefined,
         posterUrl: film.posterUrl,
         sessions: (film.sessions || []).map((session: any) => ({
           id: session.id,

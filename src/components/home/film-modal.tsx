@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { X, Ticket, Info, Clock, Film, MapPin, CheckCircle2, ChevronRight } from "lucide-react";
 import type { FilmItem, SessionItem } from "./types";
-import { GENRE_MAP } from "./types";
+import { getPrimaryGenre, formatDuration } from "./film-utils";
 import { AgeRatingBadge } from "./age-rating-badge";
 
 interface FilmModalProps {
@@ -55,7 +55,8 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
     {}
   );
 
-  const genreText = GENRE_MAP[film.title] || film.genre || "Filme em Cartaz";
+  const primaryGenre = getPrimaryGenre(film.genre);
+  const durationStr = formatDuration(film.duration);
 
   return (
     <div
@@ -109,13 +110,15 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
             </h2>
 
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300 font-medium">
-              <span className="px-2 py-0.5 rounded bg-cta/15 text-cta font-semibold uppercase text-[10px] tracking-wider">
-                {genreText.split("•")[0]?.trim()}
-              </span>
-              {film.duration && (
+              {primaryGenre && (
+                <span className="px-2 py-0.5 rounded bg-cta/15 text-cta font-semibold uppercase text-[10px] tracking-wider">
+                  {primaryGenre}
+                </span>
+              )}
+              {durationStr && (
                 <span className="flex items-center gap-1 text-slate-400">
                   <Clock className="w-3.5 h-3.5 text-slate-400" />
-                  {film.duration} min
+                  {durationStr}
                 </span>
               )}
             </div>
@@ -251,16 +254,18 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
             </div>
 
             <div className="pt-3 border-t border-borderDark/60 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-                <span className="text-slate-400 block font-medium">Gênero</span>
-                <span className="text-white font-semibold">{genreText}</span>
-              </div>
-              <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
-                <span className="text-slate-400 block font-medium">Duração</span>
-                <span className="text-white font-semibold">
-                  {film.duration ? `${film.duration} minutos` : "Não informado"}
-                </span>
-              </div>
+              {film.genre && (
+                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
+                  <span className="text-slate-400 block font-medium">Gênero</span>
+                  <span className="text-white font-semibold">{film.genre}</span>
+                </div>
+              )}
+              {durationStr && (
+                <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
+                  <span className="text-slate-400 block font-medium">Duração</span>
+                  <span className="text-white font-semibold">{durationStr}</span>
+                </div>
+              )}
               {film.director && (
                 <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
                   <span className="text-slate-400 block font-medium">Direção</span>

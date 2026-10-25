@@ -2,10 +2,10 @@
 
 import React from "react";
 import Image from "next/image";
-import { Film, Ticket, Info, Clock, Play } from "lucide-react";
+import { Film, Ticket, Info, Clock } from "lucide-react";
 import type { FilmItem } from "./types";
-import { GENRE_MAP } from "./types";
 import { AgeRatingBadge } from "./age-rating-badge";
+import { getPrimaryGenre, formatDuration, formatFilmMetaLine } from "./film-utils";
 
 interface FilmCardProps {
   film: FilmItem;
@@ -14,13 +14,15 @@ interface FilmCardProps {
 }
 
 export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps) {
-  const genreText = GENRE_MAP[film.title] || film.genre || "Filme em Cartaz";
-  const genreShort = genreText.split("•")[0]?.trim();
+  // Metadados auditados e padronizados: apenas gênero e duração reais
+  const primaryGenre = getPrimaryGenre(film.genre);
+  const durationStr = formatDuration(film.duration);
+  const metaLine = formatFilmMetaLine(film);
 
-  // Identifica tags de formato ou lançamento
+  // Identifica selos contextuais padronizados (Estreia, IMAX, VIP)
   const isEstreia = film.title.toLowerCase().includes("duna");
-  const hasImax = film.sessions.some((s) => s.room.name.toLowerCase().includes("imax"));
-  const hasVip = film.sessions.some((s) => s.room.name.toLowerCase().includes("vip"));
+  const hasImax = film.sessions?.some((s) => s.room.name.toLowerCase().includes("imax"));
+  const hasVip = film.sessions?.some((s) => s.room.name.toLowerCase().includes("vip"));
   const tag = isEstreia ? "Estreia" : hasImax ? "IMAX" : hasVip ? "VIP" : null;
 
   const handleSessionsClick = (e: React.MouseEvent) => {
@@ -58,7 +60,7 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="button"
-      aria-label={`Filme ${film.title}. Pressione Enter para ver horários e sessões.`}
+      aria-label={`Filme ${film.title}. Pressione Enter para ver sessões.`}
       className="group relative flex flex-col cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-cta rounded-2xl select-none"
     >
       {/* 1. Área do Pôster Vertical (Proporção 2:3 rigorosamente preservada) */}
@@ -80,12 +82,12 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
           </div>
         )}
 
-        {/* 2. Classificação Indicativa (Fixada no topo-esquerdo, visível no estado padrão e no hover) */}
+        {/* 2. Classificação Indicativa (Fixada no topo-esquerdo) */}
         <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none drop-shadow-md">
           <AgeRatingBadge rating={film.classification} />
         </div>
 
-        {/* 3. Indicador de Estreia ou Formato (Fixado no topo-direito, sempre legível) */}
+        {/* Selos contextuais (ESTREIA, IMAX, VIP no topo-direito) */}
         {tag && (
           <div className="absolute top-2.5 right-2.5 z-20 pointer-events-none">
             <span
@@ -102,36 +104,36 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
           </div>
         )}
 
-        {/* 4. Sobreposição Escura com Gradiente & Botões de Ação Revelados no Hover / Foco */}
+        {/* Sobreposição de Hover: Estrutura única e consistente para todos os cards */}
         <div
-          className="absolute inset-0 z-10 bg-gradient-to-t from-black/95 via-black/75 to-transparent backdrop-blur-[2px] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4 gap-2"
+          className="absolute inset-0 z-10 bg-gradient-to-t from-black/95 via-black/80 to-transparent backdrop-blur-[2px] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4 gap-2.5"
         >
-          {/* Informações Complementares Secundárias */}
-          <div className="space-y-0.5 transform translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 motion-reduce:transform-none">
-            <span className="text-[10px] font-bold text-cta uppercase tracking-wider block truncate">
-              {genreShort}
-            </span>
-            {film.duration && (
-              <span className="text-[11px] text-slate-300 font-medium flex items-center gap-1">
+          {/* Metadados: 1. Gênero cinematográfico | 2. Duração do filme */}
+          <div className="space-y-1 transform translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 motion-reduce:transform-none">
+            {primaryGenre && (
+              <span className="text-[11px] font-bold text-cta uppercase tracking-wider block truncate">
+                {primaryGenre}
+              </span>
+            )}
+            {durationStr && (
+              <span className="text-[11px] text-slate-300 font-medium flex items-center gap-1.5">
                 <Clock className="w-3 h-3 text-slate-400 shrink-0" />
-                <span>{film.duration} min</span>
+                <span>{durationStr}</span>
               </span>
             )}
           </div>
 
-          {/* Botões de Ação dentro dos Limites do Pôster */}
-          <div className="space-y-1.5 pt-1 transform translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 motion-reduce:transform-none">
-            {/* Ação Principal: Rosa CineDoom (Ver Sessões) */}
+          {/* Botões: 3. Principal "Ver sessões" | 4. Secundário "Detalhes" */}
+          <div className="space-y-1.5 pt-0.5 transform translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 motion-reduce:transform-none">
             <button
               type="button"
               onClick={handleSessionsClick}
               className="w-full py-2.5 px-3 rounded-xl bg-cta hover:bg-cta-hover text-white font-bold text-xs tracking-wide shadow-lg shadow-cta/30 hover:shadow-cta/50 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
             >
               <Ticket className="w-3.5 h-3.5" />
-              <span>Ver Sessões</span>
+              <span>Ver sessões</span>
             </button>
 
-            {/* Ação Secundária: Detalhes */}
             <button
               type="button"
               onClick={handleDetailsClick}
@@ -144,7 +146,7 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
         </div>
       </div>
 
-      {/* 5. Título do Filme Posicionado Imediatamente Abaixo do Pôster */}
+      {/* 3. Título do Filme e 4. Metadados Padronizados Imediatamente Abaixo */}
       <div className="mt-2.5 space-y-1">
         <h3
           className="font-bold text-sm sm:text-base text-white leading-tight line-clamp-2 group-hover:text-cta transition-colors min-h-[2.5rem]"
@@ -153,13 +155,12 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
           {film.title}
         </h3>
 
-        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium truncate">
-          <span>{genreShort}</span>
-          {film.duration && (
-            <>
-              <span className="text-slate-600">•</span>
-              <span>{film.duration}m</span>
-            </>
+        {/* Metadados: Gênero cinematográfico principal · Duração (ex: Ficção científica · 166 min) */}
+        <div className="flex items-center text-xs text-slate-400 font-medium truncate h-4">
+          {metaLine ? (
+            <span>{metaLine}</span>
+          ) : (
+            <span className="invisible select-none" aria-hidden="true">&nbsp;</span>
           )}
         </div>
       </div>
