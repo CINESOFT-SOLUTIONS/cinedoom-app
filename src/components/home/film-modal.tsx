@@ -6,6 +6,7 @@ import Link from "next/link";
 import { X, Ticket, Info, Clock, Film, MapPin, CheckCircle2, ChevronRight } from "lucide-react";
 import type { FilmItem, SessionItem } from "./types";
 import { getPrimaryGenre, formatDuration } from "./film-utils";
+import { getRoomExperienceCategory, getRoomDisplayName } from "@/shared/experiences";
 import { AgeRatingBadge } from "./age-rating-badge";
 
 interface FilmModalProps {
@@ -175,8 +176,8 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
               </div>
             ) : (
               Object.entries(sessionsByRoom).map(([roomName, roomSessions]) => {
-                const isImax = roomName.toLowerCase().includes("imax");
-                const isVip = roomName.toLowerCase().includes("vip");
+                const category = getRoomExperienceCategory(roomName);
+                const displayName = getRoomDisplayName(roomName);
 
                 return (
                   <div
@@ -187,20 +188,20 @@ export function FilmModal({ film, initialTab = "sessions", onClose }: FilmModalP
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-cta shrink-0" />
                         <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wider">
-                          {roomName}
+                          {displayName}
                         </h3>
                       </div>
-                      {isImax ? (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                          IMAX Laser
+                      {category === "IMAX" ? (
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                          IMAX
                         </span>
-                      ) : isVip ? (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                          VIP Lounge
+                      ) : category === "VIP" ? (
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                          VIP
                         </span>
                       ) : (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-500/20 text-slate-300 border border-slate-500/30">
-                          Confort
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                          Clássica
                         </span>
                       )}
                     </div>

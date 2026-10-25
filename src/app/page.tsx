@@ -10,13 +10,14 @@ import { FilmModal } from "@/components/home/film-modal";
 import { InstitutionalBanner } from "@/components/home/institutional-banner";
 import type { FilmItem } from "@/components/home/types";
 import { Film } from "lucide-react";
+import { type ProgramacaoFilter, matchesProgramacaoFilter } from "@/shared/experiences";
 
 export default function CinemarkStyleHomePage() {
   const [films, setFilms] = useState<FilmItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFormat, setSelectedFormat] = useState<string>("TODOS");
+  const [selectedFormat, setSelectedFormat] = useState<ProgramacaoFilter>("Todos");
   const [selectedDay, setSelectedDay] = useState<number>(0);
   const [selectedModalFilm, setSelectedModalFilm] = useState<FilmItem | null>(null);
   const [modalInitialTab, setModalInitialTab] = useState<"sessions" | "details">("sessions");
@@ -79,23 +80,11 @@ export default function CinemarkStyleHomePage() {
 
       if (!matchesSearch) return false;
 
-      if (selectedFormat === "IMAX") {
-        const hasImax = f.sessions.some((s) =>
-          s.room.name.toLowerCase().includes("imax")
+      if (selectedFormat !== "Todos") {
+        const hasMatchingSession = f.sessions.some((s) =>
+          matchesProgramacaoFilter(s.room.name, selectedFormat)
         );
-        if (!hasImax) return false;
-      } else if (selectedFormat === "VIP") {
-        const hasVip = f.sessions.some((s) =>
-          s.room.name.toLowerCase().includes("vip")
-        );
-        if (!hasVip) return false;
-      } else if (selectedFormat === "CONFORT") {
-        const hasConfort = f.sessions.some((s) =>
-          s.room.name.toLowerCase().includes("confort") ||
-          s.room.name.toLowerCase().includes("sala 1") ||
-          s.room.name.toLowerCase().includes("sala 2")
-        );
-        if (!hasConfort) return false;
+        if (!hasMatchingSession) return false;
       }
 
       return true;

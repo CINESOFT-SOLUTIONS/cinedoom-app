@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { SeatingGrid, type GridSeatItem } from "@/modules/bilheteria/components/seating-grid";
 import { useSessionSeats } from "@/modules/bilheteria/hooks/use-session-seats";
+import { getRoomWithExperience } from "@/shared/experiences";
 
 interface SessionOption {
   id: string;
@@ -254,7 +255,7 @@ export default function BilheteriaMapaAssentosPage() {
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Building className="w-3.5 h-3.5 text-cta" />
-                  {activeSession.room.name} ({activeSession.room.capacity} lugares)
+                  {getRoomWithExperience(activeSession.room.name)} ({activeSession.room.capacity} lugares)
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-cta" />
@@ -266,7 +267,7 @@ export default function BilheteriaMapaAssentosPage() {
               </div>
             ) : (
               <div className="flex items-center gap-2 text-xs text-amber-300/80">
-                <span>Modo Demonstração: Exibindo sala modelo IMAX de 100 lugares.</span>
+                <span>Modo Demonstração: Exibindo sala modelo IMAX de 120 lugares.</span>
               </div>
             )}
           </div>
@@ -281,7 +282,7 @@ export default function BilheteriaMapaAssentosPage() {
               >
                 {sessions.map((s) => (
                   <option key={s.id} value={s.id} className="bg-[#0E1322] text-white">
-                    {s.film.title} - {s.room.name} ({new Date(s.startsAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })})
+                    {s.film.title} - {getRoomWithExperience(s.room.name)} ({new Date(s.startsAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })})
                   </option>
                 ))}
               </select>

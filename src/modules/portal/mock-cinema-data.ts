@@ -6,29 +6,29 @@ export interface MockRoom {
   capacity: number;
   rows: number;
   columns: number;
-  type: "CONFORT" | "IMAX" | "VIP";
+  type: "CLASSICA" | "IMAX" | "VIP" | "CONFORT";
 }
 
 export const MOCK_ROOMS: MockRoom[] = [
   {
     id: "00000000-0000-4000-a000-000000000201",
-    name: "Sala 1 - Confort",
+    name: "Sala 1 - Clássica",
     capacity: 120,
     rows: 10,
     columns: 12,
-    type: "CONFORT",
+    type: "CLASSICA",
   },
   {
     id: "00000000-0000-4000-a000-000000000202",
-    name: "Sala 2 - Confort",
+    name: "Sala 2 - Clássica",
     capacity: 120,
     rows: 10,
     columns: 12,
-    type: "CONFORT",
+    type: "CLASSICA",
   },
   {
     id: "00000000-0000-4000-a000-000000000203",
-    name: "Sala 3 - IMAX Laser",
+    name: "Sala 3 - IMAX",
     capacity: 120,
     rows: 10,
     columns: 12,
@@ -36,7 +36,7 @@ export const MOCK_ROOMS: MockRoom[] = [
   },
   {
     id: "00000000-0000-4000-a000-000000000204",
-    name: "Sala 4 - VIP Prime",
+    name: "Sala 4 - VIP",
     capacity: 60,
     rows: 6,
     columns: 10,

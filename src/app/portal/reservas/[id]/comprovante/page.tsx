@@ -1,6 +1,7 @@
 "use client";
 
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { getRoomWithExperience } from "@/shared/experiences";
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
@@ -237,8 +238,8 @@ export default function ReservationComprovantePage() {
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Sala</span>
-                <span className="font-bold text-white">Sala {voucher.room.name}</span>
+                <span className="text-[10px] text-gray-400 uppercase font-bold block">Sala / Experiência</span>
+                <span className="font-bold text-white">{getRoomWithExperience(voucher.room.name)}</span>
               </div>
             </div>
 

@@ -32,20 +32,20 @@ const SPACES_SLIDES = [
   },
   {
     id: "imax",
-    title: "Sala 3 • IMAX Laser",
-    subtitle: "Impacto Visual & Sensorial Máximo",
+    title: "Sala 3 • IMAX",
+    subtitle: "Experiência Audiovisual Imersiva",
     badge: "Sala 3 • 120 Lugares",
     description:
-      "Tela monumental de chão ao teto com altíssima reflexão, projeção 4K Laser cristalina e 120 poltronas stadium em declive acentuado para imersão total nos grandes lançamentos.",
+      "Tela monumental de chão ao teto, projeção IMAX a laser e sistema de som imersivo com 120 lugares stadium em declive para envolver você completamente na sessão.",
     image: "/images/sobre/sala-imax.jpg",
   },
   {
     id: "vip",
-    title: "Sala 4 • VIP Prime Lounge",
-    subtitle: "Conforto Supremo & Privacidade",
+    title: "Sala 4 • VIP",
+    subtitle: "Experiência Premium com Maior Conforto",
     badge: "Sala 4 • 60 Lugares",
     description:
-      "Apenas 60 poltronas de couro extra-largas com reclinação elétrica individual, descanso para pés, mesinhas individuais para bebidas e som surround intimista.",
+      "Ambiente exclusivo com apenas 60 lugares, poltronas reclináveis individuais, mesas de apoio para alimentos e bebidas e acústica tratada para maior tranquilidade.",
     image: "/images/sobre/sala-vip.jpg",
   },
 ];
@@ -198,12 +198,15 @@ export default function SobreCineDoomPage() {
               Complexo com 4 Salas
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              4 Experiências Cinematográficas à Sua Escolha
+              3 Categorias de Experiência em 4 Salas
             </h2>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
+              Conheça as três opções de salas do CineDoom, planejadas com capacidades e diferenciais pensados para cada tipo de sessão.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {/* Categoria 1: Salas 1 e 2 Tradicionais Confort */}
+            {/* Categoria 1: Salas 1 e 2 — Clássica */}
             <InteractiveGlowCard
               className="rounded-3xl liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-blue-400/40"
               contentClassName="flex flex-col h-full"
@@ -218,40 +221,40 @@ export default function SobreCineDoomPage() {
                       Salas 1 e 2
                     </span>
                     <span className="text-xs font-bold text-slate-300">
-                      120 Lugares cada
+                      120 Lugares
                     </span>
                   </div>
 
                   <h3 className="text-xl font-bold text-white tracking-tight">
-                    Tradicional Confort
+                    Clássica
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    O padrão ouro para grandes lançamentos de aventura, comédia e filmes familiares. Conforto e ergonomia para todos os públicos.
+                    A experiência tradicional de cinema em tela grande. As Salas 1 e 2 contam com 120 lugares por sala, tela panorâmica, som de qualidade e poltronas confortáveis para você aproveitar os grandes lançamentos com a família e amigos.
                   </p>
                 </div>
 
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Tela Panorâmica 4K Digital</span>
+                    <span>Tela Panorâmica Digital</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Áudio Surround Multicanal 7.1</span>
+                    <span>Som de Qualidade Multicanal</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Poltronas Stadium em Declive</span>
+                    <span>Poltronas Confortáveis com Amplo Espaçamento</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Porta-copos e amplo espaçamento</span>
+                    <span>120 Lugares por Sala (240 no Total)</span>
                   </div>
                 </div>
               </div>
             </InteractiveGlowCard>
 
-            {/* Categoria 2: Sala 3 IMAX Laser */}
+            {/* Categoria 2: Sala 3 — IMAX */}
             <InteractiveGlowCard
               className="rounded-3xl liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-cta/40"
               contentClassName="flex flex-col h-full"
@@ -266,41 +269,41 @@ export default function SobreCineDoomPage() {
                       Sala 3
                     </span>
                     <span className="text-xs font-bold text-cta">
-                      120 Lugares Stadium
+                      120 Lugares
                     </span>
                   </div>
 
                   <h3 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                    <span>IMAX Laser</span>
-                    <span className="text-[10px] font-semibold text-cta bg-cta/15 px-2 py-0.5 rounded-full">Impacto Total</span>
+                    <span>IMAX</span>
+                    <span className="text-[10px] font-semibold text-cta bg-cta/15 px-2 py-0.5 rounded-full">Imersiva</span>
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Tela monumental de alta reflexão de chão ao teto para você viver a imersão máxima em ficção científica e blockbusters.
+                    Experiência audiovisual imersiva com tela monumental de chão ao teto, projeção IMAX a laser e sistema de som imersivo com 120 lugares stadium para imersão completa em cada cena.
                   </p>
                 </div>
 
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <Tv className="w-4 h-4 text-cta shrink-0" />
-                    <span>Projeção 4K Laser Dupla</span>
+                    <span>Projeção IMAX a Laser</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Volume2 className="w-4 h-4 text-cta shrink-0" />
-                    <span>Áudio Imersivo 12.1 Canais</span>
+                    <span>Sistema de Som Imersivo Multicanal</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Eye className="w-4 h-4 text-cta shrink-0" />
-                    <span>Campo de Visão de 60° Livre</span>
+                    <span>Tela Monumental de Chão ao Teto</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Armchair className="w-4 h-4 text-cta shrink-0" />
-                    <span>Poltronas em Veludo Premium</span>
+                    <span>120 Lugares em Disposição Stadium</span>
                   </div>
                 </div>
               </div>
             </InteractiveGlowCard>
 
-            {/* Categoria 3: Sala 4 VIP Prime */}
+            {/* Categoria 3: Sala 4 — VIP */}
             <InteractiveGlowCard
               className="rounded-3xl liquid-glass-card border border-white/15 shadow-xl flex flex-col group hover:border-amber-400/40"
               contentClassName="flex flex-col h-full"
@@ -315,31 +318,31 @@ export default function SobreCineDoomPage() {
                       Sala 4
                     </span>
                     <span className="text-xs font-bold text-amber-400">
-                      60 Lugares VIP
+                      60 Lugares
                     </span>
                   </div>
 
                   <h3 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                    <span>VIP Prime Lounge</span>
-                    <span className="text-[10px] font-semibold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full">Exclusivo</span>
+                    <span>VIP</span>
+                    <span className="text-[10px] font-semibold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full">Premium</span>
                   </h3>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Ambiente intimista e silencioso para relaxamento absoluto, com poltronas reclináveis motorizadas e mesinhas laterais.
+                    Experiência premium com maior comodidade e privacidade. Ambiente intimista limitado a apenas 60 lugares, com poltronas reclináveis individuais, mesas de apoio para bebidas e petiscos e maior conforto.
                   </p>
                 </div>
 
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <Armchair className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Reclinação Elétrica Total em Couro</span>
+                    <span>Poltronas Reclináveis Individuais</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Mesinhas Individuais de Apoio</span>
+                    <span>Mesas de Apoio para Bebidas e Petiscos</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Volume2 className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Acústica Intimista de Estúdio</span>
+                    <span>Ambiente Intimista e Silencioso</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4 text-amber-400 shrink-0" />

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { listMyReservations } from "@/modules/portal/portal-service";
 import { Film, Clock, MapPin, Ticket, ShieldCheck, ArrowRight, ExternalLink } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { getRoomWithExperience } from "@/shared/experiences";
 
 function formatDate(date: Date) {
   return new Date(date).toLocaleString("pt-BR");
@@ -85,7 +86,7 @@ export default async function MinhasReservasPage() {
                         {res.session.film.title}
                       </h3>
                       <span className="text-[10px] sm:text-[11px] font-semibold text-cta bg-cta/15 border border-cta/30 px-2.5 py-0.5 rounded-full uppercase">
-                        {res.session.room.name}
+                        {getRoomWithExperience(res.session.room.name)}
                       </span>
                     </div>
 

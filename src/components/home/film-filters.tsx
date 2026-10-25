@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Calendar, Search } from "lucide-react";
+import { PROGRAMACAO_FILTERS, type ProgramacaoFilter } from "@/shared/experiences";
 
 export interface DateTabItem {
   index: number;
@@ -14,8 +15,8 @@ interface FilmFiltersProps {
   dateTabs: DateTabItem[];
   selectedDay: number;
   onSelectDay: (idx: number) => void;
-  selectedFormat: string;
-  onSelectFormat: (fmt: string) => void;
+  selectedFormat: ProgramacaoFilter | string;
+  onSelectFormat: (fmt: ProgramacaoFilter) => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
 }
@@ -61,7 +62,7 @@ export function FilmFilters({
           {/* Filtros de Formatos & Busca */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full lg:w-auto justify-between lg:justify-end">
             <div className="flex items-center gap-1.5 text-xs overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
-              {["TODOS", "IMAX", "VIP", "CONFORT"].map((format) => (
+              {PROGRAMACAO_FILTERS.map((format) => (
                 <button
                   key={format}
                   type="button"

@@ -21,6 +21,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { SeatingGrid, type GridSeatItem } from "@/modules/bilheteria/components/seating-grid";
+import { getRoomWithExperience } from "@/shared/experiences";
 
 interface SessionData {
   id: string;
@@ -301,7 +302,7 @@ export default function PortalSessionReservationPage() {
                   {sessionData.film.title}
                 </span>
                 <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-cta/15 text-cta border border-cta/30 uppercase tracking-wider">
-                  Sala {sessionData.room.name}
+                  {getRoomWithExperience(sessionData.room.name)}
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 font-medium">
@@ -385,6 +386,12 @@ export default function PortalSessionReservationPage() {
             <div className="flex justify-between">
               <span className="text-gray-400">Filme:</span>
               <span className="font-bold text-white text-right">{sessionData.film.title}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-400">Sala / Experiência:</span>
+              <span className="font-bold text-white text-right">
+                {getRoomWithExperience(sessionData.room.name)}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-400">Horário:</span>

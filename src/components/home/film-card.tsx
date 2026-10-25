@@ -6,6 +6,7 @@ import { Film, Ticket, Info, Clock } from "lucide-react";
 import type { FilmItem } from "./types";
 import { AgeRatingBadge } from "./age-rating-badge";
 import { getPrimaryGenre, formatDuration, formatFilmMetaLine } from "./film-utils";
+import { getRoomExperienceCategory } from "@/shared/experiences";
 
 interface FilmCardProps {
   film: FilmItem;
@@ -21,8 +22,8 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
 
   // Identifica selos contextuais padronizados (Estreia, IMAX, VIP)
   const isEstreia = film.title.toLowerCase().includes("duna");
-  const hasImax = film.sessions?.some((s) => s.room.name.toLowerCase().includes("imax"));
-  const hasVip = film.sessions?.some((s) => s.room.name.toLowerCase().includes("vip"));
+  const hasImax = film.sessions?.some((s) => getRoomExperienceCategory(s.room.name) === "IMAX");
+  const hasVip = film.sessions?.some((s) => getRoomExperienceCategory(s.room.name) === "VIP");
   const tag = isEstreia ? "Estreia" : hasImax ? "IMAX" : hasVip ? "VIP" : null;
 
   const handleSessionsClick = (e: React.MouseEvent) => {
