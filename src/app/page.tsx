@@ -6,6 +6,7 @@ import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { HeroBillboard } from "@/components/home/hero-billboard";
 import { FilmFilters } from "@/components/home/film-filters";
 import { FilmCard } from "@/components/home/film-card";
+import { FilmModal } from "@/components/home/film-modal";
 import { InstitutionalBanner } from "@/components/home/institutional-banner";
 import type { FilmItem } from "@/components/home/types";
 import { Film } from "lucide-react";
@@ -17,6 +18,8 @@ export default function CinemarkStyleHomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFormat, setSelectedFormat] = useState<string>("TODOS");
   const [selectedDay, setSelectedDay] = useState<number>(0);
+  const [selectedModalFilm, setSelectedModalFilm] = useState<FilmItem | null>(null);
+  const [modalInitialTab, setModalInitialTab] = useState<"sessions" | "details">("sessions");
 
   // Carrega catálogo público do cinema CineDoom
   useEffect(() => {
@@ -122,7 +125,7 @@ export default function CinemarkStyleHomePage() {
         onSearchChange={setSearchQuery}
       />
 
-      {/* 4. Grade de Filmes & Sessões Agrupadas por Sala */}
+      {/* 4. Galeria Compacta de Pôsteres de Cinema */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full flex-1 space-y-10">
         <div className="flex items-center justify-between border-b border-borderDark/60 pb-4">
           <div>
@@ -131,7 +134,7 @@ export default function CinemarkStyleHomePage() {
               Programação CineDoom
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Clique no horário para selecionar suas poltronas na tela interativa
+              Passe o mouse sobre os pôsteres para conferir horários, salas e detalhes
             </p>
           </div>
           <span className="text-xs font-semibold px-3 py-1 rounded-full bg-surface border border-borderDark text-slate-300">
@@ -153,9 +156,20 @@ export default function CinemarkStyleHomePage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
             {filteredFilms.map((film) => (
-              <FilmCard key={film.id} film={film} />
+              <FilmCard
+                key={film.id}
+                film={film}
+                onOpenSessions={(f) => {
+                  setSelectedModalFilm(f);
+                  setModalInitialTab("sessions");
+                }}
+                onOpenDetails={(f) => {
+                  setSelectedModalFilm(f);
+                  setModalInitialTab("details");
+                }}
+              />
             ))}
           </div>
         )}
@@ -164,7 +178,14 @@ export default function CinemarkStyleHomePage() {
         <InstitutionalBanner />
       </main>
 
-      {/* 6. Footer Oficial CineDoom */}
+      {/* 6. Modal Interativo de Sessões & Detalhes */}
+      <FilmModal
+        film={selectedModalFilm}
+        initialTab={modalInitialTab}
+        onClose={() => setSelectedModalFilm(null)}
+      />
+
+      {/* 7. Footer Oficial CineDoom */}
       <CineDoomFooter />
     </div>
   );

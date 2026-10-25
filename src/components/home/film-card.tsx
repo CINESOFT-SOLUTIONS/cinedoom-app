@@ -2,121 +2,167 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Film } from "lucide-react";
-import type { FilmItem, SessionItem } from "./types";
+import { Film, Ticket, Info, Clock, Play } from "lucide-react";
+import type { FilmItem } from "./types";
 import { GENRE_MAP } from "./types";
 import { AgeRatingBadge } from "./age-rating-badge";
 
 interface FilmCardProps {
   film: FilmItem;
+  onOpenSessions?: (film: FilmItem) => void;
+  onOpenDetails?: (film: FilmItem) => void;
 }
 
-export function FilmCard({ film }: FilmCardProps) {
-  const sessionsByRoom = film.sessions.reduce<Record<string, SessionItem[]>>(
-    (acc, s) => {
-      const roomName = s.room.name;
-      if (!acc[roomName]) acc[roomName] = [];
-      acc[roomName].push(s);
-      return acc;
-    },
-    {}
-  );
-
+export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps) {
   const genreText = GENRE_MAP[film.title] || film.genre || "Filme em Cartaz";
+  const genreShort = genreText.split("•")[0]?.trim();
+
+  // Identifica tags de formato ou lançamento
+  const isEstreia = film.title.toLowerCase().includes("duna");
+  const hasImax = film.sessions.some((s) => s.room.name.toLowerCase().includes("imax"));
+  const hasVip = film.sessions.some((s) => s.room.name.toLowerCase().includes("vip"));
+  const tag = isEstreia ? "Estreia" : hasImax ? "IMAX" : hasVip ? "VIP" : null;
+
+  const handleSessionsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onOpenSessions) {
+      onOpenSessions(film);
+    }
+  };
+
+  const handleDetailsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onOpenDetails) {
+      onOpenDetails(film);
+    }
+  };
+
+  const handleCardClick = () => {
+    if (onOpenSessions) {
+      onOpenSessions(film);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (onOpenSessions) {
+        onOpenSessions(film);
+      }
+    }
+  };
 
   return (
-    <div className="liquid-glass-card hover:border-white/25 rounded-3xl p-5 md:p-6 shadow-xl transition-all grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      {/* Poster 2:3 */}
-      <div className="md:col-span-3 lg:col-span-2 relative aspect-[2/3] w-full max-w-[170px] mx-auto md:mx-0 rounded-xl overflow-hidden bg-black/40 shadow-lg group">
+    <article
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label={`Filme ${film.title}. Pressione Enter para ver horários e sessões.`}
+      className="group relative flex flex-col cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-cta rounded-2xl select-none"
+    >
+      {/* 1. Área do Pôster Vertical (Proporção 2:3 rigorosamente preservada) */}
+      <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-lg group-hover:border-cta/50 group-hover:shadow-[0_12px_32px_rgba(233,69,96,0.22)] transition-all duration-300">
+        {/* Imagem do Pôster com ampliação sutil no hover */}
         {film.posterUrl ? (
           <Image
             src={film.posterUrl}
             alt={film.title}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-500"
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+            className="object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out motion-reduce:transition-none"
             unoptimized
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-600">
-            <Film className="w-10 h-10" />
+          <div className="w-full h-full flex flex-col items-center justify-center text-slate-600 bg-slate-900/60 p-4 text-center">
+            <Film className="w-10 h-10 mb-2 opacity-50" />
+            <span className="text-xs">{film.title}</span>
           </div>
         )}
-        <div className="absolute top-2.5 left-2.5">
+
+        {/* 2. Classificação Indicativa (Fixada no topo-esquerdo, visível no estado padrão e no hover) */}
+        <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none drop-shadow-md">
           <AgeRatingBadge rating={film.classification} />
         </div>
-      </div>
 
-      {/* Informações do Filme & Sessões */}
-      <div className="md:col-span-9 lg:col-span-10 flex flex-col justify-between h-full space-y-6">
-        <div className="space-y-2">
-          <div className="flex flex-wrap items-center gap-3">
-            <h3 className="text-xl md:text-2xl font-semibold text-white leading-tight">
-              {film.title}
-            </h3>
-            <span className="text-[11px] font-medium text-cta uppercase tracking-wider px-2 py-0.5 rounded bg-cta/10">
-              {genreText.split("•")[0]?.trim()}
+        {/* 3. Indicador de Estreia ou Formato (Fixado no topo-direito, sempre legível) */}
+        {tag && (
+          <div className="absolute top-2.5 right-2.5 z-20 pointer-events-none">
+            <span
+              className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider shadow-md backdrop-blur-md ${
+                tag === "Estreia"
+                  ? "bg-cta text-white shadow-cta/30"
+                  : tag === "IMAX"
+                  ? "bg-sky-600/90 text-white border border-sky-400/40"
+                  : "bg-amber-600/90 text-white border border-amber-400/40"
+              }`}
+            >
+              {tag}
             </span>
           </div>
+        )}
 
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 font-medium">
-            {film.duration && <span>{film.duration} min</span>}
-            <span>• {genreText}</span>
-            {film.director && <span>• Direção: {film.director}</span>}
+        {/* 4. Sobreposição Escura com Gradiente & Botões de Ação Revelados no Hover / Foco */}
+        <div
+          className="absolute inset-0 z-10 bg-gradient-to-t from-black/95 via-black/75 to-transparent backdrop-blur-[2px] opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 sm:p-4 gap-2"
+        >
+          {/* Informações Complementares Secundárias */}
+          <div className="space-y-0.5 transform translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 motion-reduce:transform-none">
+            <span className="text-[10px] font-bold text-cta uppercase tracking-wider block truncate">
+              {genreShort}
+            </span>
+            {film.duration && (
+              <span className="text-[11px] text-slate-300 font-medium flex items-center gap-1">
+                <Clock className="w-3 h-3 text-slate-400 shrink-0" />
+                <span>{film.duration} min</span>
+              </span>
+            )}
           </div>
 
-          {film.synopsis && (
-            <p className="text-xs text-slate-300/80 leading-relaxed line-clamp-2 max-w-3xl">
-              {film.synopsis}
-            </p>
-          )}
+          {/* Botões de Ação dentro dos Limites do Pôster */}
+          <div className="space-y-1.5 pt-1 transform translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0 transition-transform duration-300 motion-reduce:transform-none">
+            {/* Ação Principal: Rosa CineDoom (Ver Sessões) */}
+            <button
+              type="button"
+              onClick={handleSessionsClick}
+              className="w-full py-2.5 px-3 rounded-xl bg-cta hover:bg-cta-hover text-white font-bold text-xs tracking-wide shadow-lg shadow-cta/30 hover:shadow-cta/50 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+            >
+              <Ticket className="w-3.5 h-3.5" />
+              <span>Ver Sessões</span>
+            </button>
+
+            {/* Ação Secundária: Detalhes */}
+            <button
+              type="button"
+              onClick={handleDetailsClick}
+              className="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+            >
+              <Info className="w-3.5 h-3.5 text-slate-300" />
+              <span>Detalhes</span>
+            </button>
+          </div>
         </div>
+      </div>
 
-        {/* Sessões Agrupadas por Sala */}
-        <div className="pt-4 border-t border-borderDark/60 space-y-4">
-          {Object.keys(sessionsByRoom).length === 0 ? (
-            <div className="text-xs text-slate-500 italic py-1">
-              Nenhuma sessão programada para este filme na data selecionada.
-            </div>
-          ) : (
-            Object.entries(sessionsByRoom).map(([roomName, roomSessions]) => {
-              return (
-                <div key={roomName} className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-white uppercase tracking-wider">
-                      {roomName}
-                    </span>
-                  </div>
+      {/* 5. Título do Filme Posicionado Imediatamente Abaixo do Pôster */}
+      <div className="mt-2.5 space-y-1">
+        <h3
+          className="font-bold text-sm sm:text-base text-white leading-tight line-clamp-2 group-hover:text-cta transition-colors min-h-[2.5rem]"
+          title={film.title}
+        >
+          {film.title}
+        </h3>
 
-                  <div className="flex flex-wrap gap-2.5">
-                    {roomSessions.map((sess) => {
-                      const time = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
-
-                      return (
-                        <Link
-                          key={sess.id}
-                          href={`/portal/sessoes/${sess.id}`}
-                          className="group/pill flex flex-col items-center justify-center px-4 py-2 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white transition-all shadow-md hover:scale-[1.03] active:scale-[0.98]"
-                        >
-                          <span className="font-mono font-semibold text-sm block leading-none">
-                            {time}
-                          </span>
-                          <span className="text-[10px] font-medium text-emerald-400 group-hover/pill:text-white mt-1">
-                            R$ {sess.price.toFixed(2)}
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })
+        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium truncate">
+          <span>{genreShort}</span>
+          {film.duration && (
+            <>
+              <span className="text-slate-600">•</span>
+              <span>{film.duration}m</span>
+            </>
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }
