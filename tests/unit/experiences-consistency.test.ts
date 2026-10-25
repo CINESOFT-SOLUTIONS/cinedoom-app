@@ -38,11 +38,11 @@ describe("Padronização de Experiências de Salas e Filtros (CineDoom)", () => 
       expect(classica.capacityPerRoom).toBe(120);
       expect(classica.totalCapacity).toBe(240);
       expect(classica.features).toHaveLength(3);
-      expect(classica.features).toContain("Tela panorâmica digital");
-      expect(classica.features).toContain("Som surround de qualidade");
-      expect(classica.features).toContain("Poltronas confortáveis com amplo espaçamento");
+      expect(classica.features).toContain("Tela ampla de alta definição");
+      expect(classica.features).toContain("Som de qualidade");
+      expect(classica.features).toContain("Poltronas confortáveis e espaçosas");
       expect(classica.shortDescription).toBe(
-        "Experiência tradicional de cinema com tela panorâmica, som de qualidade e poltronas confortáveis."
+        "Aproveite seus filmes favoritos em uma sala projetada para proporcionar conforto e uma ótima experiência audiovisual, com tela ampla, som de qualidade e poltronas espaçosas."
       );
     });
 
@@ -54,11 +54,11 @@ describe("Padronização de Experiências de Salas e Filtros (CineDoom)", () => 
       expect(imax.capacityPerRoom).toBe(120);
       expect(imax.totalCapacity).toBe(120);
       expect(imax.features).toHaveLength(3);
-      expect(imax.features).toContain("Projeção IMAX a laser");
-      expect(imax.features).toContain("Sistema de som imersivo");
-      expect(imax.features).toContain("Tela monumental de chão ao teto");
+      expect(imax.features).toContain("Imagens de alta nitidez");
+      expect(imax.features).toContain("Som potente que envolve você");
+      expect(imax.features).toContain("Tela de grandes dimensões com visão desobstruída");
       expect(imax.shortDescription).toBe(
-        "Experiência audiovisual imersiva com projeção IMAX a laser e sistema de som imersivo."
+        "Viva o cinema em outra escala, com imagens de alta nitidez, uma tela de grandes dimensões e som potente que envolve você em cada cena. O formato da sala favorece uma visão desobstruída da tela."
       );
     });
 
@@ -70,11 +70,11 @@ describe("Padronização de Experiências de Salas e Filtros (CineDoom)", () => 
       expect(vip.capacityPerRoom).toBe(60);
       expect(vip.totalCapacity).toBe(60);
       expect(vip.features).toHaveLength(3);
-      expect(vip.features).toContain("Poltronas reclináveis individuais");
-      expect(vip.features).toContain("Mesas de apoio para bebidas e petiscos");
-      expect(vip.features).toContain("Ambiente intimista com maior conforto");
+      expect(vip.features).toContain("Poltronas reclináveis");
+      expect(vip.features).toContain("Mesas individuais de apoio");
+      expect(vip.features).toContain("Ambiente para relaxar no seu próprio ritmo");
       expect(vip.shortDescription).toBe(
-        "Experiência premium com poltronas reclináveis, mesas de apoio individuais e maior conforto."
+        "Desfrute de uma sessão mais confortável em poltronas reclináveis, com mesas individuais para apoiar suas bebidas e petiscos. Um ambiente pensado para você relaxar e aproveitar o filme no seu próprio ritmo."
       );
     });
   });
@@ -159,11 +159,11 @@ describe("Padronização de Experiências de Salas e Filtros (CineDoom)", () => 
             { index: 0, dayName: "Hoje", dayNumber: "24/10", date: new Date() },
           ],
           selectedDay: 0,
-          onSelectDay: () => {},
+          onSelectDay: () => { },
           selectedFormat: "Todos",
-          onSelectFormat: () => {},
+          onSelectFormat: () => { },
           searchQuery: "",
-          onSearchChange: () => {},
+          onSearchChange: () => { },
         })
       );
 

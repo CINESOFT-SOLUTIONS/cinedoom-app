@@ -22,38 +22,38 @@ import {
 const SPACES_SLIDES = [
   {
     id: "lobby",
-    title: "O Foyer & Lounge CineDoom",
+    title: "Recepção & Lounge CineDoom",
     subtitle: "O Ponto de Encontro da Sua Noite",
-    badge: "Recepção & Lounge",
+    badge: "Recepção & Espera",
     description:
-      "Um ambiente acolhedor e cinematográfico com iluminação intimista, bilheteria expressa e lounge aconchegante para você relaxar e encontrar amigos antes das luzes se apagarem.",
+      "Um espaço acolhedor para você retirar seus ingressos e pipoca com tranquilidade e esperar seus amigos antes da sessão começar.",
     image: "/images/sobre/lobby.jpg",
   },
   {
     id: "classica",
     title: "Salas 1 e 2 • Clássica",
-    subtitle: "A Experiência Tradicional do Cinema",
-    badge: "Salas 1 e 2 • 120 Lugares",
+    subtitle: "O Cinema Tradicional na Tela Grande",
+    badge: "Salas 1 e 2 • 120 Lugares por sala",
     description:
-      "Experiência tradicional de cinema em tela panorâmica com som de qualidade e poltronas confortáveis, distribuídas em 120 lugares.",
+      "Aproveite seus filmes favoritos em uma sala projetada para proporcionar conforto e uma ótima experiência audiovisual, com tela ampla, som de qualidade e poltronas espaçosas.",
     image: "/images/sobre/sala-classica.jpg",
   },
   {
     id: "imax",
     title: "Sala 3 • IMAX",
-    subtitle: "Experiência Audiovisual Imersiva",
+    subtitle: "Máxima Imersão Visual e Sonora",
     badge: "Sala 3 • 120 Lugares",
     description:
-      "Tela monumental de chão ao teto, projeção IMAX a laser e sistema de som imersivo com 120 lugares stadium em declive para envolver você completamente na sessão.",
+      "Viva o cinema em outra escala, com imagens de alta nitidez, uma tela de grandes dimensões e som potente que envolve você em cada cena.",
     image: "/images/sobre/sala-imax.jpg",
   },
   {
     id: "vip",
     title: "Sala 4 • VIP",
-    subtitle: "Experiência Premium com Maior Conforto",
+    subtitle: "Mais Conforto e Privacidade",
     badge: "Sala 4 • 60 Lugares",
     description:
-      "Ambiente exclusivo com apenas 60 lugares, poltronas reclináveis individuais, mesas de apoio para bebidas e petiscos e maior conforto.",
+      "Desfrute de uma sessão mais confortável em poltronas reclináveis, com mesas individuais para apoiar suas bebidas e petiscos. Um ambiente pensado para você relaxar e aproveitar o filme no seu próprio ritmo.",
     image: "/images/sobre/sala-vip.jpg",
   },
 ];
@@ -149,9 +149,8 @@ export default function SobreCineDoomPage() {
               return (
                 <div
                   key={slide.id}
-                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                    isActive ? "opacity-100 z-10 pointer-events-auto" : "opacity-0 z-0 pointer-events-none"
-                  }`}
+                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${isActive ? "opacity-100 z-10 pointer-events-auto" : "opacity-0 z-0 pointer-events-none"
+                    }`}
                 >
                   <Image
                     src={slide.image}
@@ -187,11 +186,10 @@ export default function SobreCineDoomPage() {
                   key={idx}
                   type="button"
                   onClick={() => setCurrentSlide(idx)}
-                  className={`h-2 rounded-full transition-all cursor-pointer ${
-                    idx === currentSlide
+                  className={`h-2 rounded-full transition-all cursor-pointer ${idx === currentSlide
                       ? "w-7 bg-cta shadow-[0_0_10px_rgba(233,69,96,0.8)]"
                       : "w-2 bg-white/40 hover:bg-white/70"
-                  }`}
+                    }`}
                   aria-label={`Ir para slide ${idx + 1}`}
                 />
               ))}
@@ -241,7 +239,7 @@ export default function SobreCineDoomPage() {
 
                   {/* 3. Descrição breve, em uma única frase */}
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Experiência tradicional de cinema com tela panorâmica, som de qualidade e poltronas confortáveis.
+                    Aproveite seus filmes favoritos em uma sala projetada para proporcionar conforto e uma ótima experiência audiovisual, com tela ampla, som de qualidade e poltronas espaçosas.
                   </p>
                 </div>
 
@@ -249,15 +247,15 @@ export default function SobreCineDoomPage() {
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <Tv className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Tela panorâmica digital</span>
+                    <span>Tela ampla de alta definição</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Volume2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Som surround de qualidade</span>
+                    <span>Som de qualidade</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Armchair className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Poltronas confortáveis com amplo espaçamento</span>
+                    <span>Poltronas confortáveis e espaçosas</span>
                   </div>
                 </div>
               </div>
@@ -290,7 +288,7 @@ export default function SobreCineDoomPage() {
 
                   {/* 3. Descrição breve, em uma única frase */}
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Experiência audiovisual imersiva com projeção IMAX a laser e sistema de som imersivo.
+                    Viva o cinema em outra escala, com imagens de alta nitidez, uma tela de grandes dimensões e som potente que envolve você em cada cena.
                   </p>
                 </div>
 
@@ -298,15 +296,16 @@ export default function SobreCineDoomPage() {
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <Tv className="w-4 h-4 text-cta shrink-0" />
-                    <span>Projeção IMAX a laser</span>
+                    <span>Imagens de alta nitidez</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Volume2 className="w-4 h-4 text-cta shrink-0" />
-                    <span>Sistema de som imersivo</span>
+                    <span>Som potente que envolve você</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Eye className="w-4 h-4 text-cta shrink-0" />
-                    <span>Tela monumental de chão ao teto</span>
+                    <span>Tela de grandes dimensões para uma experiência imersiva.
+                    </span>
                   </div>
                 </div>
               </div>
@@ -339,7 +338,7 @@ export default function SobreCineDoomPage() {
 
                   {/* 3. Descrição breve, em uma única frase */}
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Experiência premium com poltronas reclináveis, mesas de apoio individuais e maior conforto.
+                    Desfrute de uma sessão mais confortável em poltronas reclináveis, com mesas individuais para apoiar suas bebidas e petiscos. Um ambiente pensado para você relaxar e aproveitar o filme no seu próprio ritmo.
                   </p>
                 </div>
 
@@ -347,15 +346,15 @@ export default function SobreCineDoomPage() {
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <Armchair className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Poltronas reclináveis individuais</span>
+                    <span>Poltronas reclináveis</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Mesas de apoio para bebidas e petiscos</span>
+                    <span>Mesas individuais de apoio</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Heart className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>Ambiente intimista com maior conforto</span>
+                    <span>Ambiente para relaxar no seu próprio ritmo</span>
                   </div>
                 </div>
               </div>

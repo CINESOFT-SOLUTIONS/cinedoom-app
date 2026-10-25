@@ -2,7 +2,7 @@
  * Fonte única de verdade para Salas e Categorias de Experiência do CineDoom.
  *
  * Estrutura Oficial do Complexo (4 Salas em 3 Experiências):
- * - Salas 1 e 2 — Clássica: experiência tradicional de cinema, com 120 lugares por sala, tela panorâmica, som de qualidade e poltronas confortáveis.
+ * - Salas 1 e 2 — Clássica: experiência tradicional de cinema, com 120 lugares, tela panorâmica, som de qualidade e poltronas confortáveis.
  * - Sala 3 — IMAX: experiência audiovisual imersiva, com 120 lugares, projeção IMAX a laser e sistema de som imersivo.
  * - Sala 4 — VIP: experiência premium, com 60 lugares, poltronas reclináveis, mesas de apoio individuais e maior conforto.
  */
@@ -61,18 +61,18 @@ export const EXPERIENCES_DATA: Record<ExperienceCategory, ExperienceInfo> = {
     totalCapacity: 240,
     badge: "Salas 1 e 2 • 120 Lugares por sala",
     shortDescription:
-      "Experiência tradicional de cinema com tela panorâmica, som de qualidade e poltronas confortáveis.",
+      "Aproveite seus filmes favoritos em uma sala projetada para proporcionar conforto e uma ótima experiência audiovisual, com tela ampla, som de qualidade e poltronas espaçosas.",
     description:
-      "Experiência tradicional de cinema nas Salas 1 e 2, equipadas com tela panorâmica digital, som surround de qualidade e 120 poltronas ergonômicas e confortáveis por sala.",
+      "Aproveite seus filmes favoritos em uma sala projetada para proporcionar conforto e uma ótima experiência audiovisual, com tela ampla, som de qualidade e poltronas espaçosas.",
     features: [
-      "Tela panorâmica digital",
-      "Som surround de qualidade",
-      "Poltronas confortáveis com amplo espaçamento",
+      "Tela ampla de alta definição",
+      "Som de qualidade",
+      "Poltronas confortáveis e espaçosas",
     ],
     specs: {
-      projection: "Projeção 4K Digital Panorâmica",
-      sound: "Áudio Surround Multicanal 7.1",
-      seats: "Poltronas ergonômicas stadium com declive",
+      projection: "Projeção Digital de Alta Definição",
+      sound: "Som de Qualidade",
+      seats: "Poltronas confortáveis e espaçosas",
       extras: "Amplo espaçamento e porta-copos individuais",
     },
   },
@@ -89,19 +89,19 @@ export const EXPERIENCES_DATA: Record<ExperienceCategory, ExperienceInfo> = {
     totalCapacity: 120,
     badge: "Sala 3 • 120 Lugares",
     shortDescription:
-      "Experiência audiovisual imersiva com projeção IMAX a laser e sistema de som imersivo.",
+      "Viva o cinema em outra escala, com imagens de alta nitidez, uma tela de grandes dimensões e som potente que envolve você em cada cena. O formato da sala favorece uma experiência imersiva.",
     description:
-      "Experiência audiovisual imersiva na Sala 3, com 120 lugares stadium, projeção IMAX a laser de altíssimo contraste e sistema de som imersivo multicanal de máxima fidelidade sonora.",
+      "Viva o cinema em outra escala, com imagens de alta nitidez, uma tela de grandes dimensões e som potente que envolve você em cada cena. O formato da sala favorece uma experiência imersiva.",
     features: [
-      "Projeção IMAX a laser",
-      "Sistema de som imersivo",
-      "Tela monumental de chão ao teto",
+      "Imagens de alta nitidez",
+      "Som potente que envolve você",
+      "Tela de grandes dimensões para uma experiência imersiva.",
     ],
     specs: {
-      projection: "Projeção IMAX a Laser 4K",
-      sound: "Sistema de Som Imersivo Multicanal IMAX",
-      seats: "120 assentos stadium em geometria de alta visibilidade",
-      extras: "Geometria de sala customizada para campo de visão expandido",
+      projection: "Projeção IMAX a Laser",
+      sound: "Som potente que envolve você",
+      seats: "Tela de grandes dimensões para uma experiência imersiva.",
+      extras: "Visão ampla e imersiva da tela",
     },
   },
   VIP: {
@@ -117,19 +117,19 @@ export const EXPERIENCES_DATA: Record<ExperienceCategory, ExperienceInfo> = {
     totalCapacity: 60,
     badge: "Sala 4 • 60 Lugares",
     shortDescription:
-      "Experiência premium com poltronas reclináveis, mesas de apoio individuais e maior conforto.",
+      "Desfrute de uma sessão mais confortável em poltronas reclináveis, com mesas individuais para apoiar suas bebidas e petiscos. Um ambiente pensado para você relaxar e aproveitar o filme no seu próprio ritmo.",
     description:
-      "Experiência premium na Sala 4 com capacidade exclusiva para 60 pessoas, equipada com poltronas reclináveis com acionamento individual, mesas de apoio para bebidas e petiscos e maior conforto.",
+      "Desfrute de uma sessão mais confortável em poltronas reclináveis, com mesas individuais para apoiar suas bebidas e petiscos. Um ambiente pensado para você relaxar e aproveitar o filme no seu próprio ritmo.",
     features: [
-      "Poltronas reclináveis individuais",
-      "Mesas de apoio para bebidas e petiscos",
-      "Ambiente intimista com maior conforto",
+      "Poltronas reclináveis",
+      "Mesas individuais de apoio",
+      "Ambiente para relaxar no seu próprio ritmo",
     ],
     specs: {
       projection: "Projeção Digital de Alta Definição",
-      sound: "Acústica Intimista de Estúdio",
-      seats: "Poltronas com reclinação individual",
-      extras: "Mesas de apoio laterais e maior distanciamento",
+      sound: "Som Aconchegante e Nítido",
+      seats: "Poltronas reclináveis com acionamento individual",
+      extras: "Mesas individuais para bebidas e petiscos",
     },
   },
 };
