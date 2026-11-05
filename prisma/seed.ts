@@ -106,11 +106,11 @@ async function main() {
       create: {
         id: "00000000-0000-4000-a000-000000000103",
         tenantId: tenant.id,
-        title: "Vingadores: Ultimato",
-        director: "Anthony Russo, Joe Russo",
-        durationMinutes: 181,
-        rating: "12",
-        synopsis: "Os Vingadores se reúnem para reverter o estalo.",
+        title: "Pobres Criaturas",
+        director: "Yorgos Lanthimos",
+        durationMinutes: 141,
+        rating: "18",
+        synopsis: "A fantástica evolução de Bella Baxter, uma jovem trazida de volta à vida pelo Dr. Godwin Baxter.",
         posterUrl: "/posters/pobres-criaturas.jpg",
       },
     }),
@@ -227,13 +227,21 @@ async function main() {
   await ensureSeats(sala3.id, 10, 12); // 120 assentos
   await ensureSeats(sala4.id, 6, 10);  // 60 assentos
 
-  // 5) Sessoes do dia corrente
+  // 5) Sessoes do dia corrente e proximos dias (Padrão Multiplex CineDoom)
   const hoje = new Date();
   hoje.setHours(0, 0, 0, 0);
 
-  async function criarSessao(filmId: string, roomId: string, hora: number, price: number) {
+  async function criarSessao(
+    filmId: string,
+    roomId: string,
+    hora: number,
+    price: number,
+    minuto = 0,
+    diaOffset = 0
+  ) {
     const startsAt = new Date(hoje);
-    startsAt.setHours(hora, 0, 0, 0);
+    startsAt.setDate(startsAt.getDate() + diaOffset);
+    startsAt.setHours(hora, minuto, 0, 0);
     const session = await prisma.session.create({
       data: {
         tenantId: tenant.id,
@@ -257,12 +265,64 @@ async function main() {
     return session;
   }
 
-  // Sessoes nas 4 salas oficiais CineDoom
-  const sessaoLotada = await criarSessao(filmes[0].id, sala3.id, 19, 42.0); // Duna no IMAX
-  await criarSessao(filmes[0].id, sala3.id, 21, 42.0);                      // Duna no IMAX 21h
-  const sessaoNormal = await criarSessao(filmes[1].id, sala4.id, 20, 54.0); // Oppenheimer no VIP
-  await criarSessao(filmes[2].id, sala1.id, 18, 32.0);                      // Pobres Criaturas na Sala 1
-  await criarSessao(filmes[3].id, sala2.id, 16, 32.0);                      // Divertida Mente 2 na Sala 2
+  // 5) Sessoes cinematográficas para toda a semana (dias 0 a 6, iniciando hoje)
+  let sessaoLotada: any = null;
+
+  for (let dia = 0; dia <= 6; dia++) {
+    // Duna: Parte Dois
+    const duna19 = await criarSessao(filmes[0].id, sala3.id, 19, 42.0, 0, dia);
+    if (dia === 0) {
+      sessaoLotada = duna19; // Guarda referência da sessão de hoje para pré-lotação demo de ~90%
+    }
+    await criarSessao(filmes[0].id, sala3.id, 11, 42.0, 0, dia);
+    await criarSessao(filmes[0].id, sala3.id, 14, 42.0, 0, dia);
+    await criarSessao(filmes[0].id, sala4.id, 14, 54.0, 30, dia);
+    await criarSessao(filmes[0].id, sala1.id, 16, 36.0, 0, dia);
+    await criarSessao(filmes[0].id, sala4.id, 16, 54.0, 30, dia);
+    await criarSessao(filmes[0].id, sala1.id, 20, 36.0, 15, dia);
+    await criarSessao(filmes[0].id, sala3.id, 21, 42.0, 45, dia);
+    await criarSessao(filmes[0].id, sala4.id, 22, 54.0, 30, dia);
+    await criarSessao(filmes[0].id, sala2.id, 23, 36.0, 0, dia);
+
+    // Oppenheimer
+    await criarSessao(filmes[1].id, sala3.id, 10, 46.0, 30, dia);
+    await criarSessao(filmes[1].id, sala1.id, 13, 34.0, 30, dia);
+    await criarSessao(filmes[1].id, sala4.id, 14, 54.0, 15, dia);
+    await criarSessao(filmes[1].id, sala2.id, 16, 34.0, 45, dia);
+    await criarSessao(filmes[1].id, sala3.id, 17, 46.0, 15, dia);
+    await criarSessao(filmes[1].id, sala1.id, 17, 34.0, 30, dia);
+    await criarSessao(filmes[1].id, sala4.id, 20, 54.0, 0, dia);
+    await criarSessao(filmes[1].id, sala2.id, 21, 34.0, 15, dia);
+    await criarSessao(filmes[1].id, sala3.id, 22, 46.0, 0, dia);
+    await criarSessao(filmes[1].id, sala4.id, 23, 54.0, 15, dia);
+
+    // Pobres Criaturas
+    await criarSessao(filmes[2].id, sala1.id, 11, 32.0, 15, dia);
+    await criarSessao(filmes[2].id, sala1.id, 13, 32.0, 45, dia);
+    await criarSessao(filmes[2].id, sala1.id, 14, 32.0, 30, dia);
+    await criarSessao(filmes[2].id, sala2.id, 15, 32.0, 0, dia);
+    await criarSessao(filmes[2].id, sala4.id, 16, 50.0, 15, dia);
+    await criarSessao(filmes[2].id, sala1.id, 18, 32.0, 30, dia);
+    await criarSessao(filmes[2].id, sala2.id, 19, 32.0, 30, dia);
+    await criarSessao(filmes[2].id, sala4.id, 20, 50.0, 30, dia);
+    await criarSessao(filmes[2].id, sala1.id, 21, 32.0, 0, dia);
+    await criarSessao(filmes[2].id, sala4.id, 22, 50.0, 15, dia);
+
+    // Divertida Mente 2
+    await criarSessao(filmes[3].id, sala1.id, 9, 28.0, 30, dia);
+    await criarSessao(filmes[3].id, sala2.id, 10, 28.0, 15, dia);
+    await criarSessao(filmes[3].id, sala2.id, 11, 28.0, 30, dia);
+    await criarSessao(filmes[3].id, sala4.id, 12, 45.0, 30, dia);
+    await criarSessao(filmes[3].id, sala2.id, 13, 30.0, 30, dia);
+    await criarSessao(filmes[3].id, sala1.id, 14, 30.0, 15, dia);
+    await criarSessao(filmes[3].id, sala2.id, 15, 32.0, 30, dia);
+    await criarSessao(filmes[3].id, sala3.id, 16, 40.0, 0, dia);
+    await criarSessao(filmes[3].id, sala1.id, 17, 30.0, 0, dia);
+    await criarSessao(filmes[3].id, sala2.id, 17, 32.0, 45, dia);
+    await criarSessao(filmes[3].id, sala3.id, 18, 40.0, 30, dia);
+    await criarSessao(filmes[3].id, sala1.id, 20, 30.0, 0, dia);
+    await criarSessao(filmes[3].id, sala2.id, 20, 30.0, 45, dia);
+  }
 
   // Pré-lotar ~90% da sessão lotada
   const ssLotados = await prisma.sessionSeat.findMany({

@@ -5,13 +5,37 @@ import { ShieldCheck, Ticket, ChevronRight, CreditCard, Banknote, QrCode } from 
 
 interface CineDoomFooterProps {
   className?: string;
+  simple?: boolean;
 }
 
 /**
  * Rodapé Oficial e Unificado do CineDoom
- * Refinado e padronizado: 4 colunas com comunicação prudente, dados operacionais verificados e marca unificada.
+ * Refinado e padronizado: suporta versão completa em 4 colunas ou versão simplificada apenas com a barra inferior.
  */
-export function CineDoomFooter({ className = "" }: CineDoomFooterProps) {
+export function CineDoomFooter({ className = "", simple = false }: CineDoomFooterProps) {
+  if (simple) {
+    return (
+      <footer className={`bg-[#070A12] border-t border-white/10 py-6 text-xs text-slate-400 mt-16 ${className}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-slate-500">
+            <p>© 2026 CineDoom. Todos os direitos reservados.</p>
+            <div className="flex items-center gap-2">
+              <span>Tecnologia por</span>
+              <div className="relative h-7 w-32 opacity-90 hover:opacity-100 transition-opacity">
+                <Image
+                  src="/logos/cinesoft-logo-horizontal-white.png"
+                  alt="CineSoft Solutions"
+                  fill
+                  className="object-contain object-left"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
   return (
     <footer
       className={`bg-[#070A12] border-t border-white/10 pt-14 pb-8 text-xs text-slate-400 mt-16 ${className}`}
@@ -19,7 +43,7 @@ export function CineDoomFooter({ className = "" }: CineDoomFooterProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Grid Principal de 4 Colunas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
-          {/* Coluna 1: Apresentação do Cinema & Experiências */}
+          {/* Coluna 1: Apresentação do Cinema */}
           <div className="space-y-4">
             <div className="relative h-10 w-44">
               <Image
@@ -29,27 +53,9 @@ export function CineDoomFooter({ className = "" }: CineDoomFooterProps) {
                 className="object-contain object-left"
               />
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-400 leading-relaxed text-justify [text-justify:inter-word] hyphens-auto">
               Cinema boutique com quatro salas, som imersivo, conforto em cada detalhe e reservas online sem taxa de conveniência.
             </p>
-
-            {/* Categorias Oficiais e Salas Reais */}
-            <div className="pt-1">
-              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
-                Experiências & Salas
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-blue-500/15 text-blue-300 border border-blue-500/30">
-                  Clássica (Salas 1 e 2)
-                </span>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-sky-500/15 text-sky-300 border border-sky-500/30">
-                  IMAX (Sala 3)
-                </span>
-                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                  VIP (Sala 4)
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Coluna 2: Programação & Navegação (Links Válidos) */}
@@ -94,15 +100,6 @@ export function CineDoomFooter({ className = "" }: CineDoomFooterProps) {
                   <span>Espaços & Bomboniere</span>
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/gestao"
-                  className="hover:text-cta transition-colors flex items-center gap-1.5 text-slate-400 hover:text-slate-200"
-                >
-                  <ChevronRight className="w-3 h-3 text-slate-600 shrink-0" />
-                  <span>Acesso Gestão & Backoffice</span>
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -121,22 +118,13 @@ export function CineDoomFooter({ className = "" }: CineDoomFooterProps) {
                   <span>Minhas Reservas Online</span>
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/auth/login"
-                  className="hover:text-cta transition-colors flex items-center gap-1.5 text-slate-300"
-                >
-                  <ChevronRight className="w-3 h-3 text-cta shrink-0" />
-                  <span>Entrar ou Criar Conta</span>
-                </Link>
-              </li>
             </ul>
 
-            <div className="space-y-1.5 text-xs text-slate-400 leading-relaxed">
+            <div className="space-y-1.5 text-xs text-slate-400 leading-relaxed text-justify [text-justify:inter-word] hyphens-auto">
               <p>
                 <strong className="text-slate-300 font-semibold">Validade das reservas:</strong> os assentos selecionados pelo portal ficam garantidos até 1 hora antes do início da sessão.
               </p>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 text-justify [text-justify:inter-word] hyphens-auto">
                 O pagamento e a retirada dos ingressos são concluídos diretamente no balcão da bilheteria física.
               </p>
             </div>
@@ -145,7 +133,7 @@ export function CineDoomFooter({ className = "" }: CineDoomFooterProps) {
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                 Meia-Entrada
               </span>
-              <p className="text-[11px] text-slate-500 leading-tight">
+              <p className="text-[11px] text-slate-500 leading-tight text-justify [text-justify:inter-word] hyphens-auto">
                 Benefício concedido conforme a legislação vigente, mediante apresentação de documento comprobatório na bilheteria física.
               </p>
             </div>
@@ -158,12 +146,12 @@ export function CineDoomFooter({ className = "" }: CineDoomFooterProps) {
             </span>
 
             {/* Proteção de Dados e Integridade */}
-            <div className="space-y-2">
+            <div className="space-y-2 text-justify [text-justify:inter-word] hyphens-auto">
               <div className="flex items-start gap-2 text-xs text-slate-300 leading-snug">
                 <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>Tratamento e proteção de dados pessoais em consonância com as diretrizes da LGPD.</span>
+                <span className="text-justify [text-justify:inter-word] hyphens-auto">Tratamento e proteção de dados pessoais em consonância com as diretrizes da LGPD.</span>
               </div>
-              <p className="text-[11px] text-slate-500 leading-relaxed">
+              <p className="text-[11px] text-slate-500 leading-relaxed text-justify [text-justify:inter-word] hyphens-auto">
                 Seleção de assentos com prevenção de reservas duplicadas em tempo real.
               </p>
             </div>

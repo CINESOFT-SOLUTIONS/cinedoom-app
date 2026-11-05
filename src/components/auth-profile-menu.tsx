@@ -162,28 +162,32 @@ export function AuthProfileMenu() {
         <div
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          className="absolute top-full mt-1 right-0 w-72 sm:w-80 max-w-[calc(100vw-1.5rem)] z-50 animate-in fade-in slide-in-from-top-1 duration-150 before:content-[''] before:absolute before:-top-3 before:left-0 before:right-0 before:h-3"
+          className="absolute top-full mt-1.5 right-0 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] z-50 animate-in fade-in slide-in-from-top-1 duration-150 before:content-[''] before:absolute before:-top-3 before:left-0 before:right-0 before:h-3"
         >
-          <div className="w-full bg-[#12182B] rounded-3xl p-3 border border-white/25 shadow-[0_20px_50px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.2)] space-y-3">
+          <div className="w-full bg-[#12182B] rounded-3xl p-3.5 border border-white/25 shadow-[0_20px_50px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.2)] space-y-3">
             {/* Card de Identificacao */}
-            <div className="p-3.5 rounded-2xl bg-white/[0.06] border border-white/10 space-y-1.5">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-bold text-sm text-white truncate">{userName}</span>
-                {role === "GERENTE" ? (
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-cta to-rose-600 text-white shadow-sm">
-                    Gerente Geral
+            <div className="p-3.5 rounded-2xl bg-white/[0.06] border border-white/10 space-y-2">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-bold text-sm text-white break-words leading-snug">
+                    {userName}
                   </span>
-                ) : role === "ATENDENTE" ? (
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500 text-white shadow-sm">
-                    Atendente de Bilheteria
-                  </span>
-                ) : (
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/20 text-slate-200 shadow-sm">
-                    Cliente CineDoom
-                  </span>
-                )}
+                  {role === "GERENTE" ? (
+                    <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-cta to-rose-600 text-white shadow-sm">
+                      Gerente Geral
+                    </span>
+                  ) : role === "ATENDENTE" ? (
+                    <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500 text-white shadow-sm">
+                      Atendente
+                    </span>
+                  ) : (
+                    <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/20 text-slate-200 shadow-sm">
+                      Cliente
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400 break-all leading-tight">{userEmail}</p>
               </div>
-              <p className="text-xs text-slate-400 truncate">{userEmail}</p>
             </div>
 
             {/* Links de Sessao / Papeis */}
@@ -198,7 +202,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <Briefcase className="w-4 h-4 text-cta" />
+                    <Briefcase className="w-4 h-4 text-cta shrink-0" />
                     <span>Visao Geral da Gestao</span>
                   </Link>
                   <Link
@@ -206,7 +210,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <Film className="w-4 h-4 text-cta" />
+                    <Film className="w-4 h-4 text-cta shrink-0" />
                     <span>Catalogo de Filmes</span>
                   </Link>
                   <Link
@@ -214,7 +218,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <LayoutGrid className="w-4 h-4 text-cta" />
+                    <LayoutGrid className="w-4 h-4 text-cta shrink-0" />
                     <span>Salas e Disposicao de Assentos</span>
                   </Link>
                   <Link
@@ -222,7 +226,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <Calendar className="w-4 h-4 text-cta" />
+                    <Calendar className="w-4 h-4 text-cta shrink-0" />
                     <span>Agendamento de Sessoes</span>
                   </Link>
                   <Link
@@ -230,7 +234,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <Users className="w-4 h-4 text-cta" />
+                    <Users className="w-4 h-4 text-cta shrink-0" />
                     <span>Gestao de Atendentes</span>
                   </Link>
                   <Link
@@ -238,7 +242,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <ShieldCheck className="w-4 h-4 text-cta" />
+                    <ShieldCheck className="w-4 h-4 text-cta shrink-0" />
                     <span>Compliance LGPD (Art. 18)</span>
                   </Link>
                   <Link
@@ -246,7 +250,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors border-t border-white/10 pt-2"
                   >
-                    <Ticket className="w-4 h-4 text-emerald-400" />
+                    <Ticket className="w-4 h-4 text-emerald-400 shrink-0" />
                     <span>Abrir Bilheteria Operacional</span>
                   </Link>
                 </>
@@ -262,7 +266,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <Ticket className="w-4 h-4 text-emerald-400" />
+                    <Ticket className="w-4 h-4 text-emerald-400 shrink-0" />
                     <span>Balcão de Vendas</span>
                   </Link>
                   <Link
@@ -270,7 +274,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <CheckCircle2 className="w-4 h-4 text-blue-400" />
+                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
                     <span>Baixa Presencial de Reserva</span>
                   </Link>
                   <Link
@@ -278,7 +282,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <Film className="w-4 h-4 text-cta" />
+                    <Film className="w-4 h-4 text-cta shrink-0" />
                     <span>Ver Programacao em Cartaz</span>
                   </Link>
                 </>
@@ -295,17 +299,17 @@ export function AuthProfileMenu() {
                     className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 text-slate-200 hover:text-white transition-colors group"
                   >
                     <div className="flex items-center gap-2.5">
-                      <Ticket className="w-4 h-4 text-cta" />
+                      <Ticket className="w-4 h-4 text-cta shrink-0" />
                       <span className="font-semibold">Minhas Reservas</span>
                     </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:translate-x-1 transition-transform shrink-0" />
                   </Link>
                   <Link
                     href="/#programacao"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <Film className="w-4 h-4 text-slate-400" />
+                    <Film className="w-4 h-4 text-slate-400 shrink-0" />
                     <span>Programacao CineDoom</span>
                   </Link>
                   <Link
@@ -313,7 +317,7 @@ export function AuthProfileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <Info className="w-4 h-4 text-slate-400" />
+                    <Info className="w-4 h-4 text-slate-400 shrink-0" />
                     <span>Sobre o CineDoom</span>
                   </Link>
                 </>
@@ -327,10 +331,15 @@ export function AuthProfileMenu() {
                     setIsOpen(false);
                     signOut({ callbackUrl: "/" });
                   }}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-500/15 text-rose-300 hover:text-rose-100 transition-colors text-xs font-semibold cursor-pointer"
+                  className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl hover:bg-rose-500/15 text-rose-300 hover:text-rose-100 transition-colors text-xs font-semibold cursor-pointer"
                 >
-                  <LogOut className="w-4 h-4 text-rose-400" />
-                  <span>Sair da Conta ({displayName})</span>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <LogOut className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span className="truncate">Sair da Conta</span>
+                  </div>
+                  <span className="text-[11px] text-rose-400/80 font-normal truncate max-w-[120px]">
+                    {displayName}
+                  </span>
                 </button>
               </div>
             </div>

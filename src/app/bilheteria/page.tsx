@@ -90,9 +90,37 @@ export default function BilheteriaMapaAssentosPage() {
         const res = await fetch("/api/sessoes");
         if (res.ok) {
           const data: SessionOption[] = await res.json();
-          setSessions(data);
-          if (data.length > 0 && !selectedSessionId) {
-            setSelectedSessionId(data[0].id);
+          if (Array.isArray(data) && data.length > 0) {
+            setSessions(data);
+            if (!selectedSessionId) {
+              setSelectedSessionId(data[0].id);
+            }
+            return;
+          }
+        }
+
+        // Fallback resiliente para catálogo público de filmes e sessões
+        const portalRes = await fetch("/api/portal/filmes");
+        if (portalRes.ok) {
+          const filmsData = await portalRes.json();
+          const flattened: SessionOption[] = (filmsData || []).flatMap((f: any) =>
+            (f.sessions || []).map((s: any) => ({
+              id: s.id,
+              startsAt: s.startsAt,
+              price: s.price,
+              film: {
+                id: f.id,
+                title: f.title,
+                durationMinutes: f.duration,
+              },
+              room: s.room,
+            }))
+          );
+          if (flattened.length > 0) {
+            setSessions(flattened);
+            if (!selectedSessionId) {
+              setSelectedSessionId(flattened[0].id);
+            }
           }
         }
       } catch {

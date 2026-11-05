@@ -109,17 +109,17 @@ export default function ReservationComprovantePage() {
 
   if (!voucher) {
     return (
-      <div className="min-h-screen bg-[#0F0F1B] text-white flex flex-col items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0E1322] text-white flex flex-col items-center justify-center p-4 font-sans">
         <div className="text-center max-w-md space-y-4">
-          <AlertTriangle className="w-12 h-12 text-[#E94560] mx-auto" />
-          <h2 className="text-2xl font-black">Reserva Não Encontrada</h2>
-          <p className="text-xs text-gray-400">{errorNotice || "Identificador inválido."}</p>
+          <AlertTriangle className="w-10 h-10 text-slate-400 mx-auto" />
+          <h2 className="text-xl font-bold">Reserva Não Encontrada</h2>
+          <p className="text-xs text-slate-400">{errorNotice || "Identificador inválido."}</p>
           <Link
-            href="/portal"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#E94560] text-white font-bold text-xs shadow-lg"
+            href="/portal/minhas-reservas"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-semibold text-xs shadow-md transition-all"
           >
             <ArrowLeft className="w-4 h-4" />
-            Voltar para o Portal
+            Voltar para Minhas Reservas
           </Link>
         </div>
       </div>
@@ -130,9 +130,8 @@ export default function ReservationComprovantePage() {
   const expiresAt = new Date(voucher.expiresAt);
 
   const formattedSessionDate = sessionStartsAt.toLocaleDateString("pt-BR", {
-    weekday: "long",
     day: "2-digit",
-    month: "long",
+    month: "short",
   });
   const formattedSessionTime = sessionStartsAt.toLocaleTimeString("pt-BR", {
     hour: "2-digit",
@@ -154,135 +153,130 @@ export default function ReservationComprovantePage() {
         {/* Top Actions */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <Link
-            href="/"
-            className="flex items-center justify-center sm:justify-start gap-2 text-xs font-bold text-gray-400 hover:text-white transition-colors py-1"
+            href="/portal/minhas-reservas"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all w-fit"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Voltar à Programação</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Voltar para Minhas Reservas</span>
           </Link>
 
           <button
             onClick={() => window.print()}
-            className="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1A1A32] hover:bg-[#252548] text-xs font-semibold text-gray-200 border border-gray-700/60 transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold text-slate-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
           >
-            <Printer className="w-3.5 h-3.5 text-gray-400" />
-            <span>Imprimir Comprovante</span>
+            <Printer className="w-3.5 h-3.5 text-slate-400" />
+            <span>Imprimir Ingresso</span>
           </button>
         </div>
 
-        {/* Success Card */}
-        <div className="liquid-glass-card rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl space-y-6 sm:space-y-8 relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-[#E94560] to-[#533483]" />
-
-          {/* Header Status */}
-          <div className="text-center space-y-2">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-emerald-950/70 border border-emerald-500/50 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
-              <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8" />
-            </div>
-            <h1 className="text-xl sm:text-2xl font-black text-white">Reserva Confirmada com Sucesso!</h1>
-            <p className="text-xs text-gray-400">
-              Seus assentos estão garantidos até 1 hora antes do início da sessão.
-            </p>
-          </div>
-
-          {/* Prominent Reservation Code Box */}
-          <div className="bg-white/[0.04] backdrop-blur-md border-2 border-dashed border-[#E94560]/60 rounded-2xl p-4 sm:p-5 text-center space-y-2 shadow-inner">
-            <span className="text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-widest block">
-              Código Identificador da Reserva
-            </span>
-            <div className="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
-              <span className="text-2xl sm:text-3xl md:text-4xl font-mono font-black text-white tracking-widest break-all">
-                {voucher.code}
-              </span>
-              <button
-                onClick={handleCopyCode}
-                title="Copiar Código"
-                className="p-2 rounded-xl bg-[#28284A] hover:bg-[#343460] text-gray-200 transition-colors"
-              >
-                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-              </button>
-            </div>
-            <p className="text-[11px] text-amber-300 font-medium">
-              Apresente este código na bilheteria física para efetuar o pagamento.
-            </p>
-          </div>
-
-          {/* Critical Payment Deadline Warning */}
-          <div className="bg-amber-950/50 border border-amber-500/40 rounded-2xl p-4 flex items-start gap-3 text-xs text-amber-200">
-            <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <span className="font-bold text-amber-300 block">
-                Prazo Limite para Pagamento Presencial:
-              </span>
-              <p className="leading-relaxed">
-                Você deve comparecer à bilheteria e quitar a reserva até{" "}
-                <strong>{formattedExpiresDate} às {formattedExpiresTime}</strong> (1 hora antes do início do filme). Após esse horário, os assentos serão liberados automaticamente para a bilheteria presencial.
-              </p>
-            </div>
-          </div>
-
-          {/* Session & Seats Details */}
-          <div className="bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl p-5 space-y-4 text-xs">
-            <div className="flex items-center gap-3 border-b border-gray-800 pb-3">
-              <Film className="w-4 h-4 text-[#E94560]" />
-              <div className="flex-1">
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Filme</span>
-                <span className="font-bold text-white text-sm">{voucher.film.title}</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 border-b border-gray-800 pb-3">
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Sessão</span>
-                <span className="font-medium text-gray-200">
-                  {formattedSessionDate} às {formattedSessionTime}
+        {/* Ingresso Típico de Cinema (Cinema Ticket Stub) */}
+        <div className="relative bg-[#121624] text-slate-200 rounded-3xl border border-white/15 shadow-2xl overflow-hidden font-sans">
+          {/* Cabeçalho do Ingresso */}
+          <div className="p-6 sm:p-7 bg-white/[0.03] border-b border-white/10">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400">
+                  CineDoom • Ingresso de Reserva
                 </span>
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  {voucher.film.title}
+                </h1>
+                <p className="text-xs text-slate-400 font-medium">
+                  {getRoomWithExperience(voucher.room.name)}
+                </p>
               </div>
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Sala / Experiência</span>
-                <span className="font-bold text-white">{getRoomWithExperience(voucher.room.name)}</span>
+              <div className="shrink-0 text-right">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
+                  Código
+                </span>
+                <div className="flex items-center gap-1.5 pt-0.5">
+                  <span className="text-base sm:text-lg font-mono font-bold text-white tracking-wider">
+                    {voucher.code}
+                  </span>
+                  <button
+                    onClick={handleCopyCode}
+                    title="Copiar Código"
+                    className="p-1 rounded-md bg-white/10 hover:bg-white/20 text-slate-300 transition-colors"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-4 border-b border-gray-800 pb-3">
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Assentos</span>
-                <span className="font-black text-[#E94560] text-sm">
+          {/* Divisória com Picote de Ingresso (Dashed Perforation & Notches) */}
+          <div className="relative py-2 bg-[#121624]">
+            {/* Picote circular esquerdo */}
+            <div className="absolute -left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-[#0E1322] border-r border-white/15" />
+            {/* Linha pontilhada de picote */}
+            <div className="border-b-2 border-dashed border-white/15 mx-5" />
+            {/* Picote circular direito */}
+            <div className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-[#0E1322] border-l border-white/15" />
+          </div>
+
+          {/* Corpo do Ingresso: Grid de Dados Essenciais */}
+          <div className="p-6 sm:p-7 space-y-5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+              <div className="space-y-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
+                  Data
+                </span>
+                <p className="font-semibold text-white capitalize">{formattedSessionDate}</p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
+                  Horário
+                </span>
+                <p className="font-semibold text-white">{formattedSessionTime}</p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
+                  Assentos
+                </span>
+                <p className="font-mono font-bold text-white tracking-wide">
                   {voucher.seats.map((s) => s.seatCode).join(", ")}
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
+                  Total
                 </span>
-              </div>
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-bold block">Titular</span>
-                <span className="font-medium text-gray-200">{voucher.buyer.name}</span>
+                <p className="font-semibold text-white">R$ {voucher.totalPrice.toFixed(2)}</p>
               </div>
             </div>
 
-            <div className="flex justify-between items-center pt-1 text-sm font-black">
-              <span className="text-gray-300">Total a Pagar no Balcão:</span>
-              <span className="text-xl text-emerald-400">R$ {voucher.totalPrice.toFixed(2)}</span>
-            </div>
-          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-white/10 text-xs">
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
+                  Titular da Reserva
+                </span>
+                <p className="text-slate-300 font-medium">{voucher.buyer.name}</p>
+              </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Link
-              href="/portal/minhas-reservas"
-              className="flex-1 py-3 rounded-xl bg-[#22223D] hover:bg-[#2C2C4E] border border-gray-700 text-center text-xs font-bold text-gray-200 transition-colors"
-            >
-              Acessar Minhas Reservas
-            </Link>
-            <Link
-              href="/portal"
-              className="flex-1 py-3 rounded-xl bg-[#E94560] hover:bg-[#d63d56] text-center text-xs font-black text-white shadow-lg shadow-[#E94560]/30 transition-all"
-            >
-              Voltar ao Catálogo de Filmes
-            </Link>
+              <div className="space-y-0.5">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
+                  Prazo de Pagamento
+                </span>
+                <p className="text-slate-300 font-medium">
+                  Até {formattedExpiresDate} às {formattedExpiresTime}
+                </p>
+              </div>
+            </div>
+
+            {/* Aviso Neutro e Conciso */}
+            <div className="p-3.5 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] text-slate-400 leading-relaxed">
+              Apresente o código <strong className="font-mono text-white">{voucher.code}</strong> na bilheteria física para pagamento e emissão dos ingressos antes do prazo limite.
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Rodapé Oficial Padronizado */}
-      <CineDoomFooter />
+      {/* Rodapé Oficial Padronizado (Versão simples) */}
+      <CineDoomFooter simple />
     </div>
   );
 }

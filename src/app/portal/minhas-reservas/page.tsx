@@ -4,14 +4,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/modules/auth/auth-options";
 import { redirect } from "next/navigation";
 import { listMyReservations } from "@/modules/portal/portal-service";
-import { Film, Clock, MapPin, Ticket, ShieldCheck, ArrowRight, ExternalLink } from "lucide-react";
+import { Ticket, ArrowRight } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
 import { CineDoomFooter } from "@/components/cinedoom-footer";
-import { getRoomWithExperience } from "@/shared/experiences";
-
-function formatDate(date: Date) {
-  return new Date(date).toLocaleString("pt-BR");
-}
+import { ReservationsTabsPanel } from "@/components/portal/reservations-tabs-panel";
 
 export default async function MinhasReservasPage() {
   const session = await getServerSession(authOptions);
@@ -25,6 +21,23 @@ export default async function MinhasReservasPage() {
   }
 
   const reservations = await listMyReservations(session.user.id, session.user.tenantId);
+
+  const now = new Date();
+  const activeReservations = reservations.filter((res) => {
+    if (res.status === "CONFIRMED") return true;
+    if (res.status === "PENDING") {
+      return !res.expiresAt || new Date(res.expiresAt) > now;
+    }
+    return false;
+  });
+
+  const expiredReservations = reservations.filter((res) => {
+    if (res.status === "EXPIRED" || res.status === "CANCELLED") return true;
+    if (res.status === "PENDING" && res.expiresAt && new Date(res.expiresAt) <= now) {
+      return true;
+    }
+    return false;
+  });
 
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
@@ -73,73 +86,15 @@ export default async function MinhasReservasPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:gap-5">
-            {reservations.map((res) => (
-              <article
-                key={res.id}
-                className="rounded-2xl liquid-glass-card overflow-hidden transition-all duration-300 hover:border-white/25 hover:shadow-2xl hover:shadow-black/40"
-              >
-                <div className="p-4 sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6">
-                  <div className="space-y-3 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-cta shadow-[0_0_8px_rgba(233,69,96,0.6)] shrink-0" />
-                      <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                        {res.session.film.title}
-                      </h3>
-                      <span className="text-[10px] sm:text-[11px] font-semibold text-cta bg-cta/15 border border-cta/30 px-2.5 py-0.5 rounded-full uppercase">
-                        {getRoomWithExperience(res.session.room.name)}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-slate-300">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-cta" />
-                        <span>{formatDate(res.session.startsAt)}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Ticket className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Código: <strong className="text-white font-mono tracking-wider">{res.code}</strong></span>
-                      </div>
-                      <div className="text-slate-300">
-                        Assentos: <strong className="text-white font-mono">{res.sessionSeats.map((s: any) => s.seat.seatCode).join(", ")}</strong>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-3 pt-1 text-xs">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                        {res.status === "PENDING" ? "Aguardando Pagamento" : res.status === "CONFIRMED" ? "Confirmada" : "Cancelada"}
-                      </span>
-                      <span className="text-xs text-emerald-400 font-semibold">
-                        Total: R$ {Number(res.totalPrice).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row md:flex-col items-start md:items-end justify-between gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-white/10 text-xs text-slate-400 w-full md:w-auto">
-                    <div className="text-left md:text-right space-y-0.5 text-[11px]">
-                      <p>Criada em: {formatDate(res.createdAt)}</p>
-                      {res.expiresAt && res.status === "PENDING" && (
-                        <p className="text-amber-300">Expira em: {formatDate(res.expiresAt)}</p>
-                      )}
-                    </div>
-
-                    <Link
-                      href={`/portal/reservas/${res.id}/comprovante`}
-                      className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs transition-all shadow-sm w-full sm:w-auto"
-                    >
-                      <span>Ver Comprovante</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+          <ReservationsTabsPanel
+            activeReservations={activeReservations}
+            expiredReservations={expiredReservations}
+          />
         )}
       </main>
 
-      {/* Rodapé Oficial Padronizado */}
-      <CineDoomFooter />
+      {/* Rodapé Simplificado apenas com barra inferior */}
+      <CineDoomFooter simple />
     </div>
   );
 }

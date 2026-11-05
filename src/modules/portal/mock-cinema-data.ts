@@ -48,14 +48,107 @@ export function getMockRooms() {
   return MOCK_ROOMS;
 }
 
+interface SessionTemplate {
+  roomIndex: number;
+  hour: number;
+  minute: number;
+  price: number;
+  idCode: string;
+}
+
+// Modelos de horários diversificados por filme para toda a semana (matinê, tarde, noite e sessão da madrugada)
+const DUNA_TEMPLATES: SessionTemplate[] = [
+  { roomIndex: 2, hour: 11, minute: 0, price: 42.0, idCode: "0314" },
+  { roomIndex: 2, hour: 14, minute: 0, price: 42.0, idCode: "0310" },
+  { roomIndex: 3, hour: 14, minute: 30, price: 54.0, idCode: "0350" }, // Sessão extra VIP vespertina
+  { roomIndex: 0, hour: 16, minute: 0, price: 36.0, idCode: "0351" },  // Sessão extra Clássica
+  { roomIndex: 3, hour: 16, minute: 30, price: 54.0, idCode: "0311" },
+  { roomIndex: 2, hour: 19, minute: 0, price: 42.0, idCode: "0301" }, // ID histórico original
+  { roomIndex: 0, hour: 20, minute: 15, price: 36.0, idCode: "0312" },
+  { roomIndex: 2, hour: 21, minute: 45, price: 42.0, idCode: "0302" }, // ID histórico original
+  { roomIndex: 3, hour: 22, minute: 30, price: 54.0, idCode: "0313" },
+  { roomIndex: 1, hour: 23, minute: 0, price: 36.0, idCode: "0352" },  // Sessão extra Clássica noturna
+];
+
+const OPPENHEIMER_TEMPLATES: SessionTemplate[] = [
+  { roomIndex: 2, hour: 10, minute: 30, price: 46.0, idCode: "0353" }, // Sessão extra IMAX matutina
+  { roomIndex: 1, hour: 13, minute: 30, price: 34.0, idCode: "0325" },
+  { roomIndex: 3, hour: 14, minute: 15, price: 54.0, idCode: "0320" },
+  { roomIndex: 1, hour: 16, minute: 45, price: 34.0, idCode: "0321" },
+  { roomIndex: 2, hour: 17, minute: 15, price: 46.0, idCode: "0322" },
+  { roomIndex: 0, hour: 17, minute: 30, price: 34.0, idCode: "0354" }, // Sessão extra Clássica entardecer
+  { roomIndex: 3, hour: 20, minute: 0, price: 54.0, idCode: "0303" }, // ID histórico original
+  { roomIndex: 1, hour: 21, minute: 15, price: 34.0, idCode: "0323" },
+  { roomIndex: 2, hour: 22, minute: 0, price: 46.0, idCode: "0355" },  // Sessão extra IMAX noite
+  { roomIndex: 3, hour: 23, minute: 15, price: 54.0, idCode: "0324" },
+];
+
+const POBRES_CRIATURAS_TEMPLATES: SessionTemplate[] = [
+  { roomIndex: 0, hour: 11, minute: 15, price: 32.0, idCode: "0356" }, // Sessão extra Clássica manhã
+  { roomIndex: 0, hour: 13, minute: 45, price: 32.0, idCode: "0334" },
+  { roomIndex: 0, hour: 14, minute: 30, price: 32.0, idCode: "0330" },
+  { roomIndex: 1, hour: 15, minute: 0, price: 32.0, idCode: "0357" },  // Sessão extra Clássica tarde
+  { roomIndex: 3, hour: 16, minute: 15, price: 50.0, idCode: "0331" },
+  { roomIndex: 0, hour: 18, minute: 30, price: 32.0, idCode: "0304" }, // ID histórico original
+  { roomIndex: 1, hour: 19, minute: 30, price: 32.0, idCode: "0332" },
+  { roomIndex: 3, hour: 20, minute: 30, price: 50.0, idCode: "0358" }, // Sessão extra VIP noite
+  { roomIndex: 0, hour: 21, minute: 0, price: 32.0, idCode: "0305" }, // ID histórico original
+  { roomIndex: 3, hour: 22, minute: 15, price: 50.0, idCode: "0333" },
+];
+
+const DIVERTIDA_MENTE_TEMPLATES: SessionTemplate[] = [
+  { roomIndex: 0, hour: 9, minute: 30, price: 28.0, idCode: "0359" },  // Sessão matinê infantil
+  { roomIndex: 1, hour: 10, minute: 15, price: 28.0, idCode: "0346" },
+  { roomIndex: 1, hour: 11, minute: 30, price: 28.0, idCode: "0340" },
+  { roomIndex: 3, hour: 12, minute: 30, price: 45.0, idCode: "0360" }, // Sessão VIP família
+  { roomIndex: 1, hour: 13, minute: 30, price: 30.0, idCode: "0341" },
+  { roomIndex: 0, hour: 14, minute: 15, price: 30.0, idCode: "0342" },
+  { roomIndex: 1, hour: 15, minute: 30, price: 32.0, idCode: "0306" }, // ID histórico original
+  { roomIndex: 2, hour: 16, minute: 0, price: 40.0, idCode: "0361" },  // Sessão extra IMAX tarde
+  { roomIndex: 0, hour: 17, minute: 0, price: 30.0, idCode: "0343" },
+  { roomIndex: 1, hour: 17, minute: 45, price: 32.0, idCode: "0307" }, // ID histórico original
+  { roomIndex: 2, hour: 18, minute: 30, price: 40.0, idCode: "0344" },
+  { roomIndex: 0, hour: 20, minute: 0, price: 30.0, idCode: "0345" },
+  { roomIndex: 1, hour: 20, minute: 45, price: 30.0, idCode: "0362" }, // Sessão noturna adicional
+];
+
+function generateSessions(templates: SessionTemplate[], baseDate: Date, totalDays = 7) {
+  const sessions = [];
+
+  for (let dayOffset = 0; dayOffset < totalDays; dayOffset++) {
+    const dayHex = dayOffset.toString(16);
+
+    for (const t of templates) {
+      const room = MOCK_ROOMS[t.roomIndex];
+      const d = new Date(baseDate);
+      d.setDate(d.getDate() + dayOffset);
+      d.setHours(t.hour, t.minute, 0, 0);
+
+      // Gera UUID válido v4 e mantém os IDs originais no dia 0
+      const sessionId = `00000000-0000-4000-b00${dayHex}-00000000${t.idCode}`;
+
+      sessions.push({
+        id: sessionId,
+        startsAt: d.toISOString(),
+        price: t.price,
+        status: "OPEN",
+        room: {
+          id: room.id,
+          name: room.name,
+          capacity: room.capacity,
+          rows: room.rows,
+          columns: room.columns,
+          type: room.type,
+        },
+      });
+    }
+  }
+
+  return sessions;
+}
+
 export function getMockFilmsWithSessions() {
   const today = new Date();
-  
-  function createTime(hours: number, minutes = 0) {
-    const d = new Date(today);
-    d.setHours(hours, minutes, 0, 0);
-    return d.toISOString();
-  }
 
   return [
     {
@@ -67,36 +160,7 @@ export function getMockFilmsWithSessions() {
       classification: "14",
       genre: "Ficção Científica • Aventura",
       posterUrl: "/posters/duna-2.jpg",
-      sessions: [
-        {
-          id: "00000000-0000-4000-b000-000000000301",
-          startsAt: createTime(19, 0),
-          price: 42.0,
-          status: "OPEN",
-          room: {
-            id: MOCK_ROOMS[2].id,
-            name: MOCK_ROOMS[2].name,
-            capacity: MOCK_ROOMS[2].capacity,
-            rows: MOCK_ROOMS[2].rows,
-            columns: MOCK_ROOMS[2].columns,
-            type: MOCK_ROOMS[2].type,
-          },
-        },
-        {
-          id: "00000000-0000-4000-b000-000000000302",
-          startsAt: createTime(21, 45),
-          price: 42.0,
-          status: "OPEN",
-          room: {
-            id: MOCK_ROOMS[2].id,
-            name: MOCK_ROOMS[2].name,
-            capacity: MOCK_ROOMS[2].capacity,
-            rows: MOCK_ROOMS[2].rows,
-            columns: MOCK_ROOMS[2].columns,
-            type: MOCK_ROOMS[2].type,
-          },
-        },
-      ],
+      sessions: generateSessions(DUNA_TEMPLATES, today, 7),
     },
     {
       id: "00000000-0000-4000-a000-000000000102",
@@ -107,22 +171,7 @@ export function getMockFilmsWithSessions() {
       classification: "16",
       genre: "Drama Histórico • Biografia",
       posterUrl: "/posters/oppenheimer.jpg",
-      sessions: [
-        {
-          id: "00000000-0000-4000-b000-000000000303",
-          startsAt: createTime(20, 0),
-          price: 54.0,
-          status: "OPEN",
-          room: {
-            id: MOCK_ROOMS[3].id,
-            name: MOCK_ROOMS[3].name,
-            capacity: MOCK_ROOMS[3].capacity,
-            rows: MOCK_ROOMS[3].rows,
-            columns: MOCK_ROOMS[3].columns,
-            type: MOCK_ROOMS[3].type,
-          },
-        },
-      ],
+      sessions: generateSessions(OPPENHEIMER_TEMPLATES, today, 7),
     },
     {
       id: "00000000-0000-4000-a000-000000000103",
@@ -133,36 +182,7 @@ export function getMockFilmsWithSessions() {
       classification: "18",
       genre: "Romance • Fantasia • Comédia",
       posterUrl: "/posters/pobres-criaturas.jpg",
-      sessions: [
-        {
-          id: "00000000-0000-4000-b000-000000000304",
-          startsAt: createTime(18, 30),
-          price: 32.0,
-          status: "OPEN",
-          room: {
-            id: MOCK_ROOMS[0].id,
-            name: MOCK_ROOMS[0].name,
-            capacity: MOCK_ROOMS[0].capacity,
-            rows: MOCK_ROOMS[0].rows,
-            columns: MOCK_ROOMS[0].columns,
-            type: MOCK_ROOMS[0].type,
-          },
-        },
-        {
-          id: "00000000-0000-4000-b000-000000000305",
-          startsAt: createTime(21, 0),
-          price: 32.0,
-          status: "OPEN",
-          room: {
-            id: MOCK_ROOMS[0].id,
-            name: MOCK_ROOMS[0].name,
-            capacity: MOCK_ROOMS[0].capacity,
-            rows: MOCK_ROOMS[0].rows,
-            columns: MOCK_ROOMS[0].columns,
-            type: MOCK_ROOMS[0].type,
-          },
-        },
-      ],
+      sessions: generateSessions(POBRES_CRIATURAS_TEMPLATES, today, 7),
     },
     {
       id: "00000000-0000-4000-a000-000000000104",
@@ -173,36 +193,7 @@ export function getMockFilmsWithSessions() {
       classification: "L",
       genre: "Animação • Família • Aventura",
       posterUrl: "/posters/divertida-mente-2.jpg",
-      sessions: [
-        {
-          id: "00000000-0000-4000-b000-000000000306",
-          startsAt: createTime(15, 30),
-          price: 32.0,
-          status: "OPEN",
-          room: {
-            id: MOCK_ROOMS[1].id,
-            name: MOCK_ROOMS[1].name,
-            capacity: MOCK_ROOMS[1].capacity,
-            rows: MOCK_ROOMS[1].rows,
-            columns: MOCK_ROOMS[1].columns,
-            type: MOCK_ROOMS[1].type,
-          },
-        },
-        {
-          id: "00000000-0000-4000-b000-000000000307",
-          startsAt: createTime(17, 45),
-          price: 32.0,
-          status: "OPEN",
-          room: {
-            id: MOCK_ROOMS[1].id,
-            name: MOCK_ROOMS[1].name,
-            capacity: MOCK_ROOMS[1].capacity,
-            rows: MOCK_ROOMS[1].rows,
-            columns: MOCK_ROOMS[1].columns,
-            type: MOCK_ROOMS[1].type,
-          },
-        },
-      ],
+      sessions: generateSessions(DIVERTIDA_MENTE_TEMPLATES, today, 7),
     },
   ];
 }

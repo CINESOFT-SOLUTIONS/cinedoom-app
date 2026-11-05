@@ -53,8 +53,12 @@ export function FilmFilters({
                     : "bg-surface/50 text-slate-400 hover:text-white hover:bg-surface border border-borderDark/50"
                 }`}
               >
-                <span className="text-[10px] uppercase tracking-wider">{tab.dayName}</span>
-                <span className="text-xs font-semibold">{tab.dayNumber}</span>
+                <span className="text-[10px] uppercase tracking-wider" suppressHydrationWarning>
+                  {tab.dayName}
+                </span>
+                <span className="text-xs font-semibold" suppressHydrationWarning>
+                  {tab.dayNumber}
+                </span>
               </button>
             ))}
           </div>

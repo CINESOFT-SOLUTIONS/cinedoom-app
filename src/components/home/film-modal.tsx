@@ -23,18 +23,19 @@ export function FilmModal({
   onClose,
 }: FilmModalProps) {
   const [activeTab, setActiveTab] = useState<"sessions" | "details">(initialTab);
-  const [modalSelectedDay, setModalSelectedDay] = useState<number>(0);
 
   // Sincroniza a aba inicial sempre que o filme mudar
   useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab, film]);
 
-  // Bloqueio de rolagem do body enquanto o modal estiver aberto e fechar no Escape
+  // Bloqueio de rolagem da página (html e body) enquanto o modal estiver aberto e fechar no Escape
   useEffect(() => {
     if (!film) return;
 
-    const prevOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -45,20 +46,52 @@ export function FilmModal({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.body.style.overflow = prevOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [film, onClose]);
 
-  // Abas de datas para navegação direta de dias no modal
+  const { baseDate, initialIndex } = useMemo(() => {
+    if (!selectedDate) {
+      return { baseDate: new Date(), initialIndex: 0 };
+    }
+    const now = new Date();
+    const targetZero = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate()
+    ).getTime();
+    const nowZero = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const diffDays = Math.round((targetZero - nowZero) / (1000 * 60 * 60 * 24));
+    if (diffDays >= 0 && diffDays < 7) {
+      return { baseDate: now, initialIndex: diffDays };
+    }
+    return { baseDate: new Date(selectedDate), initialIndex: 0 };
+  }, [selectedDate]);
+
+  const [modalSelectedDay, setModalSelectedDay] = useState<number>(initialIndex);
+
+  // Sincroniza a data inicial do modal sempre que o filme ou a data externa mudar
+  useEffect(() => {
+    setModalSelectedDay(initialIndex);
+  }, [initialIndex, film]);
+
+  // Abas de datas para navegação direta de todos os 7 dias da semana no modal
   const modalDateTabs = useMemo(() => {
-    return Array.from({ length: 6 }).map((_, i) => {
-      const d = new Date();
+    const now = new Date();
+    const isNowBase =
+      baseDate.getFullYear() === now.getFullYear() &&
+      baseDate.getMonth() === now.getMonth() &&
+      baseDate.getDate() === now.getDate();
+
+    return Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date(baseDate);
       d.setDate(d.getDate() + i);
       const dayName =
-        i === 0
+        isNowBase && i === 0
           ? "Hoje"
-          : i === 1
+          : isNowBase && i === 1
             ? "Amanhã"
             : d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "").toUpperCase();
       const dayNumber = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
@@ -69,29 +102,12 @@ export function FilmModal({
         date: d,
       };
     });
-  }, []);
-
-  // Sincroniza a data inicial do modal com a data selecionada externamente
-  useEffect(() => {
-    if (selectedDate) {
-      const now = new Date();
-      const targetZero = new Date(
-        selectedDate.getFullYear(),
-        selectedDate.getMonth(),
-        selectedDate.getDate()
-      ).getTime();
-      const nowZero = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-      const diffDays = Math.round((targetZero - nowZero) / (1000 * 60 * 60 * 24));
-      if (diffDays >= 0 && diffDays < 6) {
-        setModalSelectedDay(diffDays);
-      }
-    }
-  }, [selectedDate, film]);
+  }, [baseDate]);
 
   if (!film) return null;
 
-  const currentTargetDate = modalDateTabs[modalSelectedDay]?.date || new Date();
-  const currentTabInfo = modalDateTabs[modalSelectedDay];
+  const currentTabInfo = modalDateTabs[modalSelectedDay] || modalDateTabs[0];
+  const currentTargetDate = currentTabInfo?.date || new Date();
 
   // Filtra as sessões do filme para a data selecionada no modal
   const sessionsForSelectedDate = (film.sessions || []).filter((s) => {
@@ -248,8 +264,8 @@ export function FilmModal({
                         : "bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/5"
                       }`}
                   >
-                    <span className="text-[10px] uppercase tracking-wider">{tab.dayName}</span>
-                    <span className="text-xs font-bold font-mono">{tab.dayNumber}</span>
+                    <span className="text-[10px] uppercase tracking-wider" suppressHydrationWarning>{tab.dayName}</span>
+                    <span className="text-xs font-bold font-mono" suppressHydrationWarning>{tab.dayNumber}</span>
                   </button>
                 );
               })}
@@ -258,7 +274,7 @@ export function FilmModal({
             {/* Cabeçalho da data ativa */}
             <div className="flex items-center justify-between pb-1 pt-1 border-b border-borderDark/30">
               <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Sessões de {modalSelectedDay === 0 ? "Hoje" : modalSelectedDay === 1 ? "Amanhã" : currentTabInfo.dayNumber}
+                Sessões de {modalSelectedDay === 0 ? "Hoje" : modalSelectedDay === 1 ? "Amanhã" : currentTabInfo?.dayNumber || "esta data"}
               </span>
               <span className="text-[11px] text-slate-400">
                 {sessionsForSelectedDate.length} {sessionsForSelectedDate.length === 1 ? "sessão" : "sessões"}
@@ -270,7 +286,7 @@ export function FilmModal({
               <div className="py-10 text-center space-y-2 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
                 <Ticket className="w-8 h-8 text-slate-600 mx-auto opacity-70" />
                 <p className="text-sm font-semibold text-rose-400/90">
-                  Nenhuma sessão disponível para {modalSelectedDay === 0 ? "hoje" : currentTabInfo.dayNumber}
+                  Nenhuma sessão disponível para {modalSelectedDay === 0 ? "hoje" : currentTabInfo?.dayNumber || "esta data"}
                 </p>
                 <p className="text-xs text-slate-400 max-w-sm mx-auto">
                   Consulte os outros dias nas abas de data acima para encontrar os horários disponíveis.

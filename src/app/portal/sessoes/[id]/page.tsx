@@ -516,8 +516,8 @@ export default function PortalSessionReservationPage() {
         </aside>
       </main>
 
-      {/* Rodapé Oficial Padronizado */}
-      <CineDoomFooter />
+      {/* Rodapé Oficial Padronizado (Versão simples) */}
+      <CineDoomFooter simple />
     </div>
   );
 }

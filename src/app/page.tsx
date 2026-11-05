@@ -27,7 +27,7 @@ export default function CinemarkStyleHomePage() {
     async function loadFilms() {
       try {
         setLoading(true);
-        const res = await fetch("/api/portal/filmes");
+        const res = await fetch("/api/portal/filmes", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           setFilms(data);
@@ -50,9 +50,9 @@ export default function CinemarkStyleHomePage() {
     return () => clearInterval(interval);
   }, [films.length]);
 
-  // Abas de datas no estilo Cinemark
+  // Abas de datas no estilo Cinemark para os 7 dias da semana a partir de hoje
   const dateTabs = useMemo(() => {
-    return Array.from({ length: 6 }).map((_, i) => {
+    return Array.from({ length: 7 }).map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() + i);
       const dayName =
@@ -150,6 +150,7 @@ export default function CinemarkStyleHomePage() {
               <FilmCard
                 key={film.id}
                 film={film}
+                selectedDate={dateTabs[selectedDay]?.date}
                 onOpenSessions={(f) => {
                   setSelectedModalFilm(f);
                   setModalInitialTab("sessions");

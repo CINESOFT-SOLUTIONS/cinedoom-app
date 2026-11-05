@@ -470,7 +470,7 @@ export default function SobreCineDoomPage() {
       </main>
 
       {/* ================= RODAPE OFICIAL ================= */}
-      <CineDoomFooter />
+      <CineDoomFooter simple />
     </div>
   );
 }

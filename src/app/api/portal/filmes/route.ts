@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FilmService } from "@/features/catalogo";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 /**
  * Controller para Catalogo Publico de Filmes e Sessoes
  * Rastreabilidade: Controller-Service-Repository, ISO/IEC/IEEE 12207:2021
@@ -12,5 +15,12 @@ export async function GET(request: NextRequest) {
   const tenantId = headerTenantId || queryTenantId;
 
   const payload = await FilmService.getCatalogWithSessions(tenantId);
-  return NextResponse.json(payload, { status: 200 });
+  return NextResponse.json(payload, {
+    status: 200,
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
+    },
+  });
 }

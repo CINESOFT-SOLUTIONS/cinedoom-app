@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "CineDoom — Plataforma de Gestao de Cinemas e Bilheteria",
+  title: "CineDoom",
   description: "Plataforma de gestão de cinemas, bilheteria presencial e reservas online para clientes.",
   icons: {
     icon: "/logos/cinedoom-icon.png",
