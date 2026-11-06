@@ -293,7 +293,7 @@ export function FilmModal({
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 items-start">
                 {roomNames.map((roomName) => {
                   const roomSessions = sessionsByRoom[roomName];
                   const category = getRoomExperienceCategory(roomName);
@@ -302,7 +302,7 @@ export function FilmModal({
                   return (
                     <div
                       key={roomName}
-                      className="p-3.5 rounded-2xl bg-[#0E1322]/80 border border-white/10 flex flex-col justify-between space-y-3 shadow-md hover:border-white/20 transition-all"
+                      className="p-3.5 rounded-2xl bg-[#0E1322]/80 border border-white/10 flex flex-col justify-start gap-3 shadow-md hover:border-white/20 transition-all"
                     >
                       {/* Identificação da sala e categoria da experiência */}
                       <div className="flex items-center justify-between gap-2 border-b border-white/5 pb-2">
@@ -327,8 +327,8 @@ export function FilmModal({
                         )}
                       </div>
 
-                      {/* Blocos individuais compactos dos horários (sem preço, clique direto para assentos) */}
-                      <div className="flex flex-wrap gap-2">
+                      {/* Blocos individuais compactos dos horários organizados de cima para baixo e da esquerda para a direita */}
+                      <div className="flex flex-wrap gap-2 items-start content-start">
                         {roomSessions.map((sess) => {
                           const time = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
                             hour: "2-digit",
@@ -340,7 +340,7 @@ export function FilmModal({
                               key={sess.id}
                               href={`/portal/sessoes/${sess.id}`}
                               onClick={onClose}
-                              className="px-3 py-2 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white font-mono font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm hover:shadow-cta/30 hover:scale-105 active:scale-95 text-center flex-1 min-w-[70px] max-w-[100px] flex items-center justify-center cursor-pointer"
+                              className="px-3 py-2 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white font-mono font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm hover:shadow-cta/30 hover:scale-105 active:scale-95 text-center min-w-[72px] flex items-center justify-center cursor-pointer"
                               title={`Reservar assento para sessão das ${time} na ${displayName}`}
                               aria-label={`Sessão às ${time} na ${displayName}`}
                             >
