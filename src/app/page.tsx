@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { CineDoomHeader } from "@/components/cinedoom-header";
 import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { HeroBillboard } from "@/components/home/hero-billboard";
@@ -13,6 +14,7 @@ import { Film } from "lucide-react";
 import { type ProgramacaoFilter, matchesProgramacaoFilter } from "@/shared/experiences";
 
 export default function CinemarkStyleHomePage() {
+  const router = useRouter();
   const [films, setFilms] = useState<FilmItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
@@ -160,8 +162,7 @@ export default function CinemarkStyleHomePage() {
                 film={film}
                 selectedDate={dateTabs[selectedDay]?.date}
                 onOpenSessions={(f) => {
-                  setSelectedModalFilm(f);
-                  setModalInitialTab("sessions");
+                  router.push(`/portal/reservas?filmeId=${f.id}`);
                 }}
                 onOpenDetails={(f) => {
                   setSelectedModalFilm(f);

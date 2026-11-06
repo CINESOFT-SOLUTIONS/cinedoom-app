@@ -56,6 +56,8 @@ export interface AuthCardProps {
   activeView?: "login" | "cadastro";
   onViewChange?: (view: "login" | "cadastro") => void;
   onClose?: () => void;
+  onSuccess?: () => void;
+  redirectOnLogin?: boolean;
   isModal?: boolean;
 }
 
@@ -64,6 +66,8 @@ export function AuthCard({
   activeView: controlledView,
   onViewChange,
   onClose,
+  onSuccess,
+  redirectOnLogin = true,
   isModal = false,
 }: AuthCardProps) {
   const router = useRouter();
@@ -170,7 +174,10 @@ export function AuthCard({
         setLoginError("Credenciais inválidas ou usuário inativo.");
       } else {
         if (onClose) onClose();
-        router.push("/");
+        if (onSuccess) onSuccess();
+        if (redirectOnLogin) {
+          router.push("/");
+        }
         router.refresh();
       }
     } catch {

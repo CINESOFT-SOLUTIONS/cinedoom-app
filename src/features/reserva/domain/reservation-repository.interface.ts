@@ -11,6 +11,8 @@ export interface ExecuteReservationParams {
     lgpdConsentAt: Date;
   };
   userId: string | null;
+  holdToken?: string | null;
+  ticketTypes?: Record<string, number>;
 }
 
 export interface RegisterClientParams {

@@ -404,6 +404,17 @@ export function FilmModal({
                 </span>
               </div>
             </div>
+
+            <div className="pt-4 border-t border-borderDark/40">
+              <Link
+                href={`/portal/reservas?filmeId=${film.id}`}
+                onClick={onClose}
+                className="w-full py-3 px-4 rounded-xl bg-cta hover:bg-cta-hover text-white font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-cta/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <Ticket className="w-4 h-4" />
+                <span>Iniciar Reserva & Ver Sessões</span>
+              </Link>
+            </div>
           </div>
         )}
       </div>

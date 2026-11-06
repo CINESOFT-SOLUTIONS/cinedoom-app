@@ -136,6 +136,8 @@ export class PublicReservationServiceClass {
       tenantId,
       sortedSeatIds,
       userId: finalUserId,
+      holdToken: input.holdToken,
+      ticketTypes: input.ticketTypes,
       buyer: {
         name: input.buyer.name.trim(),
         email: input.buyer.email.trim().toLowerCase(),

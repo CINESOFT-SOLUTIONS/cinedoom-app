@@ -58,6 +58,8 @@ export const createReservationSchema = z.object({
     }),
   }),
   userId: z.string().uuid("userId deve ser um UUID valido").optional().nullable(),
+  holdToken: z.string().optional().nullable(),
+  ticketTypes: z.record(z.string(), z.number()).optional(),
 });
 
 export type CreateReservationInput = z.infer<typeof createReservationSchema>;

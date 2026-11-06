@@ -1,5 +1,6 @@
 import { rawPrisma } from "@/shared/db/prisma";
 import { CryptoService, sanitizeCPF, maskCPF } from "@/modules/crypto";
+import { TemporaryHoldService } from "../application/temporary-hold.service";
 import type {
   IPublicReservationRepository,
   ExecuteReservationParams,
@@ -43,7 +44,7 @@ export class PrismaPublicReservationRepository implements IPublicReservationRepo
   async executeReservationTransaction(params: ExecuteReservationParams): Promise<any> {
     const { sessionId, tenantId, sortedSeatIds, buyer: buyerData, userId } = params;
 
-    return await rawPrisma.$transaction(async (tx) => {
+    const result = await rawPrisma.$transaction(async (tx) => {
       const session = await tx.session.findFirst({
         where: {
           id: sessionId,
@@ -131,7 +132,11 @@ export class PrismaPublicReservationRepository implements IPublicReservationRepo
           expiresAtVal &&
           new Date(expiresAtVal) <= now;
 
-        if (seat.status !== "AVAILABLE" && !isReservationExpired) {
+        const isHeldByCurrentToken =
+          params.holdToken &&
+          TemporaryHoldService.isHoldValid(params.holdToken, sessionId, [seat.id]);
+
+        if (seat.status !== "AVAILABLE" && !isReservationExpired && !isHeldByCurrentToken) {
           throw new SeatNotAvailableError(
             `O assento selecionado (${seat.id}) ja foi vendido ou reservado (status: ${seat.status}).`
           );
@@ -139,7 +144,16 @@ export class PrismaPublicReservationRepository implements IPublicReservationRepo
       }
 
       const reservationExpiresAt = new Date(sessionStartsAt.getTime() - minAntecedenceMs);
-      const totalPrice = Number(session.price) * sortedSeatIds.length;
+      const unitPrice = Number(session.price);
+      let totalPrice = unitPrice * sortedSeatIds.length;
+
+      if (params.ticketTypes) {
+        const inteira = Number(params.ticketTypes["inteira"] ?? params.ticketTypes["INTEIRA"] ?? 0);
+        const meia = Number(params.ticketTypes["meia"] ?? params.ticketTypes["MEIA"] ?? 0);
+        if (inteira + meia === sortedSeatIds.length) {
+          totalPrice = (inteira * unitPrice) + (meia * unitPrice * 0.5);
+        }
+      }
 
       let reservationCode = "";
       let attempts = 0;
@@ -240,6 +254,12 @@ export class PrismaPublicReservationRepository implements IPublicReservationRepo
         },
       };
     });
+
+    if (params.holdToken) {
+      await TemporaryHoldService.releaseHold(params.holdToken).catch(() => {});
+    }
+
+    return result;
   }
 
   async findReservationByIdOrCode(idOrCode: string, tenantId: string): Promise<any | null> {

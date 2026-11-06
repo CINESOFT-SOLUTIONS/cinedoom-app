@@ -1,14 +1,20 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 
 export type AuthModalView = "login" | "cadastro";
+
+export interface AuthModalOptions {
+  redirectOnLogin?: boolean;
+  onSuccess?: () => void;
+}
 
 interface AuthModalContextType {
   isOpen: boolean;
   view: AuthModalView;
-  openLogin: () => void;
-  openCadastro: () => void;
+  options?: AuthModalOptions;
+  openLogin: (options?: AuthModalOptions | any) => void;
+  openCadastro: (options?: AuthModalOptions | any) => void;
   switchView: (view: AuthModalView) => void;
   close: () => void;
   isLoginOpen: boolean;
@@ -18,6 +24,7 @@ interface AuthModalContextType {
 const AuthModalContext = createContext<AuthModalContextType>({
   isOpen: false,
   view: "login",
+  options: { redirectOnLogin: true },
   openLogin: () => {},
   openCadastro: () => {},
   switchView: () => {},
@@ -29,30 +36,42 @@ const AuthModalContext = createContext<AuthModalContextType>({
 export function AuthModalProvider({ children }: { children: React.ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [view, setView] = useState<AuthModalView>("login");
+  const [options, setOptions] = useState<AuthModalOptions>({ redirectOnLogin: true });
 
-  const openLogin = () => {
+  const openLogin = useCallback((opts?: AuthModalOptions | any) => {
     setView("login");
+    if (opts && typeof opts === "object" && !("nativeEvent" in opts)) {
+      setOptions(opts);
+    } else {
+      setOptions({ redirectOnLogin: true });
+    }
     setIsOpen(true);
-  };
+  }, []);
 
-  const openCadastro = () => {
+  const openCadastro = useCallback((opts?: AuthModalOptions | any) => {
     setView("cadastro");
+    if (opts && typeof opts === "object" && !("nativeEvent" in opts)) {
+      setOptions(opts);
+    } else {
+      setOptions({ redirectOnLogin: true });
+    }
     setIsOpen(true);
-  };
+  }, []);
 
-  const switchView = (newView: AuthModalView) => {
+  const switchView = useCallback((newView: AuthModalView) => {
     setView(newView);
-  };
+  }, []);
 
-  const close = () => {
+  const close = useCallback(() => {
     setIsOpen(false);
-  };
+  }, []);
 
   return (
     <AuthModalContext.Provider
       value={{
         isOpen,
         view,
+        options,
         openLogin,
         openCadastro,
         switchView,

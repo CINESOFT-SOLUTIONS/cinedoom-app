@@ -5,7 +5,7 @@ import { useAuthModal } from "@/contexts/auth-modal-context";
 import { AuthCard } from "@/components/auth-card";
 
 export function LoginModal() {
-  const { isOpen, view, switchView, close } = useAuthModal();
+  const { isOpen, view, options, switchView, close } = useAuthModal();
 
   // Trava de rolagem ao abrir o modal
   useEffect(() => {
@@ -49,6 +49,8 @@ export function LoginModal() {
           activeView={view}
           onViewChange={switchView}
           onClose={close}
+          redirectOnLogin={options?.redirectOnLogin}
+          onSuccess={options?.onSuccess}
         />
       </div>
     </div>
