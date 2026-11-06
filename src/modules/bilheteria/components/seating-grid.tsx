@@ -48,43 +48,43 @@ interface SeatStyleConfig {
 const statusColorClasses: Record<SeatChromaticStatus, SeatStyleConfig> = {
   AVAILABLE: {
     base: "bg-white",
-    backrest: "bg-slate-100 border border-slate-300 group-hover:bg-white",
-    armrest: "bg-slate-200 border border-slate-300 group-hover:bg-slate-100",
+    backrest: "bg-slate-200 border-t border-x border-slate-300 group-hover:bg-white",
+    armrest: "bg-slate-300 border-l border-b border-slate-400 group-hover:bg-slate-200",
     cushion:
-      "bg-white border-slate-300 text-slate-900 font-bold group-hover:bg-slate-50 group-hover:shadow-[0_0_12px_rgba(255,255,255,0.7)] shadow-white/30",
+      "bg-white border-slate-300 text-slate-900 font-bold group-hover:bg-slate-50 group-hover:shadow-[0_0_10px_rgba(255,255,255,0.7)] shadow-xs",
     text: "text-slate-900",
     label: "Disponivel",
   },
   SELECTED: {
     base: "bg-[#E94560]",
-    backrest: "bg-[#D63D56] border border-[#C12E46] ring-1 ring-white/60",
-    armrest: "bg-[#C12E46] border border-[#9E1B32] ring-1 ring-white/60",
+    backrest: "bg-[#D63D56] border-t border-x border-[#C12E46]",
+    armrest: "bg-[#C12E46] border-b border-[#9E1B32]",
     cushion:
-      "bg-[#E94560] border-[#D63D56] text-white ring-2 ring-white/90 shadow-md shadow-[#E94560]/50 font-bold scale-105",
+      "bg-[#E94560] border-[#D63D56] text-white font-bold ring-2 ring-white/90 shadow-md shadow-[#E94560]/50",
     text: "text-white",
     label: "Selecionado",
   },
   SOLD: {
     base: "bg-[#EF4444]/20",
-    backrest: "bg-[#EF4444]/15 border border-[#EF4444]/25 opacity-60",
-    armrest: "bg-[#EF4444]/15 border border-[#EF4444]/25 opacity-60",
-    cushion: "bg-[#EF4444]/20 border-[#EF4444]/40 text-[#EF4444]/60 line-through opacity-70",
+    backrest: "bg-[#EF4444]/15 border-t border-x border-[#EF4444]/25 opacity-60",
+    armrest: "bg-[#EF4444]/15 opacity-60",
+    cushion: "bg-[#EF4444]/20 border-[#EF4444]/30 text-[#EF4444]/60 line-through opacity-70",
     text: "text-[#EF4444]/60",
     label: "Vendido",
   },
   RESERVED: {
     base: "bg-[#0F3460]",
-    backrest: "bg-[#162B4D] border border-[#203A63] opacity-90",
-    armrest: "bg-[#0B2545] border border-[#162B4D] opacity-90",
-    cushion: "bg-[#0F3460] border-[#203A63] text-sky-200 font-semibold opacity-95 shadow-xs shadow-[#0F3460]/50",
+    backrest: "bg-[#162B4D] border-t border-x border-[#203A63] opacity-90",
+    armrest: "bg-[#0B2545] border-b border-[#162B4D] opacity-90",
+    cushion: "bg-[#0F3460] border-[#203A63] text-sky-200 font-semibold opacity-95 shadow-xs shadow-[#0F3460]/40",
     text: "text-sky-200",
     label: "Reservado",
   },
   BLOCKED: {
     base: "bg-[#9CA3AF]/20",
-    backrest: "bg-[#9CA3AF]/15 border border-[#9CA3AF]/25 opacity-50",
-    armrest: "bg-[#9CA3AF]/15 border border-[#9CA3AF]/25 opacity-50",
-    cushion: "bg-[#9CA3AF]/20 border-[#9CA3AF]/40 text-[#9CA3AF]/40 opacity-50",
+    backrest: "bg-[#9CA3AF]/15 border-t border-x border-[#9CA3AF]/25 opacity-50",
+    armrest: "bg-[#9CA3AF]/15 opacity-50",
+    cushion: "bg-[#9CA3AF]/20 border-[#9CA3AF]/30 text-[#9CA3AF]/40 opacity-50",
     text: "text-[#9CA3AF]/40",
     label: "Bloqueado",
   },
@@ -127,38 +127,38 @@ const SeatButton = React.memo(function SeatButton({
       data-testid={`seat-${code}`}
       data-seat-id={seat.id}
       data-status={effectiveStatus}
-      className={`group relative w-6 h-7 sm:w-7 sm:h-7.5 md:w-7.5 md:h-8 flex flex-col items-center justify-between p-0.5 rounded-t-lg transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-1 focus:ring-offset-[#1A1A2E] select-none ${
+      className={`group relative w-6 h-7 sm:w-7 sm:h-7.5 md:w-7.5 md:h-8 flex flex-col items-center justify-center transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-1 focus:ring-offset-[#1A1A2E] select-none ${
         isClickable ? "hover:scale-105 active:scale-95 cursor-pointer" : "cursor-not-allowed"
       }`}
     >
-      {/* 1. Encosto superior ergonomico com curvatura suave */}
+      {/* 1. Encosto superior ergonômico contínuo (unido diretamente ao assento, sem vão) */}
       <div
-        className={`w-5 sm:w-6 md:w-7 h-2 sm:h-2.5 rounded-t-md shadow-xs transition-colors duration-150 ${style.backrest}`}
+        className={`w-[78%] h-2 sm:h-2.5 rounded-t-md transition-colors duration-150 ${style.backrest}`}
       />
 
-      {/* 2. Regiao do assento e apoios de braco laterais */}
-      <div className="w-full flex items-center justify-between gap-0.5">
-        {/* Apoio de braco esquerdo */}
+      {/* 2. Região do assento e apoios de braço laterais integrados */}
+      <div className="w-full flex items-stretch justify-center">
+        {/* Apoio de braço esquerdo */}
         <div
-          className={`w-1 sm:w-1 h-4 sm:h-5 rounded-full shadow-xs transition-colors duration-150 ${style.armrest}`}
+          className={`w-1 rounded-l-[4px] rounded-tl-[2px] transition-colors duration-150 ${style.armrest}`}
         />
 
-        {/* Assento / Almofada central */}
+        {/* Assento / Almofada central contínua com número */}
         <div
-          className={`flex-1 h-4 sm:h-5 rounded-sm border flex items-center justify-center font-bold transition-all duration-150 shadow-xs ${style.cushion}`}
+          className={`flex-1 h-4 sm:h-4.5 rounded-b-[4px] border-b border-x flex items-center justify-center font-bold transition-all duration-150 ${style.cushion}`}
         >
           {effectiveStatus === "SELECTED" ? (
-            <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3] text-white" />
+            <Check className="w-3 h-3 stroke-[3] text-white" />
           ) : (
-            <span className="text-[9px] sm:text-[10px] md:text-xs leading-none">
+            <span className="text-[9px] sm:text-[10px] md:text-[11px] font-bold leading-none select-none">
               {seat.columnNumber}
             </span>
           )}
         </div>
 
-        {/* Apoio de braco direito */}
+        {/* Apoio de braço direito */}
         <div
-          className={`w-1 sm:w-1 h-4 sm:h-5 rounded-full shadow-xs transition-colors duration-150 ${style.armrest}`}
+          className={`w-1 rounded-r-[4px] rounded-tr-[2px] transition-colors duration-150 ${style.armrest}`}
         />
       </div>
     </button>
