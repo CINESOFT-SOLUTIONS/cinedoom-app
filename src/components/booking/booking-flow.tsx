@@ -643,18 +643,18 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       {currentStep === 1 && (
         <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-stretch">
-            {/* Coluna Esquerda: Filme Selecionado + Cinema + Seletor de Datas */}
-            <div className="lg:col-span-4 flex flex-col gap-2.5">
-              {/* Card Compacto do Filme */}
+            {/* Coluna Esquerda: Filme Selecionado com Sinopse Completa + Seletor de Datas */}
+            <div className="lg:col-span-5 flex flex-col gap-2.5">
+              {/* Card do Filme com Sinopse Completa */}
               {selectedFilm && (
-                <div className="p-3 sm:p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md flex gap-3.5 items-center">
-                  <div className="relative aspect-[2/3] w-16 sm:w-20 rounded-lg overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-sm shrink-0">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md flex gap-3.5 items-start">
+                  <div className="relative aspect-[2/3] w-20 sm:w-24 rounded-lg overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-sm shrink-0">
                     {selectedFilm.posterUrl ? (
                       <Image
                         src={selectedFilm.posterUrl}
                         alt={selectedFilm.title}
                         fill
-                        sizes="80px"
+                        sizes="96px"
                         className="object-cover"
                         unoptimized
                       />
@@ -668,35 +668,32 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                     </div>
                   </div>
 
-                  <div className="flex-1 min-w-0 space-y-0.5">
+                  <div className="flex-1 min-w-0 space-y-1">
                     <span className="text-[10px] font-bold text-cta uppercase tracking-wider block truncate">
                       Filme Selecionado
                     </span>
-                    <h1 className="text-sm sm:text-base font-bold text-white leading-tight truncate">
+                    <h1 className="text-sm sm:text-base font-bold text-white leading-tight">
                       {selectedFilm.title}
                     </h1>
-                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400 truncate">
-                      <span className="truncate">{getPrimaryGenre(selectedFilm.genre)}</span>
+                    <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-400">
+                      <span>{getPrimaryGenre(selectedFilm.genre)}</span>
                       <span>•</span>
                       <span className="font-mono">{formatDuration(selectedFilm.duration)}</span>
+                      {selectedFilm.director && (
+                        <>
+                          <span>•</span>
+                          <span>Dir. {selectedFilm.director}</span>
+                        </>
+                      )}
                     </div>
                     {selectedFilm.synopsis && (
-                      <p className="text-[10px] text-slate-400/90 line-clamp-2 pt-0.5 leading-snug">
+                      <p className="text-xs text-slate-300/90 pt-1 leading-relaxed">
                         {selectedFilm.synopsis}
                       </p>
                     )}
                   </div>
                 </div>
               )}
-
-              {/* Informações do Cinema */}
-              <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
-                <div className="flex items-center gap-2 truncate">
-                  <MapPin className="w-3.5 h-3.5 text-cta shrink-0" />
-                  <span className="font-bold text-white text-[11px] truncate">CineDoom Prime Cinemas</span>
-                </div>
-                <span className="text-[10px] text-slate-400 shrink-0">Shopping Cidade</span>
-              </div>
 
               {/* Seletor de Datas Compacto */}
               <div className="p-3 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
@@ -705,7 +702,7 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                     <Calendar className="w-3.5 h-3.5 text-cta" />
                     <span>Escolha a Data</span>
                   </span>
-                  <span className="text-[10px] text-slate-400">7 dias</span>
+                  <span className="text-[10px] text-slate-400">7 dias disponíveis</span>
                 </div>
 
                 <div className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-4 gap-1.5">
@@ -732,15 +729,12 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
             </div>
 
             {/* Coluna Direita: Salas e Horários Agrupados */}
-            <div className="lg:col-span-8 p-3.5 sm:p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md flex flex-col justify-start gap-3">
+            <div className="lg:col-span-7 p-3.5 sm:p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md flex flex-col justify-start gap-3">
               <div className="flex items-center justify-between border-b border-white/10 pb-2">
                 <h2 className="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
                   <Ticket className="w-4 h-4 text-cta" />
-                  <span>Salas &amp; Horários Disponíveis</span>
+                  <span>Escolha uma sessão</span>
                 </h2>
-                <span className="text-[11px] text-slate-400">
-                  {roomNames.length} {roomNames.length === 1 ? "sala configurada" : "salas configuradas"}
-                </span>
               </div>
 
               {roomNames.length === 0 ? (

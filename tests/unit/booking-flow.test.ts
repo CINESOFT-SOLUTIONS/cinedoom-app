@@ -52,7 +52,7 @@ describe("Reformulação do Fluxo de Reservas do CineDoom (4 Etapas Sequenciais)
       expect(html).toContain('aria-label="Progresso da Reserva"');
     });
 
-    it("inicia na Etapa 1 com seleção de datas e informações do cinema", () => {
+    it("inicia na Etapa 1 com seleção de datas e escolha de sessão", () => {
       const html = renderToStaticMarkup(
         React.createElement(BookingFlow, {
           initialFilmId: "film-01",
@@ -61,8 +61,7 @@ describe("Reformulação do Fluxo de Reservas do CineDoom (4 Etapas Sequenciais)
 
       // Elementos da Etapa 1
       expect(html).toContain("Escolha a Data");
-      expect(html).toContain("CineDoom Prime Cinemas");
-      expect(html).toContain("Salas &amp; Horários Disponíveis");
+      expect(html).toContain("Escolha uma sessão");
       expect(html).toContain("Hoje");
       expect(html).toContain("Amanhã");
     });
