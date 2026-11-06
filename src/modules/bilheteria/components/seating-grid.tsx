@@ -127,8 +127,8 @@ const SeatButton = React.memo(function SeatButton({
       data-testid={`seat-${code}`}
       data-seat-id={seat.id}
       data-status={effectiveStatus}
-      className={`group relative w-7 h-8 sm:w-8 sm:h-9 md:w-9 md:h-10 flex flex-col items-center justify-between p-0.5 rounded-t-lg transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-1 focus:ring-offset-[#1A1A2E] select-none ${
-        isClickable ? "hover:scale-110 active:scale-95 cursor-pointer" : "cursor-not-allowed"
+      className={`group relative w-6 h-7 sm:w-7 sm:h-7.5 md:w-7.5 md:h-8 flex flex-col items-center justify-between p-0.5 rounded-t-lg transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-1 focus:ring-offset-[#1A1A2E] select-none ${
+        isClickable ? "hover:scale-105 active:scale-95 cursor-pointer" : "cursor-not-allowed"
       }`}
     >
       {/* 1. Encosto superior ergonomico com curvatura suave */}
@@ -221,19 +221,19 @@ export function SeatingGrid({
   }, [selectedSeatsList, unitPrice]);
 
   return (
-    <div className={`flex flex-col items-center w-full max-w-4xl mx-auto space-y-3 sm:space-y-4 ${className}`}>
+    <div className={`flex flex-col items-center w-full max-w-4xl mx-auto space-y-1.5 sm:space-y-2 ${className}`}>
       {/* Visual da Tela de Projecao Curvada */}
       {showScreen && (
-        <div className="w-full flex flex-col items-center mb-1 pt-1 select-none">
-          <div className="relative w-full max-w-2xl px-4 flex flex-col items-center">
+        <div className="w-full flex flex-col items-center mb-0.5 pt-0.5 select-none">
+          <div className="relative w-full max-w-xl px-4 flex flex-col items-center">
             {/* Feixe sutil de iluminacao difusa da tela */}
-            <div className="w-3/4 max-w-lg h-4 bg-gradient-to-b from-[#E94560]/15 via-[#E94560]/5 to-transparent blur-sm rounded-t-full pointer-events-none" />
+            <div className="w-3/4 max-w-md h-3 bg-gradient-to-b from-[#E94560]/15 via-[#E94560]/5 to-transparent blur-xs rounded-t-full pointer-events-none" />
 
             {/* SVG da Tela Curvada */}
-            <div className="w-full max-w-lg -mt-2 flex flex-col items-center">
+            <div className="w-full max-w-md -mt-2 flex flex-col items-center">
               <svg
                 viewBox="0 0 500 45"
-                className="w-full h-6 sm:h-8 text-[#E94560] overflow-visible drop-shadow-[0_0_15px_rgba(233,69,96,0.6)]"
+                className="w-full h-5 sm:h-6 text-[#E94560] overflow-visible drop-shadow-[0_0_15px_rgba(233,69,96,0.6)]"
                 aria-hidden="true"
               >
                 <defs>
@@ -254,8 +254,8 @@ export function SeatingGrid({
                 />
               </svg>
 
-              <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold tracking-widest uppercase text-gray-400 mt-1 shadow-[0_0_15px_rgba(233,69,96,0.6)]">
-                <Monitor className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#E94560]" />
+              <div className="flex items-center gap-2 text-[9px] sm:text-[10px] font-bold tracking-widest uppercase text-gray-400 mt-0.5 shadow-[0_0_15px_rgba(233,69,96,0.6)]">
+                <Monitor className="w-3 h-3 text-[#E94560]" />
                 <span>TELA / PROJECAO</span>
               </div>
             </div>
@@ -264,8 +264,8 @@ export function SeatingGrid({
       )}
 
       {/* Dica de arraste horizontal no celular */}
-      <div className="md:hidden flex items-center justify-center gap-1.5 text-[10px] text-gray-400 py-0.5 px-2.5 rounded-full bg-white/5 border border-white/10 select-none">
-        <MoveHorizontal className="w-3 h-3 text-[#E94560] animate-pulse" />
+      <div className="md:hidden flex items-center justify-center gap-1.5 text-[9px] text-gray-400 py-0.5 px-2 rounded-full bg-white/5 border border-white/10 select-none">
+        <MoveHorizontal className="w-2.5 h-2.5 text-[#E94560] animate-pulse" />
         <span>Arraste para os lados para visualizar todos os assentos</span>
       </div>
 
@@ -273,9 +273,9 @@ export function SeatingGrid({
       <div
         role="grid"
         aria-label="Mapa interativo de assentos"
-        className="w-full overflow-x-auto pb-2 flex flex-col items-center touch-pan-x"
+        className="w-full overflow-x-auto pb-1 flex flex-col items-center touch-pan-x"
       >
-        <div className="min-w-fit space-y-1.5 sm:space-y-2 md:space-y-2.5 p-1">
+        <div className="min-w-fit space-y-1 sm:space-y-1.5 md:space-y-1.5 p-0.5">
           {groupedRows.map(({ label, seats: rowSeats }) => {
             const hasCentralAisle = rowSeats.length >= 4;
             const splitIndex = hasCentralAisle ? Math.ceil(rowSeats.length / 2) : rowSeats.length;

@@ -838,100 +838,139 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       {/* ========================================================================= */}
       {/* ETAPA 2: ASSENTOS (Otimização do Viewport: Tela, Fileiras e Controles)    */}
       {/* ========================================================================= */}
+      {/* ETAPA 2: ASSENTOS (Layout 2 Colunas no Desktop: Sem Rolagem Vertical)     */}
+      {/* ========================================================================= */}
       {currentStep === 2 && (
         <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
-          {/* Barra Superior Compacta */}
-          <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#121829]/90 border border-white/10 shadow-sm mb-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setCurrentStep(1)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Voltar para Sessões</span>
-            </button>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+            {/* Coluna Lateral: Resumo da Sessão, Poltronas, Legenda e Ação */}
+            <div className="lg:col-span-4 flex flex-col gap-2.5">
+              {/* Card de Sessão e Voltar */}
+              <div className="p-3 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(1)}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Voltar para Sessões</span>
+                </button>
 
-            <div className="flex items-center gap-3 text-xs">
-              <span className="text-slate-300 font-semibold hidden sm:inline-block">
-                {selectedFilm?.title} • {sessionDetail?.room.name || "Sala"}
-              </span>
-              <span className="px-2 py-0.5 rounded bg-cta/20 text-cta border border-cta/30 font-bold font-mono">
-                {sessionDetail?.startsAt
-                  ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
+                <div className="border-t border-white/10 pt-2 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xs sm:text-sm font-bold text-white leading-tight">
+                      {selectedFilm?.title}
+                    </h2>
+                    <span className="text-[11px] text-slate-400">
+                      {sessionDetail?.room.name || "Sala"}
+                    </span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-lg bg-cta/20 text-cta border border-cta/30 font-bold font-mono text-xs shrink-0">
+                    {sessionDetail?.startsAt
+                      ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "Horário"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Card de Poltronas Selecionadas & Botão de Avanço */}
+              <div className="p-3 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
+                    Poltronas ({selectedSeatIds.length}/5)
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-mono">
+                    R$ {unitPrice.toFixed(2)} un
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-1 min-h-[30px] items-center">
+                  {selectedSeatIds.length === 0 ? (
+                    <span className="text-slate-400 text-xs italic">
+                      Toque nas poltronas brancas no mapa ao lado
+                    </span>
+                  ) : (
+                    selectedSeatIds.map((id) => {
+                      const s = seats.find((st) => st.id === id);
+                      return (
+                        <span
+                          key={id}
+                          className="px-2 py-0.5 rounded-md bg-cta/20 text-cta border border-cta/30 text-xs font-bold font-mono"
+                        >
+                          {s?.seatCode || id.slice(-2)}
+                        </span>
+                      );
                     })
-                  : "Horário"}
-              </span>
-            </div>
-          </div>
+                  )}
+                </div>
 
-          {/* Componente SeatingGrid com espaçamento otimizado para não rolar */}
-          <div className="p-3 sm:p-4 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-xl flex-1 flex flex-col justify-center">
-            {seatsLoading && seats.length === 0 ? (
-              <div className="py-12 flex flex-col items-center justify-center space-y-2">
-                <div className="w-8 h-8 border-2 border-cta border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs text-slate-400">Carregando poltronas...</span>
+                <button
+                  type="button"
+                  disabled={selectedSeatIds.length === 0 || isSubmitting}
+                  onClick={handleProceedToTickets}
+                  className={`w-full py-2.5 rounded-xl font-bold text-xs tracking-wide shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                    selectedSeatIds.length === 0 || isSubmitting
+                      ? "bg-slate-700/50 text-slate-400 cursor-not-allowed opacity-50"
+                      : "bg-cta hover:bg-cta-hover text-white shadow-cta/30 active:scale-95"
+                  }`}
+                >
+                  <span>Continuar para Ingressos ({selectedSeatIds.length})</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
-            ) : (
-              <SeatingGrid
-                seats={seats}
-                selectedSeatIds={selectedSeatIds}
-                onSeatToggle={handleSeatToggle}
-                maxSelection={5}
-                unitPrice={unitPrice}
-                showLegend={true}
-                showScreen={true}
-                showSummary={false}
-              />
-            )}
-          </div>
 
-          {/* Barra de Ações Integrada Inferior */}
-          <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#121829]/95 border border-white/10 shadow-md mt-2 shrink-0">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="text-slate-400">Selecionadas ({selectedSeatIds.length}/5):</span>
-              <div className="flex flex-wrap gap-1">
-                {selectedSeatIds.length === 0 ? (
-                  <span className="text-slate-400 text-[11px]">Nenhuma poltrona escolhida</span>
-                ) : (
-                  selectedSeatIds.map((id) => {
-                    const s = seats.find((st) => st.id === id);
-                    return (
-                      <span
-                        key={id}
-                        className="px-1.5 py-0.5 rounded bg-cta/20 text-cta border border-cta/30 text-[11px] font-bold font-mono"
-                      >
-                        {s?.seatCode || id.slice(-2)}
-                      </span>
-                    );
-                  })
-                )}
+              {/* Legenda Cromática Oficial CineDoom */}
+              <div className="p-2.5 sm:p-3 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                  Legenda de Assentos
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-2 text-[11px] text-slate-300">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded bg-white border border-slate-300 shadow-xs shadow-white/30" />
+                    <span>Disponível</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded bg-[#E94560] border border-[#D63D56] shadow-xs shadow-[#E94560]/40" />
+                    <span>Selecionado</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded bg-[#EF4444]/20 border border-[#EF4444]/40" />
+                    <span className="text-gray-400">Vendido</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded bg-[#0F3460] border border-[#203A63] shadow-xs shadow-[#0F3460]/40" />
+                    <span className="text-gray-400">Reservado</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded bg-[#9CA3AF]/20 border border-[#9CA3AF]/40" />
+                    <span className="text-gray-400">Bloqueado</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setCurrentStep(1)}
-                className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
-              >
-                Alterar
-              </button>
-
-              <button
-                type="button"
-                disabled={selectedSeatIds.length === 0 || isSubmitting}
-                onClick={handleProceedToTickets}
-                className={`px-4 py-2 rounded-lg font-bold text-xs tracking-wide shadow-md transition-all flex items-center gap-1.5 cursor-pointer ${
-                  selectedSeatIds.length === 0 || isSubmitting
-                    ? "bg-slate-700/50 text-slate-400 cursor-not-allowed opacity-50"
-                    : "bg-cta hover:bg-cta-hover text-white shadow-cta/30 active:scale-95"
-                }`}
-              >
-                <span>Continuar para Ingressos ({selectedSeatIds.length})</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
+            {/* Coluna Central: Mapa de Assentos com Tela de Projeção */}
+            <div className="lg:col-span-8 p-2.5 sm:p-3 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-xl flex flex-col justify-center items-center">
+              {seatsLoading && seats.length === 0 ? (
+                <div className="py-12 flex flex-col items-center justify-center space-y-2">
+                  <div className="w-8 h-8 border-2 border-cta border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-slate-400">Carregando poltronas...</span>
+                </div>
+              ) : (
+                <SeatingGrid
+                  seats={seats}
+                  selectedSeatIds={selectedSeatIds}
+                  onSeatToggle={handleSeatToggle}
+                  maxSelection={5}
+                  unitPrice={unitPrice}
+                  showLegend={false}
+                  showScreen={true}
+                  showSummary={false}
+                />
+              )}
             </div>
           </div>
         </section>
