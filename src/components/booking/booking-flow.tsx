@@ -766,7 +766,11 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
   const roomNames = Object.keys(sessionsByRoom).sort();
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-3 text-white flex-1 flex flex-col justify-between">
+    <div
+      className={`w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-3 text-white flex-1 flex flex-col justify-between ${
+        holdExpiresAt ? "pb-16 sm:pb-16" : ""
+      }`}
+    >
       {/* 1. BARRA DE PROGRESSO SUPERIOR COMPACTA */}
       <nav
         aria-label="Progresso da Reserva"
@@ -1313,8 +1317,8 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
             </div>
           </div>
 
-          {/* Barra de Ações Inferior */}
-          <div className="flex items-center justify-between pt-3">
+          {/* Barra de Ações Inferior (Espaçamento para não sobrepor o contador fixo inferior) */}
+          <div className="flex items-center justify-between pt-3 pb-8 sm:pb-6">
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
@@ -1526,8 +1530,8 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                 </span>
               </label>
 
-              {/* Ações */}
-              <div className="flex items-center justify-between pt-1">
+              {/* Ações (Espaçamento para não sobrepor o contador fixo inferior) */}
+              <div className="flex items-center justify-between pt-1 pb-8 sm:pb-6">
                 <button
                   type="button"
                   onClick={() => setCurrentStep(3)}
