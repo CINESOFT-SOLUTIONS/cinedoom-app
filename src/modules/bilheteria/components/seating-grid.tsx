@@ -47,12 +47,12 @@ interface SeatStyleConfig {
 
 const statusColorClasses: Record<SeatChromaticStatus, SeatStyleConfig> = {
   AVAILABLE: {
-    base: "bg-[#3B82F6]",
-    backrest: "bg-[#2563EB] border border-[#1D4ED8] group-hover:bg-[#3B82F6]",
-    armrest: "bg-[#1D4ED8] border border-[#1E40AF] group-hover:bg-[#2563EB]",
+    base: "bg-white",
+    backrest: "bg-slate-100 border border-slate-300 group-hover:bg-white",
+    armrest: "bg-slate-200 border border-slate-300 group-hover:bg-slate-100",
     cushion:
-      "bg-[#3B82F6] border-[#2563EB] text-white group-hover:bg-[#60A5FA] group-hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] shadow-[#3B82F6]/30",
-    text: "text-white",
+      "bg-white border-slate-300 text-slate-900 font-bold group-hover:bg-slate-50 group-hover:shadow-[0_0_12px_rgba(255,255,255,0.7)] shadow-white/30",
+    text: "text-slate-900",
     label: "Disponivel",
   },
   SELECTED: {
@@ -73,11 +73,11 @@ const statusColorClasses: Record<SeatChromaticStatus, SeatStyleConfig> = {
     label: "Vendido",
   },
   RESERVED: {
-    base: "bg-[#F59E0B]",
-    backrest: "bg-[#D97706] border border-[#B45309] opacity-85",
-    armrest: "bg-[#B45309] border border-[#92400E] opacity-85",
-    cushion: "bg-[#F59E0B] border-[#D97706] text-amber-950 font-semibold opacity-90",
-    text: "text-amber-950",
+    base: "bg-[#0F3460]",
+    backrest: "bg-[#162B4D] border border-[#203A63] opacity-90",
+    armrest: "bg-[#0B2545] border border-[#162B4D] opacity-90",
+    cushion: "bg-[#0F3460] border-[#203A63] text-sky-200 font-semibold opacity-95 shadow-xs shadow-[#0F3460]/50",
+    text: "text-sky-200",
     label: "Reservado",
   },
   BLOCKED: {
@@ -343,11 +343,11 @@ export function SeatingGrid({
         </div>
       </div>
 
-      {/* Legenda Cromatica (Azul Royal Cinema para Disponivel) */}
+      {/* Legenda Cromática Oficial CineDoom */}
       {showLegend && (
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 md:gap-5 pt-2 border-t border-gray-800/80 text-[10px] sm:text-[11px] text-gray-300">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="w-3 h-3 rounded bg-[#3B82F6] border border-[#2563EB] shadow-xs shadow-[#3B82F6]/30" />
+            <span className="w-3 h-3 rounded bg-white border border-slate-300 shadow-xs shadow-white/30" />
             <span>Disponivel</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
@@ -356,11 +356,11 @@ export function SeatingGrid({
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="w-3 h-3 rounded bg-[#EF4444]/20 border border-[#EF4444]/40" />
-            <span className="text-gray-400">Vendido / Ocupado</span>
+            <span className="text-gray-400">Vendido</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="w-3 h-3 rounded bg-[#F59E0B] border border-[#D97706]" />
-            <span className="text-gray-400">Reservado (Online)</span>
+            <span className="w-3 h-3 rounded bg-[#0F3460] border border-[#203A63] shadow-xs shadow-[#0F3460]/40" />
+            <span className="text-gray-400">Reservado</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="w-3 h-3 rounded bg-[#9CA3AF]/20 border border-[#9CA3AF]/40" />

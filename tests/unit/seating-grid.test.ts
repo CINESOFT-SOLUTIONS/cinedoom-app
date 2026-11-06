@@ -35,8 +35,8 @@ describe("Componente SeatingGrid - Design System & Estados Cromáticos (TASK-17 
 
       expect(html).toContain("Disponivel");
       expect(html).toContain("Selecionado");
-      expect(html).toContain("Vendido / Ocupado");
-      expect(html).toContain("Reservado (Online)");
+      expect(html).toContain("Vendido");
+      expect(html).toContain("Reservado");
       expect(html).toContain("Bloqueado");
     });
 
@@ -54,7 +54,7 @@ describe("Componente SeatingGrid - Design System & Estados Cromáticos (TASK-17 
   });
 
   describe("Mapeamento de Estados Cromáticos e Acessibilidade ARIA", () => {
-    it("assento AVAILABLE possui cor azul royal (#3B82F6), tabIndex=0 e não está desabilitado", () => {
+    it("assento AVAILABLE possui cor branca (bg-white), tabIndex=0 e não está desabilitado", () => {
       const html = renderToStaticMarkup(
         React.createElement(SeatingGrid, {
           seats: mockSeats,
@@ -64,7 +64,7 @@ describe("Componente SeatingGrid - Design System & Estados Cromáticos (TASK-17 
 
       expect(html).toContain('data-testid="seat-A1"');
       expect(html).toContain('data-status="AVAILABLE"');
-      expect(html).toContain("bg-[#3B82F6]");
+      expect(html).toContain("bg-white");
       expect(html).toContain('aria-label="Fileira A, Assento 1 - Disponivel"');
       expect(html).toContain('tabindex="0"');
       expect(html).not.toContain('disabled="" data-testid="seat-A1"');
@@ -99,7 +99,7 @@ describe("Componente SeatingGrid - Design System & Estados Cromáticos (TASK-17 
       expect(html).toContain('tabindex="-1"');
     });
 
-    it("assento RESERVED possui cor âmbar (#F59E0B) e disabled=true", () => {
+    it("assento RESERVED possui cor da paleta CineDoom (#0F3460) e disabled=true", () => {
       const html = renderToStaticMarkup(
         React.createElement(SeatingGrid, {
           seats: mockSeats,
@@ -108,7 +108,7 @@ describe("Componente SeatingGrid - Design System & Estados Cromáticos (TASK-17 
 
       expect(html).toContain('data-testid="seat-B1"');
       expect(html).toContain('data-status="RESERVED"');
-      expect(html).toContain("bg-[#F59E0B]");
+      expect(html).toContain("bg-[#0F3460]");
       expect(html).toContain('disabled=""');
     });
 
