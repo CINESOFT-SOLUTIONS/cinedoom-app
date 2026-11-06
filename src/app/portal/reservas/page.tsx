@@ -16,9 +16,9 @@ function BookingFlowContainer() {
 
 export default function PortalReservasPage() {
   return (
-    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
+    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white lg:h-screen lg:overflow-hidden">
       <CineDoomHeader activePage="filmes" />
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full flex flex-col justify-between overflow-x-hidden lg:overflow-y-auto">
         <Suspense
           fallback={
             <div className="py-24 flex items-center justify-center">
@@ -29,7 +29,7 @@ export default function PortalReservasPage() {
           <BookingFlowContainer />
         </Suspense>
       </main>
-      <CineDoomFooter />
+      <CineDoomFooter className="lg:hidden" />
     </div>
   );
 }

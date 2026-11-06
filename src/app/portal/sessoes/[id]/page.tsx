@@ -11,12 +11,12 @@ export default function PortalSessionReservationPage() {
   const sessionId = params.id as string;
 
   return (
-    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
+    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white lg:h-screen lg:overflow-hidden">
       <CineDoomHeader activePage="filmes" />
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full flex flex-col justify-between overflow-x-hidden lg:overflow-y-auto">
         <BookingFlow initialSessionId={sessionId} />
       </main>
-      <CineDoomFooter />
+      <CineDoomFooter className="lg:hidden" />
     </div>
   );
 }

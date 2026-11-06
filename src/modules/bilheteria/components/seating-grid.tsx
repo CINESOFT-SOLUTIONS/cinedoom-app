@@ -221,19 +221,19 @@ export function SeatingGrid({
   }, [selectedSeatsList, unitPrice]);
 
   return (
-    <div className={`flex flex-col items-center w-full max-w-4xl mx-auto space-y-6 ${className}`}>
+    <div className={`flex flex-col items-center w-full max-w-4xl mx-auto space-y-3 sm:space-y-4 ${className}`}>
       {/* Visual da Tela de Projecao Curvada */}
       {showScreen && (
-        <div className="w-full flex flex-col items-center mb-4 pt-2 select-none">
+        <div className="w-full flex flex-col items-center mb-1 pt-1 select-none">
           <div className="relative w-full max-w-2xl px-4 flex flex-col items-center">
             {/* Feixe sutil de iluminacao difusa da tela */}
-            <div className="w-3/4 max-w-lg h-6 bg-gradient-to-b from-[#E94560]/15 via-[#E94560]/5 to-transparent blur-sm rounded-t-full pointer-events-none" />
+            <div className="w-3/4 max-w-lg h-4 bg-gradient-to-b from-[#E94560]/15 via-[#E94560]/5 to-transparent blur-sm rounded-t-full pointer-events-none" />
 
             {/* SVG da Tela Curvada */}
-            <div className="w-full max-w-lg -mt-3 flex flex-col items-center">
+            <div className="w-full max-w-lg -mt-2 flex flex-col items-center">
               <svg
                 viewBox="0 0 500 45"
-                className="w-full h-8 sm:h-9 text-[#E94560] overflow-visible drop-shadow-[0_0_15px_rgba(233,69,96,0.6)]"
+                className="w-full h-6 sm:h-8 text-[#E94560] overflow-visible drop-shadow-[0_0_15px_rgba(233,69,96,0.6)]"
                 aria-hidden="true"
               >
                 <defs>
@@ -254,8 +254,8 @@ export function SeatingGrid({
                 />
               </svg>
 
-              <div className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-gray-400 mt-2 shadow-[0_0_15px_rgba(233,69,96,0.6)]">
-                <Monitor className="w-3.5 h-3.5 text-[#E94560]" />
+              <div className="flex items-center gap-2 text-[10px] sm:text-xs font-bold tracking-widest uppercase text-gray-400 mt-1 shadow-[0_0_15px_rgba(233,69,96,0.6)]">
+                <Monitor className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#E94560]" />
                 <span>TELA / PROJECAO</span>
               </div>
             </div>
@@ -264,8 +264,8 @@ export function SeatingGrid({
       )}
 
       {/* Dica de arraste horizontal no celular */}
-      <div className="md:hidden flex items-center justify-center gap-1.5 text-[11px] text-gray-400 py-1 px-3 rounded-full bg-white/5 border border-white/10 select-none">
-        <MoveHorizontal className="w-3.5 h-3.5 text-[#E94560] animate-pulse" />
+      <div className="md:hidden flex items-center justify-center gap-1.5 text-[10px] text-gray-400 py-0.5 px-2.5 rounded-full bg-white/5 border border-white/10 select-none">
+        <MoveHorizontal className="w-3 h-3 text-[#E94560] animate-pulse" />
         <span>Arraste para os lados para visualizar todos os assentos</span>
       </div>
 
@@ -273,9 +273,9 @@ export function SeatingGrid({
       <div
         role="grid"
         aria-label="Mapa interativo de assentos"
-        className="w-full overflow-x-auto pb-4 flex flex-col items-center touch-pan-x"
+        className="w-full overflow-x-auto pb-2 flex flex-col items-center touch-pan-x"
       >
-        <div className="min-w-fit space-y-3 sm:space-y-3.5 md:space-y-4 p-2">
+        <div className="min-w-fit space-y-1.5 sm:space-y-2 md:space-y-2.5 p-1">
           {groupedRows.map(({ label, seats: rowSeats }) => {
             const hasCentralAisle = rowSeats.length >= 4;
             const splitIndex = hasCentralAisle ? Math.ceil(rowSeats.length / 2) : rowSeats.length;
@@ -345,25 +345,25 @@ export function SeatingGrid({
 
       {/* Legenda Cromatica (Azul Royal Cinema para Disponivel) */}
       {showLegend && (
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 pt-3 border-t border-gray-800 text-[11px] sm:text-xs text-gray-300">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 md:gap-5 pt-2 border-t border-gray-800/80 text-[10px] sm:text-[11px] text-gray-300">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-[#3B82F6] border border-[#2563EB] shadow-sm shadow-[#3B82F6]/30" />
+            <span className="w-3 h-3 rounded bg-[#3B82F6] border border-[#2563EB] shadow-xs shadow-[#3B82F6]/30" />
             <span>Disponivel</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-[#E94560] border border-[#D63D56] shadow-sm shadow-[#E94560]/40" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="w-3 h-3 rounded bg-[#E94560] border border-[#D63D56] shadow-xs shadow-[#E94560]/40" />
             <span>Selecionado</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-[#EF4444]/20 border border-[#EF4444]/40" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="w-3 h-3 rounded bg-[#EF4444]/20 border border-[#EF4444]/40" />
             <span className="text-gray-400">Vendido / Ocupado</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-[#F59E0B] border border-[#D97706]" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="w-3 h-3 rounded bg-[#F59E0B] border border-[#D97706]" />
             <span className="text-gray-400">Reservado (Online)</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-[#9CA3AF]/20 border border-[#9CA3AF]/40" />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="w-3 h-3 rounded bg-[#9CA3AF]/20 border border-[#9CA3AF]/40" />
             <span className="text-gray-400">Bloqueado</span>
           </div>
         </div>

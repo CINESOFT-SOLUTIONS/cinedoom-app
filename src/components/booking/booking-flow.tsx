@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,11 +14,8 @@ import {
   AlertTriangle,
   ArrowLeft,
   ArrowRight,
-  ShieldCheck,
   User,
   Mail,
-  CreditCard,
-  RefreshCw,
   Film,
   Info,
   Check,
@@ -140,7 +137,6 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
           const data: FilmItem[] = await res.json();
           setAvailableFilms(data);
 
-          // Se veio filme inicial, seleciona
           if (initialFilmId) {
             const found = data.find((f) => f.id === initialFilmId);
             if (found) setSelectedFilm(found);
@@ -157,14 +153,14 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     loadCatalog();
   }, [initialFilmId]);
 
-  // 3. Se veio initialSessionId, carrega a sessao imediatamente e posiciona
+  // 3. Se veio initialSessionId, posiciona
   useEffect(() => {
     if (initialSessionId) {
       setSelectedSessionId(initialSessionId);
     }
   }, [initialSessionId]);
 
-  // 4. Carrega detalhes da sessao selecionada
+  // 4. Carrega detalhes da sessão selecionada
   useEffect(() => {
     if (!selectedSessionId) return;
 
@@ -175,7 +171,6 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
           const data: SessionPortalDetail = await res.json();
           setSessionDetail(data);
 
-          // Sincroniza filme selecionado com a sessão
           if (data.film) {
             setSelectedFilm((prev) => {
               if (prev && prev.id === data.film.id) return prev;
@@ -200,11 +195,10 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     loadSession();
   }, [selectedSessionId]);
 
-  // 5. Polling de Assentos (Etapa 2) - Consulta pública sem exigir login
+  // 5. Polling de Assentos (Etapa 2)
   const fetchSeats = useCallback(async () => {
     if (!selectedSessionId) return;
     try {
-      // Tenta rota pública primeiro, fallback para rota canônica
       const res = await fetch(`/api/portal/sessoes/${selectedSessionId}/assentos`, {
         cache: "no-store",
       }).catch(() => null);
@@ -224,8 +218,6 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
 
       if (data && Array.isArray(data)) {
         setSeats(data);
-
-        // Se algum assento selecionado foi vendido por outrem, remove
         setSelectedSeatIds((prev) =>
           prev.filter((id) => {
             const current = data?.find((s) => s.id === id);
@@ -247,7 +239,7 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     }
   }, [selectedSessionId, currentStep, fetchSeats]);
 
-  // 6. Preenche dados do comprador a partir da autenticação quando disponível
+  // 6. Preenche dados do comprador a partir da autenticação
   useEffect(() => {
     if (authSession?.user) {
       if (authSession.user.name && !buyerName) setBuyerName(authSession.user.name);
@@ -259,7 +251,6 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
   useEffect(() => {
     const seatCount = selectedSeatIds.length;
     if (seatCount > 0) {
-      // Se a soma atual for diferente da quantidade de assentos, define inteira como padrão
       setTicketQuantities((prev) => {
         const currentSum = prev.inteira + prev.meia;
         if (currentSum !== seatCount) {
@@ -272,7 +263,7 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     }
   }, [selectedSeatIds.length]);
 
-  // 8. Cronômetro regressivo dos 10 minutos (iniciado na Etapa 3 ou se holdExpiresAt estiver ativo)
+  // 8. Cronômetro regressivo dos 10 minutos
   useEffect(() => {
     if (!holdExpiresAt) return;
 
@@ -332,21 +323,21 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     [selectedFilm?.id, selectedSessionId, selectedSeatIds, ticketQuantities, holdToken, holdExpiresAt]
   );
 
-  // Calcula valores monetários
+  // Valores monetários
   const unitPrice = sessionDetail?.price || 35.0;
   const inteiraPrice = unitPrice;
   const meiaPrice = unitPrice * 0.5;
   const totalAmount =
     ticketQuantities.inteira * inteiraPrice + ticketQuantities.meia * meiaPrice;
 
-  // Formatação MM:SS para o contador
+  // Formatação MM:SS
   const formattedCountdown = useMemo(() => {
     const mins = Math.floor(remainingSeconds / 60);
     const secs = remainingSeconds % 60;
     return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   }, [remainingSeconds]);
 
-  // Handlers de Navegação entre Etapas
+  // Handlers de Navegação
   const handleSelectSession = (sessId: string) => {
     setSelectedSessionId(sessId);
     setErrorNotice(null);
@@ -371,7 +362,6 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     });
   };
 
-  // Avançar da Etapa 2 para a Etapa 3: Inicia Bloqueio Temporário de 10 minutos
   const handleProceedToTickets = async () => {
     if (selectedSeatIds.length === 0) {
       setErrorNotice("Por favor, selecione ao menos uma poltrona no mapa para continuar.");
@@ -415,7 +405,6 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       saveStateToStorage(3, data.holdToken, expiresTimestamp);
     } catch (err) {
       console.error("Erro ao bloquear assentos:", err);
-      // Se offline/mock, avança com timer local
       const expiresTimestamp = Date.now() + 10 * 60 * 1000;
       setHoldExpiresAt(expiresTimestamp);
       setCurrentStep(3);
@@ -424,7 +413,6 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     }
   };
 
-  // Avançar da Etapa 3 para a Etapa 4: Exige Autenticação
   const handleProceedToSummary = () => {
     setErrorNotice(null);
 
@@ -441,10 +429,8 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       return;
     }
 
-    // Salva estado antes de verificar autenticação
     saveStateToStorage(4);
 
-    // Se NÃO estiver autenticado, abre o modal existente de autenticação
     if (authStatus !== "authenticated" || !authSession?.user) {
       openLogin({
         redirectOnLogin: false,
@@ -456,11 +442,9 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       return;
     }
 
-    // Se já estiver autenticado, avança direto para o Resumo
     setCurrentStep(4);
   };
 
-  // Confirmar Reserva (Etapa 4)
   const handleConfirmReservation = async () => {
     setErrorNotice(null);
 
@@ -517,7 +501,6 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
         return;
       }
 
-      // Limpa rascunho de storage e redireciona para o comprovante
       try {
         sessionStorage.removeItem(STORAGE_KEY);
       } catch {}
@@ -566,7 +549,6 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       map[room].push(sess);
     });
 
-    // Ordena horários em cada sala
     Object.keys(map).forEach((r) => {
       map[r].sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
     });
@@ -577,14 +559,16 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
   const roomNames = Object.keys(sessionsByRoom).sort();
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-6 pb-28 text-white space-y-6">
-      {/* 1. BARRA DE PROGRESSO SUPERIOR (4 ETAPAS SEQUENCIAIS) */}
-      <nav aria-label="Progresso da Reserva" className="w-full bg-[#121829]/90 border border-white/10 rounded-2xl p-4 sm:p-5 shadow-xl backdrop-blur-md">
-        <div className="flex items-center justify-between relative max-w-3xl mx-auto">
-          {/* Linha de Conexão entre Etapas */}
-          <div className="absolute top-1/2 left-6 right-6 -translate-y-1/2 h-0.5 bg-white/10 -z-0" />
+    <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-3 text-white flex-1 flex flex-col justify-between">
+      {/* 1. BARRA DE PROGRESSO SUPERIOR COMPACTA */}
+      <nav
+        aria-label="Progresso da Reserva"
+        className="w-full bg-[#121829]/95 border border-white/10 rounded-xl px-4 py-2 sm:py-2.5 shadow-md backdrop-blur-md mb-2 sm:mb-3 shrink-0"
+      >
+        <div className="flex items-center justify-between relative max-w-2xl mx-auto">
+          <div className="absolute top-1/2 left-5 right-5 -translate-y-1/2 h-0.5 bg-white/10 -z-0" />
           <div
-            className="absolute top-1/2 left-6 -translate-y-1/2 h-0.5 bg-cta transition-all duration-300 -z-0"
+            className="absolute top-1/2 left-5 -translate-y-1/2 h-0.5 bg-cta transition-all duration-300 -z-0"
             style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
           />
 
@@ -593,10 +577,9 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
             { step: 2, label: "Assentos", icon: Ticket },
             { step: 3, label: "Ingressos", icon: Sparkles },
             { step: 4, label: "Resumo", icon: CheckCircle },
-          ].map(({ step, label, icon: StepIcon }) => {
+          ].map(({ step, label }) => {
             const isCompleted = step < currentStep;
             const isCurrent = step === currentStep;
-            const isPending = step > currentStep;
             const canClick = isCompleted;
 
             return (
@@ -605,23 +588,23 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                 type="button"
                 disabled={!canClick}
                 onClick={() => canClick && setCurrentStep(step as BookingStep)}
-                className={`relative z-10 flex flex-col items-center gap-1.5 group outline-none ${
+                className={`relative z-10 flex items-center gap-1.5 sm:gap-2 group outline-none ${
                   canClick ? "cursor-pointer" : "cursor-default"
                 }`}
               >
                 <div
-                  className={`w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all duration-200 border-2 ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-150 border-2 ${
                     isCompleted
-                      ? "bg-cta border-cta text-white shadow-md shadow-cta/30"
+                      ? "bg-cta border-cta text-white shadow-xs shadow-cta/30"
                       : isCurrent
-                      ? "bg-[#1A2238] border-cta text-cta ring-4 ring-cta/20 shadow-lg scale-110"
+                      ? "bg-[#1A2238] border-cta text-cta ring-2 ring-cta/25 shadow-sm scale-105"
                       : "bg-[#0A0E1A] border-white/20 text-slate-400 opacity-60"
                   }`}
                 >
-                  {isCompleted ? <Check className="w-4 h-4 sm:w-5 sm:h-5 stroke-[3]" /> : step}
+                  {isCompleted ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : step}
                 </div>
                 <span
-                  className={`text-[10px] sm:text-xs font-semibold tracking-wide uppercase ${
+                  className={`text-[10px] sm:text-xs font-semibold tracking-wide uppercase hidden xs:inline-block ${
                     isCurrent
                       ? "text-white font-bold"
                       : isCompleted
@@ -637,15 +620,17 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
         </div>
       </nav>
 
-      {/* Alerta de Erro Global */}
+      {/* Alerta de Erro Compacto */}
       {errorNotice && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-start gap-3 text-sm animate-in fade-in duration-200">
-          <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-          <div className="flex-1 font-medium">{errorNotice}</div>
+        <div className="p-2.5 sm:p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center justify-between gap-2 text-xs mb-2 shrink-0 animate-in fade-in duration-150">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <span className="font-medium">{errorNotice}</span>
+          </div>
           <button
             type="button"
             onClick={() => setErrorNotice(null)}
-            className="text-rose-400 hover:text-white text-xs font-bold uppercase"
+            className="text-rose-400 hover:text-white text-[10px] font-bold uppercase shrink-0"
           >
             Fechar
           </button>
@@ -653,229 +638,224 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       )}
 
       {/* ========================================================================= */}
-      {/* ETAPA 1: SESSÕES (Filme, Seletor de Datas, Salas e Horários Interativos) */}
+      {/* ETAPA 1: SESSÕES (Layout 2 Colunas no Desktop: Sem Rolagem Vertical)      */}
       {/* ========================================================================= */}
       {currentStep === 1 && (
-        <section className="space-y-6 animate-in fade-in duration-200">
-          {/* Cabeçalho com Informações do Filme Selecionado */}
-          {selectedFilm && (
-            <div className="p-4 sm:p-6 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-lg flex flex-col sm:flex-row gap-5 items-center sm:items-start">
-              <div className="relative aspect-[2/3] w-28 sm:w-36 rounded-xl overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-md shrink-0">
-                {selectedFilm.posterUrl ? (
-                  <Image
-                    src={selectedFilm.posterUrl}
-                    alt={selectedFilm.title}
-                    fill
-                    sizes="144px"
-                    className="object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-600">
-                    <Film className="w-8 h-8 opacity-40" />
-                  </div>
-                )}
-                <div className="absolute top-2 left-2 z-10">
-                  <AgeRatingBadge rating={selectedFilm.classification} />
-                </div>
-              </div>
-
-              <div className="flex-1 space-y-2 text-center sm:text-left">
-                <span className="text-xs font-bold text-cta uppercase tracking-widest block">
-                  Filme Selecionado
-                </span>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white leading-tight">
-                  {selectedFilm.title}
-                </h1>
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs text-slate-400">
-                  <span className="font-semibold text-slate-300">
-                    {getPrimaryGenre(selectedFilm.genre)}
-                  </span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1 font-mono">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    {formatDuration(selectedFilm.duration)}
-                  </span>
-                  {selectedFilm.director && (
-                    <>
-                      <span>•</span>
-                      <span>Dir. {selectedFilm.director}</span>
-                    </>
-                  )}
-                </div>
-                {selectedFilm.synopsis && (
-                  <p className="text-xs sm:text-sm text-slate-300/90 line-clamp-3 pt-1">
-                    {selectedFilm.synopsis}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Informações do Cinema */}
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-cta" />
-              <span className="font-bold text-white">CineDoom Prime Cinemas</span>
-              <span className="text-slate-400">• Shopping Cidade - Piso 3</span>
-            </div>
-            <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-              <span>Projeção Digital Laser 4K</span>
-            </div>
-          </div>
-
-          {/* Seletor de Datas Disponíveis */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-cta" />
-                <span>Escolha a Data</span>
-              </h2>
-              <span className="text-xs text-slate-400">7 dias disponíveis</span>
-            </div>
-
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-              {dateTabs.map((tab) => {
-                const isSelected = selectedDateIndex === tab.index;
-                return (
-                  <button
-                    key={tab.index}
-                    type="button"
-                    onClick={() => setSelectedDateIndex(tab.index)}
-                    className={`flex flex-col items-center px-4 py-2.5 rounded-xl text-xs font-semibold shrink-0 transition-all cursor-pointer ${
-                      isSelected
-                        ? "bg-cta text-white shadow-lg shadow-cta/30 scale-105"
-                        : "bg-[#121829] hover:bg-white/10 text-slate-300 hover:text-white border border-white/10"
-                    }`}
-                  >
-                    <span className="text-[10px] uppercase tracking-wider">{tab.dayName}</span>
-                    <span className="text-sm font-bold font-mono">{tab.dayNumber}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Salas e Horários Agrupados */}
-          <div className="space-y-4">
-            <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-              <Ticket className="w-4 h-4 text-cta" />
-              <span>Salas & Horários Disponíveis</span>
-            </h2>
-
-            {roomNames.length === 0 ? (
-              <div className="py-12 text-center space-y-2 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
-                <Ticket className="w-10 h-10 text-slate-600 mx-auto opacity-70" />
-                <p className="text-sm font-semibold text-rose-400/90">
-                  Nenhuma sessão disponível para esta data.
-                </p>
-                <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                  Consulte os outros dias nas abas de data acima para encontrar horários abertos.
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {roomNames.map((roomName) => {
-                  const roomSessions = sessionsByRoom[roomName];
-                  const category = getRoomExperienceCategory(roomName);
-                  const displayName = getRoomDisplayName(roomName);
-
-                  return (
-                    <div
-                      key={roomName}
-                      className="p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md flex flex-col justify-start gap-3 hover:border-white/20 transition-all"
-                    >
-                      <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
-                        <div className="flex items-center gap-1.5 truncate">
-                          <MapPin className="w-3.5 h-3.5 text-cta shrink-0" />
-                          <h3 className="text-xs font-bold text-white uppercase tracking-wider truncate">
-                            {displayName}
-                          </h3>
-                        </div>
-                        <span
-                          className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                            category === "IMAX"
-                              ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
-                              : category === "VIP"
-                              ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                              : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                          }`}
-                        >
-                          {category}
-                        </span>
+        <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-stretch">
+            {/* Coluna Esquerda: Filme Selecionado + Cinema + Seletor de Datas */}
+            <div className="lg:col-span-4 flex flex-col gap-2.5">
+              {/* Card Compacto do Filme */}
+              {selectedFilm && (
+                <div className="p-3 sm:p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md flex gap-3.5 items-center">
+                  <div className="relative aspect-[2/3] w-16 sm:w-20 rounded-lg overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-sm shrink-0">
+                    {selectedFilm.posterUrl ? (
+                      <Image
+                        src={selectedFilm.posterUrl}
+                        alt={selectedFilm.title}
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-600">
+                        <Film className="w-6 h-6 opacity-40" />
                       </div>
-
-                      {/* Botões interativos dos horários */}
-                      <div className="flex flex-wrap gap-2">
-                        {roomSessions.map((sess) => {
-                          const time = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          });
-                          const isSelected = selectedSessionId === sess.id;
-
-                          return (
-                            <button
-                              key={sess.id}
-                              type="button"
-                              onClick={() => handleSelectSession(sess.id)}
-                              className={`px-3.5 py-2 rounded-xl font-mono font-bold text-xs sm:text-sm tracking-wide transition-all cursor-pointer min-w-[72px] flex items-center justify-center ${
-                                isSelected
-                                  ? "bg-cta text-white ring-2 ring-white/80 scale-105 shadow-md shadow-cta/40"
-                                  : "bg-[#182035] hover:bg-cta hover:text-white border border-white/10 text-slate-200 shadow-xs"
-                              }`}
-                            >
-                              {time}
-                            </button>
-                          );
-                        })}
-                      </div>
+                    )}
+                    <div className="absolute top-1 left-1 z-10 scale-90 origin-top-left">
+                      <AgeRatingBadge rating={selectedFilm.classification} />
                     </div>
-                  );
-                })}
+                  </div>
+
+                  <div className="flex-1 min-w-0 space-y-0.5">
+                    <span className="text-[10px] font-bold text-cta uppercase tracking-wider block truncate">
+                      Filme Selecionado
+                    </span>
+                    <h1 className="text-sm sm:text-base font-bold text-white leading-tight truncate">
+                      {selectedFilm.title}
+                    </h1>
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400 truncate">
+                      <span className="truncate">{getPrimaryGenre(selectedFilm.genre)}</span>
+                      <span>•</span>
+                      <span className="font-mono">{formatDuration(selectedFilm.duration)}</span>
+                    </div>
+                    {selectedFilm.synopsis && (
+                      <p className="text-[10px] text-slate-400/90 line-clamp-2 pt-0.5 leading-snug">
+                        {selectedFilm.synopsis}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Informações do Cinema */}
+              <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300">
+                <div className="flex items-center gap-2 truncate">
+                  <MapPin className="w-3.5 h-3.5 text-cta shrink-0" />
+                  <span className="font-bold text-white text-[11px] truncate">CineDoom Prime Cinemas</span>
+                </div>
+                <span className="text-[10px] text-slate-400 shrink-0">Shopping Cidade</span>
               </div>
-            )}
+
+              {/* Seletor de Datas Compacto */}
+              <div className="p-3 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5 text-[11px]">
+                    <Calendar className="w-3.5 h-3.5 text-cta" />
+                    <span>Escolha a Data</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400">7 dias</span>
+                </div>
+
+                <div className="grid grid-cols-4 sm:grid-cols-7 lg:grid-cols-4 gap-1.5">
+                  {dateTabs.map((tab) => {
+                    const isSelected = selectedDateIndex === tab.index;
+                    return (
+                      <button
+                        key={tab.index}
+                        type="button"
+                        onClick={() => setSelectedDateIndex(tab.index)}
+                        className={`flex flex-col items-center py-1.5 px-1 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-cta text-white shadow-sm shadow-cta/30 scale-102"
+                            : "bg-[#0A0E1A] hover:bg-white/10 text-slate-300 hover:text-white border border-white/10"
+                        }`}
+                      >
+                        <span className="text-[9px] uppercase tracking-wider">{tab.dayName}</span>
+                        <span className="text-xs font-bold font-mono">{tab.dayNumber}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Coluna Direita: Salas e Horários Agrupados */}
+            <div className="lg:col-span-8 p-3.5 sm:p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md flex flex-col justify-start gap-3">
+              <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                <h2 className="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                  <Ticket className="w-4 h-4 text-cta" />
+                  <span>Salas &amp; Horários Disponíveis</span>
+                </h2>
+                <span className="text-[11px] text-slate-400">
+                  {roomNames.length} {roomNames.length === 1 ? "sala configurada" : "salas configuradas"}
+                </span>
+              </div>
+
+              {roomNames.length === 0 ? (
+                <div className="py-10 text-center space-y-1.5 bg-white/[0.02] border border-white/5 rounded-xl p-4">
+                  <Ticket className="w-8 h-8 text-slate-600 mx-auto opacity-70" />
+                  <p className="text-xs font-semibold text-rose-400/90">
+                    Nenhuma sessão disponível para esta data.
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    Consulte os outros dias no seletor de datas ao lado para encontrar horários.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2.5 items-start">
+                  {roomNames.map((roomName) => {
+                    const roomSessions = sessionsByRoom[roomName];
+                    const category = getRoomExperienceCategory(roomName);
+                    const displayName = getRoomDisplayName(roomName);
+
+                    return (
+                      <div
+                        key={roomName}
+                        className="p-3 rounded-xl bg-[#0B0F1A] border border-white/10 shadow-xs flex flex-col justify-start gap-2 hover:border-white/20 transition-all"
+                      >
+                        <div className="flex items-center justify-between border-b border-white/5 pb-1.5">
+                          <div className="flex items-center gap-1.5 truncate">
+                            <MapPin className="w-3 h-3 text-cta shrink-0" />
+                            <h3 className="text-[11px] font-bold text-white uppercase tracking-wider truncate">
+                              {displayName}
+                            </h3>
+                          </div>
+                          <span
+                            className={`text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                              category === "IMAX"
+                                ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
+                                : category === "VIP"
+                                ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                            }`}
+                          >
+                            {category}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1.5">
+                          {roomSessions.map((sess) => {
+                            const time = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            });
+                            const isSelected = selectedSessionId === sess.id;
+
+                            return (
+                              <button
+                                key={sess.id}
+                                type="button"
+                                onClick={() => handleSelectSession(sess.id)}
+                                className={`px-2.5 py-1.5 rounded-lg font-mono font-bold text-xs tracking-wide transition-all cursor-pointer min-w-[64px] flex items-center justify-center ${
+                                  isSelected
+                                    ? "bg-cta text-white ring-2 ring-white/80 scale-105 shadow-sm shadow-cta/40"
+                                    : "bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-slate-200"
+                                }`}
+                              >
+                                {time}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}
 
       {/* ========================================================================= */}
-      {/* ETAPA 2: ASSENTOS (Reutilização Integral do SeatingGrid Oficial CineDoom)  */}
+      {/* ETAPA 2: ASSENTOS (Otimização do Viewport: Tela, Fileiras e Controles)    */}
       {/* ========================================================================= */}
       {currentStep === 2 && (
-        <section className="space-y-6 animate-in fade-in duration-200">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-lg">
+        <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
+          {/* Barra Superior Compacta */}
+          <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#121829]/90 border border-white/10 shadow-sm mb-2 shrink-0">
             <button
               type="button"
               onClick={() => setCurrentStep(1)}
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-3.5 h-3.5" />
               <span>Voltar para Sessões</span>
             </button>
 
-            <div className="text-center sm:text-right">
-              <span className="text-xs text-slate-400 block">
+            <div className="flex items-center gap-3 text-xs">
+              <span className="text-slate-300 font-semibold hidden sm:inline-block">
                 {selectedFilm?.title} • {sessionDetail?.room.name || "Sala"}
               </span>
-              <span className="text-sm font-bold text-white">
-                Sessão das{" "}
+              <span className="px-2 py-0.5 rounded bg-cta/20 text-cta border border-cta/30 font-bold font-mono">
                 {sessionDetail?.startsAt
                   ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })
-                  : "Horário selecionado"}
+                  : "Horário"}
               </span>
             </div>
           </div>
 
-          {/* Componente SeatingGrid Existente Reutilizado com Poltronas Estilizadas */}
-          <div className="p-4 sm:p-6 rounded-3xl bg-[#0B0F1A] border border-white/10 shadow-2xl">
+          {/* Componente SeatingGrid com espaçamento otimizado para não rolar */}
+          <div className="p-3 sm:p-4 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-xl flex-1 flex flex-col justify-center">
             {seatsLoading && seats.length === 0 ? (
-              <div className="py-20 flex flex-col items-center justify-center space-y-3">
-                <div className="w-10 h-10 border-2 border-cta border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs text-slate-400">Carregando mapa de poltronas...</span>
+              <div className="py-12 flex flex-col items-center justify-center space-y-2">
+                <div className="w-8 h-8 border-2 border-cta border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs text-slate-400">Carregando poltronas...</span>
               </div>
             ) : (
               <SeatingGrid
@@ -886,238 +866,268 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                 unitPrice={unitPrice}
                 showLegend={true}
                 showScreen={true}
-                showSummary={true}
+                showSummary={false}
               />
             )}
           </div>
 
-          {/* Botão de Continuidade para Ingressos */}
-          <div className="flex items-center justify-between pt-2">
-            <button
-              type="button"
-              onClick={() => setCurrentStep(1)}
-              className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
-            >
-              Alterar Sessão
-            </button>
+          {/* Barra de Ações Integrada Inferior */}
+          <div className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-[#121829]/95 border border-white/10 shadow-md mt-2 shrink-0">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-slate-400">Selecionadas ({selectedSeatIds.length}/5):</span>
+              <div className="flex flex-wrap gap-1">
+                {selectedSeatIds.length === 0 ? (
+                  <span className="text-slate-400 text-[11px]">Nenhuma poltrona escolhida</span>
+                ) : (
+                  selectedSeatIds.map((id) => {
+                    const s = seats.find((st) => st.id === id);
+                    return (
+                      <span
+                        key={id}
+                        className="px-1.5 py-0.5 rounded bg-cta/20 text-cta border border-cta/30 text-[11px] font-bold font-mono"
+                      >
+                        {s?.seatCode || id.slice(-2)}
+                      </span>
+                    );
+                  })
+                )}
+              </div>
+            </div>
 
-            <button
-              type="button"
-              disabled={selectedSeatIds.length === 0 || isSubmitting}
-              onClick={handleProceedToTickets}
-              className={`px-6 py-3 rounded-xl font-bold text-sm tracking-wide shadow-lg transition-all flex items-center gap-2 cursor-pointer ${
-                selectedSeatIds.length === 0 || isSubmitting
-                  ? "bg-slate-700/50 text-slate-400 cursor-not-allowed opacity-50"
-                  : "bg-cta hover:bg-cta-hover text-white shadow-cta/30 hover:scale-[1.02] active:scale-95"
-              }`}
-            >
-              {isSubmitting ? (
-                <span>Iniciando bloqueio...</span>
-              ) : (
-                <>
-                  <span>Continuar para Ingressos ({selectedSeatIds.length})</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(1)}
+                className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
+              >
+                Alterar
+              </button>
+
+              <button
+                type="button"
+                disabled={selectedSeatIds.length === 0 || isSubmitting}
+                onClick={handleProceedToTickets}
+                className={`px-4 py-2 rounded-lg font-bold text-xs tracking-wide shadow-md transition-all flex items-center gap-1.5 cursor-pointer ${
+                  selectedSeatIds.length === 0 || isSubmitting
+                    ? "bg-slate-700/50 text-slate-400 cursor-not-allowed opacity-50"
+                    : "bg-cta hover:bg-cta-hover text-white shadow-cta/30 active:scale-95"
+                }`}
+              >
+                <span>Continuar para Ingressos ({selectedSeatIds.length})</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </section>
       )}
 
       {/* ========================================================================= */}
-      {/* ETAPA 3: INGRESSOS (Seleção de Categorias, Controles +/- e Regra de 5)    */}
+      {/* ETAPA 3: INGRESSOS (Layout 2 Colunas no Desktop: Sem Rolagem Vertical)     */}
       {/* ========================================================================= */}
       {currentStep === 3 && (
-        <section className="space-y-6 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-lg">
-            <button
-              type="button"
-              onClick={() => setCurrentStep(2)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Voltar para Assentos</span>
-            </button>
-
-            <div className="text-right">
-              <span className="text-xs text-slate-400 block">Poltronas Selecionadas</span>
-              <div className="flex gap-1 justify-end">
-                {selectedSeatIds.map((id) => {
-                  const s = seats.find((st) => st.id === id);
-                  return (
-                    <span
-                      key={id}
-                      className="px-1.5 py-0.5 rounded bg-cta/20 border border-cta/40 text-cta text-[10px] font-bold font-mono"
-                    >
-                      {s?.seatCode || id.slice(-2)}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Cards de Tipos de Ingressos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Inteira */}
-            <div className="p-5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-white">Inteira</h3>
-                  <p className="text-xs text-slate-400">Ingresso padrão individual sem desconto</p>
-                </div>
-                <div className="text-right">
-                  <span className="text-xs text-slate-400 uppercase font-semibold block">Valor Unitário</span>
-                  <span className="text-lg font-bold text-white font-mono">
-                    R$ {inteiraPrice.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                <span className="text-xs text-slate-300 font-semibold">Quantidade</span>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    disabled={ticketQuantities.inteira <= 0}
-                    onClick={() =>
-                      setTicketQuantities((prev) => ({
-                        ...prev,
-                        inteira: Math.max(0, prev.inteira - 1),
-                      }))
-                    }
-                    className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white transition-all cursor-pointer"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="w-6 text-center font-bold text-base font-mono">
-                    {ticketQuantities.inteira}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={
-                      ticketQuantities.inteira + ticketQuantities.meia >= selectedSeatIds.length
-                    }
-                    onClick={() =>
-                      setTicketQuantities((prev) => ({
-                        ...prev,
-                        inteira: prev.inteira + 1,
-                      }))
-                    }
-                    className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white transition-all cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="text-right text-xs text-slate-400">
-                Subtotal:{" "}
-                <span className="font-bold text-white font-mono">
-                  R$ {(ticketQuantities.inteira * inteiraPrice).toFixed(2)}
+        <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-stretch">
+            {/* Coluna Esquerda: Resumo da Sessão e Assentos */}
+            <div className="lg:col-span-4 flex flex-col gap-2.5">
+              <div className="p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
+                <span className="text-[10px] font-bold text-cta uppercase tracking-wider block">
+                  Resumo da Escolha
                 </span>
-              </div>
-            </div>
-
-            {/* Meia-entrada */}
-            <div className="p-5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-1.5">
-                    <span>Meia-entrada</span>
-                    <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      -50%
-                    </span>
-                  </h3>
-                  <p className="text-xs text-slate-400 max-w-xs">
-                    Estudantes, idosos (60+), PCD e professores (Lei Federal nº 12.933/2013)
+                <h2 className="text-sm font-bold text-white leading-tight">
+                  {selectedFilm?.title}
+                </h2>
+                <div className="text-xs text-slate-300 space-y-0.5">
+                  <p>{sessionDetail?.room.name || "Sala de Cinema"}</p>
+                  <p className="font-mono text-slate-400">
+                    {sessionDetail?.startsAt
+                      ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : ""}
                   </p>
                 </div>
-                <div className="text-right">
-                  <span className="text-xs text-slate-400 uppercase font-semibold block">Valor Unitário</span>
-                  <span className="text-lg font-bold text-white font-mono">
-                    R$ {meiaPrice.toFixed(2)}
+
+                <div className="pt-2 border-t border-white/5 space-y-1">
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">
+                    Poltronas Escolhidas ({selectedSeatIds.length})
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedSeatIds.map((id) => {
+                      const s = seats.find((st) => st.id === id);
+                      return (
+                        <span
+                          key={id}
+                          className="px-1.5 py-0.5 rounded bg-cta/20 border border-cta/40 text-cta text-[10px] font-bold font-mono"
+                        >
+                          {s?.seatCode || id.slice(-2)}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Total da Reserva:</span>
+                  <span className="text-base font-extrabold text-cta font-mono">
+                    R$ {totalAmount.toFixed(2)}
                   </span>
                 </div>
               </div>
+            </div>
 
-              <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                <span className="text-xs text-slate-300 font-semibold">Quantidade</span>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    disabled={ticketQuantities.meia <= 0}
-                    onClick={() =>
-                      setTicketQuantities((prev) => ({
-                        ...prev,
-                        meia: Math.max(0, prev.meia - 1),
-                      }))
-                    }
-                    className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white transition-all cursor-pointer"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="w-6 text-center font-bold text-base font-mono">
-                    {ticketQuantities.meia}
-                  </span>
-                  <button
-                    type="button"
-                    disabled={
-                      ticketQuantities.inteira + ticketQuantities.meia >= selectedSeatIds.length
-                    }
-                    onClick={() =>
-                      setTicketQuantities((prev) => ({
-                        ...prev,
-                        meia: prev.meia + 1,
-                      }))
-                    }
-                    className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white transition-all cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
+            {/* Coluna Direita: Cards dos Tipos de Ingressos */}
+            <div className="lg:col-span-8 flex flex-col gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {/* Card Inteira */}
+                <div className="p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-xs flex flex-col justify-between gap-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-white">Inteira</h3>
+                      <p className="text-[11px] text-slate-400">Padrão sem desconto</p>
+                    </div>
+                    <div className="text-right font-mono">
+                      <span className="text-xs font-bold text-white">
+                        R$ {inteiraPrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                    <span className="text-xs text-slate-300">Quantidade:</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={ticketQuantities.inteira <= 0}
+                        onClick={() =>
+                          setTicketQuantities((prev) => ({
+                            ...prev,
+                            inteira: Math.max(0, prev.inteira - 1),
+                          }))
+                        }
+                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer"
+                      >
+                        <Minus className="w-3 h-3" />
+                      </button>
+                      <span className="w-5 text-center font-bold text-sm font-mono">
+                        {ticketQuantities.inteira}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={
+                          ticketQuantities.inteira + ticketQuantities.meia >= selectedSeatIds.length
+                        }
+                        onClick={() =>
+                          setTicketQuantities((prev) => ({
+                            ...prev,
+                            inteira: prev.inteira + 1,
+                          }))
+                        }
+                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="text-right text-[11px] text-slate-400">
+                    Subtotal:{" "}
+                    <span className="font-bold text-white font-mono">
+                      R$ {(ticketQuantities.inteira * inteiraPrice).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Card Meia-entrada */}
+                <div className="p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-xs flex flex-col justify-between gap-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
+                        <span>Meia-entrada</span>
+                        <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          -50%
+                        </span>
+                      </h3>
+                      <p className="text-[11px] text-slate-400">Estudantes, 60+, PCD, Professores</p>
+                    </div>
+                    <div className="text-right font-mono">
+                      <span className="text-xs font-bold text-white">
+                        R$ {meiaPrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                    <span className="text-xs text-slate-300">Quantidade:</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        disabled={ticketQuantities.meia <= 0}
+                        onClick={() =>
+                          setTicketQuantities((prev) => ({
+                            ...prev,
+                            meia: Math.max(0, prev.meia - 1),
+                          }))
+                        }
+                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer"
+                      >
+                        <Minus className="w-3 h-3" />
+                      </button>
+                      <span className="w-5 text-center font-bold text-sm font-mono">
+                        {ticketQuantities.meia}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={
+                          ticketQuantities.inteira + ticketQuantities.meia >= selectedSeatIds.length
+                        }
+                        onClick={() =>
+                          setTicketQuantities((prev) => ({
+                            ...prev,
+                            meia: prev.meia + 1,
+                          }))
+                        }
+                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer"
+                      >
+                        <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="text-right text-[11px] text-slate-400">
+                    Subtotal:{" "}
+                    <span className="font-bold text-white font-mono">
+                      R$ {(ticketQuantities.meia * meiaPrice).toFixed(2)}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="text-right text-xs text-slate-400">
-                Subtotal:{" "}
-                <span className="font-bold text-white font-mono">
-                  R$ {(ticketQuantities.meia * meiaPrice).toFixed(2)}
+              {/* Informação de Compatibilidade */}
+              <div className="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs">
+                <span className="flex items-center gap-1.5 text-slate-300 text-[11px]">
+                  <Info className="w-3.5 h-3.5 text-cta shrink-0" />
+                  <span>
+                    Total:{" "}
+                    <strong className="text-white">
+                      {ticketQuantities.inteira + ticketQuantities.meia} de {selectedSeatIds.length}
+                    </strong>{" "}
+                    ingressos selecionados.
+                  </span>
                 </span>
+                <span className="font-bold text-cta font-mono">R$ {totalAmount.toFixed(2)}</span>
               </div>
             </div>
           </div>
 
-          {/* Validação de Compatibilidade de Ingressos vs Assentos */}
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2">
-              <Info className="w-4 h-4 text-cta shrink-0" />
-              <span>
-                Total de ingressos selecionados:{" "}
-                <strong className="text-white font-mono">
-                  {ticketQuantities.inteira + ticketQuantities.meia}
-                </strong>{" "}
-                de{" "}
-                <strong className="text-white font-mono">{selectedSeatIds.length}</strong>{" "}
-                poltronas (limite máximo de 5).
-              </span>
-            </div>
-
-            <div className="text-right">
-              <span className="text-slate-400">Total da Reserva: </span>
-              <span className="text-lg font-extrabold text-cta font-mono">
-                R$ {totalAmount.toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          {/* Ações */}
+          {/* Barra de Ações Inferior */}
           <div className="flex items-center justify-between pt-2">
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
-              className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
             >
-              Revisar Poltronas
+              Voltar para Assentos
             </button>
 
             <button
@@ -1127,294 +1137,276 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                 isHoldExpired
               }
               onClick={handleProceedToSummary}
-              className={`px-6 py-3 rounded-xl font-bold text-sm tracking-wide shadow-lg transition-all flex items-center gap-2 cursor-pointer ${
+              className={`px-5 py-2.5 rounded-xl font-bold text-xs tracking-wide shadow-md transition-all flex items-center gap-2 cursor-pointer ${
                 ticketQuantities.inteira + ticketQuantities.meia !== selectedSeatIds.length ||
                 isHoldExpired
                   ? "bg-slate-700/50 text-slate-400 cursor-not-allowed opacity-50"
-                  : "bg-cta hover:bg-cta-hover text-white shadow-cta/30 hover:scale-[1.02] active:scale-95"
+                  : "bg-cta hover:bg-cta-hover text-white shadow-cta/30 active:scale-95"
               }`}
             >
               <span>Avançar para Resumo</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </section>
       )}
 
       {/* ========================================================================= */}
-      {/* ETAPA 4: RESUMO E CONFIRMAÇÃO (Voucher Completo, Regras & Resgate)        */}
+      {/* ETAPA 4: RESUMO E CONFIRMAÇÃO (Layout 2 Colunas: Sem Rolagem Vertical)    */}
       {/* ========================================================================= */}
       {currentStep === 4 && (
-        <section className="space-y-6 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-lg">
-            <button
-              type="button"
-              onClick={() => setCurrentStep(3)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Voltar para Ingressos</span>
-            </button>
-
-            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">
-              Revisão Final da Reserva
-            </span>
-          </div>
-
-          {/* Card Detalhado de Resumo */}
-          <div className="p-5 sm:p-7 rounded-3xl bg-[#121829]/95 border border-white/10 shadow-2xl space-y-6">
-            <div className="flex flex-col sm:flex-row gap-5 items-center sm:items-start border-b border-white/10 pb-5">
-              <div className="relative aspect-[2/3] w-24 sm:w-28 rounded-xl overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-md shrink-0">
-                {selectedFilm?.posterUrl ? (
-                  <Image
-                    src={selectedFilm.posterUrl}
-                    alt={selectedFilm.title}
-                    fill
-                    sizes="112px"
-                    className="object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-600">
-                    <Film className="w-8 h-8 opacity-40" />
+        <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-stretch">
+            {/* Coluna Esquerda: Voucher e Poltronas */}
+            <div className="lg:col-span-6 flex flex-col gap-2.5">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-[#121829]/95 border border-white/10 shadow-md space-y-3">
+                <div className="flex gap-3 items-center border-b border-white/10 pb-3">
+                  <div className="relative aspect-[2/3] w-14 sm:w-16 rounded-lg overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-xs shrink-0">
+                    {selectedFilm?.posterUrl ? (
+                      <Image
+                        src={selectedFilm.posterUrl}
+                        alt={selectedFilm.title}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-600">
+                        <Film className="w-6 h-6 opacity-40" />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              <div className="flex-1 space-y-1.5 text-center sm:text-left">
-                <div className="flex items-center justify-center sm:justify-start gap-2">
-                  <AgeRatingBadge rating={selectedFilm?.classification} />
-                  <span className="text-xs text-slate-400 font-semibold">
-                    {getPrimaryGenre(selectedFilm?.genre)}
-                  </span>
-                </div>
-                <h2 className="text-xl sm:text-2xl font-extrabold text-white">
-                  {selectedFilm?.title}
-                </h2>
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs text-slate-300">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-cta" />
-                    CineDoom Prime Cinemas
-                  </span>
-                  <span>•</span>
-                  <span>{sessionDetail?.room.name || "Sala de Cinema"}</span>
-                  <span>•</span>
-                  <span className="font-mono">
-                    {sessionDetail?.startsAt
-                      ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Grid de Poltronas e Ingressos */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
-                <span className="text-slate-400 uppercase font-semibold block">
-                  Poltronas Selecionadas ({selectedSeatIds.length})
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedSeatIds.map((id) => {
-                    const s = seats.find((st) => st.id === id);
-                    return (
-                      <span
-                        key={id}
-                        className="px-2 py-1 rounded-md bg-[#0F3460] text-cta border border-cta/30 font-bold font-mono text-xs"
-                      >
-                        {s?.seatCode || id.slice(-2)}
+                  <div className="flex-1 min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <AgeRatingBadge rating={selectedFilm?.classification} />
+                      <span className="text-[10px] text-slate-400 font-semibold truncate">
+                        {getPrimaryGenre(selectedFilm?.genre)}
                       </span>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5 space-y-2">
-                <span className="text-slate-400 uppercase font-semibold block">Detalhamento dos Ingressos</span>
-                <div className="space-y-1 text-slate-200">
-                  {ticketQuantities.inteira > 0 && (
-                    <div className="flex justify-between font-mono">
-                      <span>{ticketQuantities.inteira}x Inteira</span>
-                      <span>R$ {(ticketQuantities.inteira * inteiraPrice).toFixed(2)}</span>
                     </div>
-                  )}
-                  {ticketQuantities.meia > 0 && (
-                    <div className="flex justify-between font-mono">
-                      <span>{ticketQuantities.meia}x Meia-entrada</span>
-                      <span>R$ {(ticketQuantities.meia * meiaPrice).toFixed(2)}</span>
+                    <h2 className="text-sm sm:text-base font-bold text-white leading-tight truncate">
+                      {selectedFilm?.title}
+                    </h2>
+                    <p className="text-[11px] text-slate-300 truncate">
+                      CineDoom • {sessionDetail?.room.name || "Sala"} •{" "}
+                      <span className="font-mono text-white">
+                        {sessionDetail?.startsAt
+                          ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : ""}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
+                    <span className="text-slate-400 uppercase font-semibold text-[10px] block">
+                      Poltronas ({selectedSeatIds.length})
+                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {selectedSeatIds.map((id) => {
+                        const s = seats.find((st) => st.id === id);
+                        return (
+                          <span
+                            key={id}
+                            className="px-1.5 py-0.5 rounded bg-[#0F3460] text-cta border border-cta/30 font-bold font-mono text-[10px]"
+                          >
+                            {s?.seatCode || id.slice(-2)}
+                          </span>
+                        );
+                      })}
                     </div>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-1">
+                    <span className="text-slate-400 uppercase font-semibold text-[10px] block">
+                      Detalhamento
+                    </span>
+                    <div className="space-y-0.5 text-[11px] font-mono text-slate-300">
+                      {ticketQuantities.inteira > 0 && (
+                        <div className="flex justify-between">
+                          <span>{ticketQuantities.inteira}x Inteira</span>
+                          <span>R$ {(ticketQuantities.inteira * inteiraPrice).toFixed(2)}</span>
+                        </div>
+                      )}
+                      {ticketQuantities.meia > 0 && (
+                        <div className="flex justify-between">
+                          <span>{ticketQuantities.meia}x Meia</span>
+                          <span>R$ {(ticketQuantities.meia * meiaPrice).toFixed(2)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-white/10 text-xs">
+                  <span className="font-bold text-slate-300">Valor Total da Reserva</span>
+                  <span className="text-base font-extrabold text-cta font-mono">
+                    R$ {totalAmount.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Coluna Direita: Dados Comprador, Instruções de Resgate e Confirmação */}
+            <div className="lg:col-span-6 flex flex-col gap-2.5">
+              {/* Form Compacto do Comprador */}
+              <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
+                <span className="text-[10px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <User className="w-3 h-3 text-cta" />
+                  <span>Titular da Reserva</span>
+                </span>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="text-[9px] text-slate-400 block">Nome</label>
+                    <input
+                      type="text"
+                      value={buyerName}
+                      onChange={(e) => setBuyerName(e.target.value)}
+                      placeholder="Nome"
+                      className="w-full px-2 py-1.5 rounded-lg bg-[#0A0E1A] border border-white/10 text-white text-[11px] focus:border-cta outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] text-slate-400 block">E-mail</label>
+                    <input
+                      type="email"
+                      value={buyerEmail}
+                      onChange={(e) => setBuyerEmail(e.target.value)}
+                      placeholder="E-mail"
+                      className="w-full px-2 py-1.5 rounded-lg bg-[#0A0E1A] border border-white/10 text-white text-[11px] focus:border-cta outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] text-slate-400 block">CPF</label>
+                    <input
+                      type="text"
+                      maxLength={14}
+                      value={buyerCpf}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/\D/g, "").slice(0, 11);
+                        if (v.length > 9) {
+                          setBuyerCpf(`${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6, 9)}-${v.slice(9)}`);
+                        } else if (v.length > 6) {
+                          setBuyerCpf(`${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6)}`);
+                        } else if (v.length > 3) {
+                          setBuyerCpf(`${v.slice(0, 3)}.${v.slice(3)}`);
+                        } else {
+                          setBuyerCpf(v);
+                        }
+                      }}
+                      placeholder="000.000.000-00"
+                      className="w-full px-2 py-1.5 rounded-lg bg-[#0A0E1A] border border-white/10 text-white text-[11px] font-mono focus:border-cta outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Informações Oficiais de Resgate */}
+              <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200 text-[11px] space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-amber-300 text-[10px] uppercase tracking-wide">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>Instruções de Resgate Presencial</span>
+                </div>
+                <p className="text-slate-300 text-[10px] leading-tight">
+                  Apresente este código na bilheteria física do cinema para efetuar o pagamento presencial em dinheiro, débito ou crédito até <strong>1 hora antes do início da sessão</strong>.
+                </p>
+                <p className="text-slate-400 text-[9px] leading-tight">
+                  Para meia-entrada, apresente documento comprobatório oficial e documento com foto.
+                </p>
+              </div>
+
+              {/* Checkbox LGPD */}
+              <label className="flex items-start gap-2 p-2 rounded-xl bg-white/[0.02] border border-white/5 cursor-pointer text-[10px] text-slate-300 leading-tight">
+                <input
+                  type="checkbox"
+                  checked={lgpdConsent}
+                  onChange={(e) => setLgpdConsent(e.target.checked)}
+                  className="mt-0.5 rounded border-white/20 text-cta focus:ring-cta focus:ring-offset-0 bg-[#0A0E1A]"
+                />
+                <span>
+                  Concordo com os termos de reserva e autorizo o tratamento dos dados informados sob a LGPD (Lei nº 13.709/2018).
+                </span>
+              </label>
+
+              {/* Ações */}
+              <div className="flex items-center justify-between pt-1">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep(3)}
+                  className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
+                >
+                  Revisar
+                </button>
+
+                <button
+                  type="button"
+                  disabled={isSubmitting || !lgpdConsent || isHoldExpired}
+                  onClick={handleConfirmReservation}
+                  className={`px-5 py-2.5 rounded-xl font-bold text-xs tracking-wide shadow-md transition-all flex items-center gap-1.5 cursor-pointer ${
+                    isSubmitting || !lgpdConsent || isHoldExpired
+                      ? "bg-slate-700/50 text-slate-400 cursor-not-allowed opacity-50"
+                      : "bg-cta hover:bg-cta-hover text-white shadow-cta/40 active:scale-95"
+                  }`}
+                >
+                  {isSubmitting ? (
+                    <span>Confirmando...</span>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-3.5 h-3.5" />
+                      <span>Confirmar Reserva (R$ {totalAmount.toFixed(2)})</span>
+                    </>
                   )}
-                </div>
-                <div className="flex justify-between pt-2 border-t border-white/10 font-bold text-sm">
-                  <span>Valor Total da Reserva</span>
-                  <span className="text-cta font-mono text-base">R$ {totalAmount.toFixed(2)}</span>
-                </div>
+                </button>
               </div>
             </div>
-
-            {/* Dados do Comprador e CPF para Retirada */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5 text-cta" />
-                <span>Titular da Reserva (Resgate Presencial)</span>
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Nome Completo</label>
-                  <input
-                    type="text"
-                    value={buyerName}
-                    onChange={(e) => setBuyerName(e.target.value)}
-                    placeholder="Seu nome"
-                    className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white text-xs focus:border-cta outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">E-mail para Confirmação</label>
-                  <input
-                    type="email"
-                    value={buyerEmail}
-                    onChange={(e) => setBuyerEmail(e.target.value)}
-                    placeholder="seu@email.com"
-                    className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white text-xs focus:border-cta outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">CPF (apenas números)</label>
-                  <input
-                    type="text"
-                    maxLength={14}
-                    value={buyerCpf}
-                    onChange={(e) => {
-                      const v = e.target.value.replace(/\D/g, "").slice(0, 11);
-                      if (v.length > 9) {
-                        setBuyerCpf(`${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6, 9)}-${v.slice(9)}`);
-                      } else if (v.length > 6) {
-                        setBuyerCpf(`${v.slice(0, 3)}.${v.slice(3, 6)}.${v.slice(6)}`);
-                      } else if (v.length > 3) {
-                        setBuyerCpf(`${v.slice(0, 3)}.${v.slice(3)}`);
-                      } else {
-                        setBuyerCpf(v);
-                      }
-                    }}
-                    placeholder="000.000.000-00"
-                    className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white text-xs font-mono focus:border-cta outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Informações Oficiais de Resgate da Reserva (Conhecimento Canônico do Projeto) */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs space-y-2">
-              <div className="flex items-center gap-2 font-bold text-amber-300 uppercase tracking-wide">
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>Instruções Importantes de Resgate da Reserva</span>
-              </div>
-              <ul className="list-disc list-inside space-y-1 text-slate-300 leading-relaxed">
-                <li>
-                  <strong className="text-white">Pagamento Presencial:</strong> Apresente o código da reserva na bilheteria física do cinema para efetuar o pagamento em dinheiro, débito ou crédito até <strong>1 hora antes do início da sessão</strong>.
-                </li>
-                <li>
-                  <strong className="text-white">Documentação Obrigatória:</strong> Para ingressos de meia-entrada, apresente documento comprobatório oficial (carteira de estudante, identidade para idosos) junto com documento de identificação com foto.
-                </li>
-                <li>
-                  <strong className="text-white">Cancelamento Gratuito:</strong> É permitido o cancelamento online sem custo diretamente no portal em <em>Minhas Reservas</em> até 60 minutos antes da sessão.
-                </li>
-              </ul>
-            </div>
-
-            {/* Termos de Consentimento LGPD */}
-            <label className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5 cursor-pointer text-xs text-slate-300">
-              <input
-                type="checkbox"
-                checked={lgpdConsent}
-                onChange={(e) => setLgpdConsent(e.target.checked)}
-                className="mt-0.5 rounded border-white/20 text-cta focus:ring-cta focus:ring-offset-0 bg-[#0A0E1A]"
-              />
-              <span>
-                Concordo com os termos de reserva e autorizo o tratamento dos dados informados para fins de emissão de ingressos, controle de acesso e conformidade com a LGPD (Lei nº 13.709/2018).
-              </span>
-            </label>
-          </div>
-
-          {/* Botão Final: Confirmar Reserva */}
-          <div className="flex items-center justify-between pt-2">
-            <button
-              type="button"
-              onClick={() => setCurrentStep(3)}
-              className="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
-            >
-              Revisar Ingressos
-            </button>
-
-            <button
-              type="button"
-              disabled={isSubmitting || !lgpdConsent || isHoldExpired}
-              onClick={handleConfirmReservation}
-              className={`px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide shadow-xl transition-all flex items-center gap-2 cursor-pointer ${
-                isSubmitting || !lgpdConsent || isHoldExpired
-                  ? "bg-slate-700/50 text-slate-400 cursor-not-allowed opacity-50"
-                  : "bg-cta hover:bg-cta-hover text-white shadow-cta/40 hover:scale-[1.02] active:scale-95"
-              }`}
-            >
-              {isSubmitting ? (
-                <span>Confirmando Reserva...</span>
-              ) : (
-                <>
-                  <CheckCircle className="w-4 h-4" />
-                  <span>Confirmar Reserva (R$ {totalAmount.toFixed(2)})</span>
-                </>
-              )}
-            </button>
           </div>
         </section>
       )}
 
       {/* ========================================================================= */}
-      {/* CONTADOR REGRESSIVO PERSISTENTE DE 10 MINUTOS (BARRA FIXA INFERIOR)       */}
+      {/* CONTADOR REGRESSIVO PERSISTENTE (BARRA FIXA INFERIOR COMPACTA)            */}
       {/* ========================================================================= */}
       {holdExpiresAt && (
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-[#0A0E1A]/95 border-t border-white/10 p-3 sm:p-4 shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom duration-300">
-          <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 sm:gap-3">
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-[#0A0E1A]/95 border-t border-white/10 py-1.5 px-4 shadow-xl backdrop-blur-xl animate-in slide-in-from-bottom duration-200">
+          <div className="max-w-5xl mx-auto flex items-center justify-between gap-3 h-9 sm:h-10">
+            <div className="flex items-center gap-2">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${
                   isHoldExpired || remainingSeconds <= 120
                     ? "bg-rose-500/20 text-rose-400 animate-pulse"
                     : "bg-cta/20 text-cta"
                 }`}
               >
-                <Timer className="w-4 h-4" />
+                <Timer className="w-3.5 h-3.5" />
               </div>
-              <div>
-                <span className="text-[10px] sm:text-xs text-slate-400 uppercase font-semibold block">
-                  {isHoldExpired ? "Prazo Expirado" : "Tempo restante para concluir sua reserva"}
-                </span>
-                <span
-                  className={`text-sm sm:text-base font-extrabold font-mono tracking-wider ${
-                    isHoldExpired || remainingSeconds <= 120 ? "text-rose-400 animate-pulse" : "text-white"
-                  }`}
-                >
-                  {isHoldExpired ? "00:00 - Poltronas liberadas" : formattedCountdown}
-                </span>
-              </div>
+              <span className="text-[10px] sm:text-xs text-slate-300 font-semibold truncate">
+                {isHoldExpired ? "Prazo Expirado" : "Tempo restante para concluir sua reserva:"}
+              </span>
+              <span
+                className={`text-xs sm:text-sm font-extrabold font-mono tracking-wider ${
+                  isHoldExpired || remainingSeconds <= 120 ? "text-rose-400 animate-pulse" : "text-white"
+                }`}
+              >
+                {isHoldExpired ? "00:00" : formattedCountdown}
+              </span>
             </div>
 
             {isHoldExpired ? (
               <button
                 type="button"
                 onClick={handleRestart}
-                className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-all shadow-md cursor-pointer"
+                className="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold transition-all shadow-xs cursor-pointer"
               >
-                Reiniciar Seleção
+                Reiniciar
               </button>
             ) : (
-              <span className="text-[11px] text-slate-400 hidden sm:inline-block">
-                Poltronas bloqueadas com exclusividade
+              <span className="text-[10px] text-slate-400 hidden sm:inline-block">
+                Poltronas bloqueadas temporariamente
               </span>
             )}
           </div>
