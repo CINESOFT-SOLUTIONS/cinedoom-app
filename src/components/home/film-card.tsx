@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { Film, Ticket, Info, Clock } from "lucide-react";
 import type { FilmItem } from "./types";
 import { AgeRatingBadge } from "./age-rating-badge";
@@ -16,33 +15,11 @@ interface FilmCardProps {
   onOpenDetails?: (film: FilmItem) => void;
 }
 
-export function FilmCard({ film, selectedDate, onOpenSessions, onOpenDetails }: FilmCardProps) {
+export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps) {
   // Metadados auditados e padronizados: apenas gênero e duração reais
   const primaryGenre = getPrimaryGenre(film.genre);
   const durationStr = formatDuration(film.duration);
   const metaLine = formatFilmMetaLine(film);
-
-  // Sessões da data selecionada para exibição direta e imediata no card
-  const targetDate = useMemo(() => selectedDate || new Date(), [selectedDate]);
-  const daySessions = useMemo(() => {
-    const directMatches = (film.sessions || [])
-      .filter((s) => {
-        const sDate = new Date(s.startsAt);
-        return (
-          sDate.getFullYear() === targetDate.getFullYear() &&
-          sDate.getMonth() === targetDate.getMonth() &&
-          sDate.getDate() === targetDate.getDate()
-        );
-      })
-      .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
-
-    if (directMatches.length > 0) return directMatches;
-
-    // Fallback resiliente: exibe as primeiras sessões cadastradas para garantir visibilidade contínua
-    return (film.sessions || [])
-      .slice(0, 6)
-      .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
-  }, [film.sessions, targetDate]);
 
   // Identifica selos contextuais padronizados (Estreia, IMAX, VIP)
   const isEstreia = film.title.toLowerCase().includes("duna");
@@ -188,73 +165,6 @@ export function FilmCard({ film, selectedDate, onOpenSessions, onOpenDetails }: 
             <span className="invisible select-none" aria-hidden="true">&nbsp;</span>
           )}
         </div>
-
-        {/* Grade de Horários da Data Selecionada visíveis diretamente no card */}
-        {daySessions.length > 0 ? (
-          <div className="pt-2.5 border-t border-white/10 space-y-1.5" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="font-semibold text-slate-300 flex items-center gap-1">
-                <Clock className="w-3 h-3 text-cta" /> Horários:
-              </span>
-              <span className="text-[10px] text-slate-400 font-mono">{daySessions.length} sessões</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {daySessions.slice(0, 6).map((sess) => {
-                const time = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-                const category = getRoomExperienceCategory(sess.room.name);
-
-                return (
-                  <Link
-                    key={sess.id}
-                    href={`/portal/sessoes/${sess.id}`}
-                    className={`px-2 py-1 rounded-lg text-xs font-mono font-bold transition-all border flex items-center gap-1 shadow-sm hover:scale-105 active:scale-95 ${
-                      category === "IMAX"
-                        ? "bg-sky-950/70 border-sky-500/40 text-sky-200 hover:bg-sky-600 hover:text-white"
-                        : category === "VIP"
-                        ? "bg-amber-950/70 border-amber-500/40 text-amber-200 hover:bg-amber-600 hover:text-white"
-                        : "bg-[#141A2D] border-borderDark text-slate-200 hover:bg-cta hover:text-white hover:border-cta"
-                    }`}
-                    title={`Reservar sessão às ${time} - ${sess.room.name}`}
-                  >
-                    <span>{time}</span>
-                    {category === "IMAX" && <span className="text-[8px] font-sans font-bold uppercase text-sky-300">IMAX</span>}
-                    {category === "VIP" && <span className="text-[8px] font-sans font-bold uppercase text-amber-300">VIP</span>}
-                  </Link>
-                );
-              })}
-              {daySessions.length > 6 && (
-                <button
-                  type="button"
-                  onClick={handleSessionsClick}
-                  className="px-2 py-1 rounded-lg text-[11px] font-medium bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/5 transition-all cursor-pointer"
-                  title="Ver todas as sessões"
-                >
-                  +{daySessions.length - 6}
-                </button>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="pt-2.5 border-t border-white/10 space-y-1.5" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="font-semibold text-slate-400 flex items-center gap-1">
-                <Clock className="w-3 h-3 text-cta" /> Horários:
-              </span>
-              <span className="text-[10px] text-slate-400 font-mono">Consulte datas</span>
-            </div>
-            <button
-              type="button"
-              onClick={handleSessionsClick}
-              className="w-full py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <Ticket className="w-3.5 h-3.5 text-cta" />
-              <span>Ver todas as sessões</span>
-            </button>
-          </div>
-        )}
       </div>
     </article>
   );

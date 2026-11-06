@@ -123,7 +123,7 @@ export default function CinemarkStyleHomePage() {
               Programação CineDoom
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Passe o mouse sobre os pôsteres para conferir horários, salas e detalhes
+              Clique nos pôsteres ou em &quot;Ver sessões&quot; para conferir salas, horários e reservar
             </p>
           </div>
           <span className="text-xs font-semibold px-3 py-1 rounded-full bg-surface border border-borderDark text-slate-300">

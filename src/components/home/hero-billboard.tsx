@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { Sparkles, Clock, Ticket, Play, X } from "lucide-react";
 import type { FilmItem } from "./types";
 import { getPrimaryGenre, formatDuration } from "./film-utils";
@@ -101,21 +100,6 @@ export function HeroBillboard({
                   <Play className="w-4 h-4 text-cta fill-cta" />
                   <span>Ver Detalhes</span>
                 </button>
-              )}
-
-              {activeHeroFilm?.sessions?.[0] && (
-                <Link
-                  href={`/portal/sessoes/${activeHeroFilm.sessions[0].id}`}
-                  className="px-4 py-3 sm:py-3.5 rounded-xl bg-[#141A2D] hover:bg-surface border border-borderDark text-emerald-400 font-medium text-xs transition-all flex items-center justify-center gap-1.5"
-                >
-                  <Clock className="w-3.5 h-3.5" />
-                  Próxima Sessão (
-                  {new Date(activeHeroFilm.sessions[0].startsAt).toLocaleTimeString("pt-BR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  )
-                </Link>
               )}
             </div>
           </div>
