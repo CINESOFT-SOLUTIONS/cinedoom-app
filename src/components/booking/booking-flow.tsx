@@ -247,19 +247,20 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     }
   }, [authSession, buyerName, buyerEmail]);
 
-  // 7. Sincroniza quantidades padrão de ingressos quando a seleção de assentos muda
+  // 7. Sincroniza quantidades de ingressos sem seleção automática prévia (inicia em 0)
   useEffect(() => {
     const seatCount = selectedSeatIds.length;
-    if (seatCount > 0) {
+    if (seatCount === 0) {
+      setTicketQuantities({ inteira: 0, meia: 0 });
+    } else {
       setTicketQuantities((prev) => {
         const currentSum = prev.inteira + prev.meia;
-        if (currentSum !== seatCount) {
-          return { inteira: seatCount, meia: 0 };
+        // Se a soma ultrapassar a nova quantidade de assentos, reseta para 0
+        if (currentSum > seatCount) {
+          return { inteira: 0, meia: 0 };
         }
         return prev;
       });
-    } else {
-      setTicketQuantities({ inteira: 0, meia: 0 });
     }
   }, [selectedSeatIds.length]);
 
@@ -977,206 +978,159 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       )}
 
       {/* ========================================================================= */}
-      {/* ETAPA 3: INGRESSOS (Ingressos à Esquerda, Modal Lateral à Direita)        */}
+      {/* ETAPA 3: INGRESSOS (Seleção Limpa sem Modal Lateral)                     */}
       {/* ========================================================================= */}
       {currentStep === 3 && (
-        <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-stretch">
-            {/* Coluna Principal (Esquerda): Cards dos Tipos de Ingressos */}
-            <div className="lg:col-span-8 flex flex-col gap-2.5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                {/* Card Inteira */}
-                <div className="p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-xs flex flex-col justify-between gap-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-sm font-bold text-white">Inteira</h3>
-                      <p className="text-[11px] text-slate-400">Padrão sem desconto</p>
-                    </div>
-                    <div className="text-right font-mono">
-                      <span className="text-xs font-bold text-white">
-                        R$ {inteiraPrice.toFixed(2)}
-                      </span>
-                    </div>
+        <section className="flex-1 flex flex-col justify-between max-w-4xl mx-auto w-full animate-in fade-in duration-150">
+          <div className="flex flex-col gap-3 w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {/* Card Inteira */}
+              <div className="p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md flex flex-col justify-between gap-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-base font-bold text-white">Inteira</h3>
+                    <p className="text-xs text-slate-400">Padrão sem desconto</p>
                   </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                    <span className="text-xs text-slate-300">Quantidade:</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        disabled={ticketQuantities.inteira <= 0}
-                        onClick={() =>
-                          setTicketQuantities((prev) => ({
-                            ...prev,
-                            inteira: Math.max(0, prev.inteira - 1),
-                          }))
-                        }
-                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="w-5 text-center font-bold text-sm font-mono">
-                        {ticketQuantities.inteira}
-                      </span>
-                      <button
-                        type="button"
-                        disabled={
-                          ticketQuantities.inteira + ticketQuantities.meia >= selectedSeatIds.length
-                        }
-                        onClick={() =>
-                          setTicketQuantities((prev) => ({
-                            ...prev,
-                            inteira: prev.inteira + 1,
-                          }))
-                        }
-                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="text-right text-[11px] text-slate-400">
-                    Subtotal:{" "}
-                    <span className="font-bold text-white font-mono">
-                      R$ {(ticketQuantities.inteira * inteiraPrice).toFixed(2)}
+                  <div className="text-right font-mono">
+                    <span className="text-sm font-bold text-white">
+                      R$ {inteiraPrice.toFixed(2)}
                     </span>
                   </div>
                 </div>
 
-                {/* Card Meia-entrada */}
-                <div className="p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-xs flex flex-col justify-between gap-3">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-                        <span>Meia-entrada</span>
-                        <span className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                          -50%
-                        </span>
-                      </h3>
-                      <p className="text-[11px] text-slate-400">Estudantes, 60+, PCD, Professores</p>
-                    </div>
-                    <div className="text-right font-mono">
-                      <span className="text-xs font-bold text-white">
-                        R$ {meiaPrice.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                    <span className="text-xs text-slate-300">Quantidade:</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        disabled={ticketQuantities.meia <= 0}
-                        onClick={() =>
-                          setTicketQuantities((prev) => ({
-                            ...prev,
-                            meia: Math.max(0, prev.meia - 1),
-                          }))
-                        }
-                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </button>
-                      <span className="w-5 text-center font-bold text-sm font-mono">
-                        {ticketQuantities.meia}
-                      </span>
-                      <button
-                        type="button"
-                        disabled={
-                          ticketQuantities.inteira + ticketQuantities.meia >= selectedSeatIds.length
-                        }
-                        onClick={() =>
-                          setTicketQuantities((prev) => ({
-                            ...prev,
-                            meia: prev.meia + 1,
-                          }))
-                        }
-                        className="w-7 h-7 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="text-right text-[11px] text-slate-400">
-                    Subtotal:{" "}
-                    <span className="font-bold text-white font-mono">
-                      R$ {(ticketQuantities.meia * meiaPrice).toFixed(2)}
+                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                  <span className="text-xs text-slate-300 font-medium">Quantidade:</span>
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      type="button"
+                      disabled={ticketQuantities.inteira <= 0}
+                      onClick={() =>
+                        setTicketQuantities((prev) => ({
+                          ...prev,
+                          inteira: Math.max(0, prev.inteira - 1),
+                        }))
+                      }
+                      className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer transition-colors"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="w-6 text-center font-bold text-base font-mono">
+                      {ticketQuantities.inteira}
                     </span>
+                    <button
+                      type="button"
+                      disabled={
+                        ticketQuantities.inteira + ticketQuantities.meia >= selectedSeatIds.length
+                      }
+                      onClick={() =>
+                        setTicketQuantities((prev) => ({
+                          ...prev,
+                          inteira: prev.inteira + 1,
+                        }))
+                      }
+                      className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
                   </div>
+                </div>
+
+                <div className="text-right text-xs text-slate-400">
+                  Subtotal:{" "}
+                  <span className="font-bold text-white font-mono">
+                    R$ {(ticketQuantities.inteira * inteiraPrice).toFixed(2)}
+                  </span>
                 </div>
               </div>
 
-              {/* Informação de Compatibilidade */}
-              <div className="px-3.5 py-2 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs">
-                <span className="flex items-center gap-1.5 text-slate-300 text-[11px]">
-                  <Info className="w-3.5 h-3.5 text-cta shrink-0" />
-                  <span>
-                    Total:{" "}
-                    <strong className="text-white">
-                      {ticketQuantities.inteira + ticketQuantities.meia} de {selectedSeatIds.length}
-                    </strong>{" "}
-                    ingressos selecionados.
+              {/* Card Meia-entrada */}
+              <div className="p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md flex flex-col justify-between gap-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-base font-bold text-white flex items-center gap-2">
+                      <span>Meia-entrada</span>
+                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        -50%
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-400">Estudantes, 60+, PCD, Professores</p>
+                  </div>
+                  <div className="text-right font-mono">
+                    <span className="text-sm font-bold text-white">
+                      R$ {meiaPrice.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                  <span className="text-xs text-slate-300 font-medium">Quantidade:</span>
+                  <div className="flex items-center gap-2.5">
+                    <button
+                      type="button"
+                      disabled={ticketQuantities.meia <= 0}
+                      onClick={() =>
+                        setTicketQuantities((prev) => ({
+                          ...prev,
+                          meia: Math.max(0, prev.meia - 1),
+                        }))
+                      }
+                      className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer transition-colors"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="w-6 text-center font-bold text-base font-mono">
+                      {ticketQuantities.meia}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={
+                        ticketQuantities.inteira + ticketQuantities.meia >= selectedSeatIds.length
+                      }
+                      onClick={() =>
+                        setTicketQuantities((prev) => ({
+                          ...prev,
+                          meia: prev.meia + 1,
+                        }))
+                      }
+                      className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-white cursor-pointer transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-right text-xs text-slate-400">
+                  Subtotal:{" "}
+                  <span className="font-bold text-white font-mono">
+                    R$ {(ticketQuantities.meia * meiaPrice).toFixed(2)}
                   </span>
-                </span>
-                <span className="font-bold text-cta font-mono">R$ {totalAmount.toFixed(2)}</span>
+                </div>
               </div>
             </div>
 
-            {/* Coluna Lateral (Direita): Resumo da Sessão e Assentos */}
-            <div className="lg:col-span-4 flex flex-col gap-2.5">
-              <div className="p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
-                <span className="text-[10px] font-bold text-cta uppercase tracking-wider block">
-                  Resumo da Escolha
+            {/* Informação de Compatibilidade e Total */}
+            <div className="p-3 rounded-xl bg-white/5 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+              <span className="flex items-center gap-2 text-slate-300">
+                <Info className="w-4 h-4 text-cta shrink-0" />
+                <span>
+                  Total selecionado:{" "}
+                  <strong className="text-white font-mono">
+                    {ticketQuantities.inteira + ticketQuantities.meia} de {selectedSeatIds.length}
+                  </strong>{" "}
+                  ingressos para as poltronas escolhidas.
                 </span>
-                <h2 className="text-sm font-bold text-white leading-tight">
-                  {selectedFilm?.title}
-                </h2>
-                <div className="text-xs text-slate-300 space-y-0.5">
-                  <p>{sessionDetail?.room.name || "Sala de Cinema"}</p>
-                  <p className="font-mono text-slate-400">
-                    {sessionDetail?.startsAt
-                      ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
-                  </p>
-                </div>
-
-                <div className="pt-2 border-t border-white/5 space-y-1">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">
-                    Poltronas Escolhidas ({selectedSeatIds.length})
-                  </span>
-                  <div className="flex flex-wrap gap-1">
-                    {selectedSeatIds.map((id) => {
-                      const s = seats.find((st) => st.id === id);
-                      return (
-                        <span
-                          key={id}
-                          className="px-1.5 py-0.5 rounded bg-cta/20 border border-cta/40 text-cta text-[10px] font-bold font-mono"
-                        >
-                          {s?.seatCode || id.slice(-2)}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Total da Reserva:</span>
-                  <span className="text-base font-extrabold text-cta font-mono">
-                    R$ {totalAmount.toFixed(2)}
-                  </span>
-                </div>
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400">Total da Reserva:</span>
+                <span className="text-base font-bold text-cta font-mono">
+                  R$ {totalAmount.toFixed(2)}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Barra de Ações Inferior */}
-          <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center justify-between pt-3">
             <button
               type="button"
               onClick={() => setCurrentStep(2)}
