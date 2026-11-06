@@ -8,6 +8,7 @@ import type { FilmItem, SessionItem } from "./types";
 import { getPrimaryGenre, formatDuration } from "./film-utils";
 import { getRoomExperienceCategory, getRoomDisplayName } from "@/shared/experiences";
 import { AgeRatingBadge } from "./age-rating-badge";
+import { abandonPreviousReservationIfDifferent } from "@/components/booking/reservation-lifecycle";
 
 interface FilmModalProps {
   film: FilmItem | null;
@@ -339,7 +340,10 @@ export function FilmModal({
                             <Link
                               key={sess.id}
                               href={`/portal/sessoes/${sess.id}`}
-                              onClick={onClose}
+                              onClick={() => {
+                                abandonPreviousReservationIfDifferent(film.id, sess.id);
+                                onClose();
+                              }}
                               className="px-3 py-2 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white font-mono font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm hover:shadow-cta/30 hover:scale-105 active:scale-95 text-center min-w-[72px] flex items-center justify-center cursor-pointer outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
                               title={`Reservar assento para sessão das ${time} na ${displayName}`}
                               aria-label={`Sessão às ${time} na ${displayName}`}
@@ -408,7 +412,10 @@ export function FilmModal({
             <div className="pt-4 border-t border-borderDark/40">
               <Link
                 href={`/portal/reservas?filmeId=${film.id}`}
-                onClick={onClose}
+                onClick={() => {
+                  abandonPreviousReservationIfDifferent(film.id);
+                  onClose();
+                }}
                 className="w-full py-3 px-4 rounded-xl bg-cta hover:bg-cta-hover text-white font-bold text-xs sm:text-sm tracking-wide shadow-lg shadow-cta/30 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               >
                 <Ticket className="w-4 h-4" />

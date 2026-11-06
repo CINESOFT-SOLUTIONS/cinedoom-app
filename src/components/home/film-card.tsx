@@ -7,6 +7,7 @@ import type { FilmItem } from "./types";
 import { AgeRatingBadge } from "./age-rating-badge";
 import { getPrimaryGenre, formatDuration, formatFilmMetaLine } from "./film-utils";
 import { getRoomExperienceCategory } from "@/shared/experiences";
+import { abandonPreviousReservationIfDifferent } from "@/components/booking/reservation-lifecycle";
 
 interface FilmCardProps {
   film: FilmItem;
@@ -29,6 +30,7 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
 
   const handleSessionsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    abandonPreviousReservationIfDifferent(film.id);
     if (onOpenSessions) {
       onOpenSessions(film);
     }
@@ -42,6 +44,7 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
   };
 
   const handleCardClick = () => {
+    abandonPreviousReservationIfDifferent(film.id);
     if (onOpenSessions) {
       onOpenSessions(film);
     }
@@ -50,6 +53,7 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
+      abandonPreviousReservationIfDifferent(film.id);
       if (onOpenSessions) {
         onOpenSessions(film);
       }

@@ -9,6 +9,7 @@ import { FilmFilters } from "@/components/home/film-filters";
 import { FilmCard } from "@/components/home/film-card";
 import { FilmModal } from "@/components/home/film-modal";
 import { InstitutionalBanner } from "@/components/home/institutional-banner";
+import { abandonPreviousReservationIfDifferent } from "@/components/booking/reservation-lifecycle";
 import type { FilmItem } from "@/components/home/types";
 import { Film } from "lucide-react";
 import { type ProgramacaoFilter, matchesProgramacaoFilter } from "@/shared/experiences";
@@ -162,6 +163,7 @@ export default function CinemarkStyleHomePage() {
                 film={film}
                 selectedDate={dateTabs[selectedDay]?.date}
                 onOpenSessions={(f) => {
+                  abandonPreviousReservationIfDifferent(f.id);
                   router.push(`/portal/reservas?filmeId=${f.id}`);
                 }}
                 onOpenDetails={(f) => {

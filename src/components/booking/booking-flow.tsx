@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,6 +31,14 @@ import { getRoomExperienceCategory, getRoomDisplayName } from "@/shared/experien
 import { useAuthModal } from "@/contexts/auth-modal-context";
 import { formatDuration, getPrimaryGenre } from "@/components/home/film-utils";
 import type { FilmItem, SessionItem } from "@/components/home/types";
+import {
+  BOOKING_STORAGE_KEY,
+  generateReservationContextId,
+  releaseReservationHold,
+  getSavedReservationContext,
+  clearReservationContext,
+  saveReservationContext,
+} from "./reservation-lifecycle";
 
 export type BookingStep = 1 | 2 | 3 | 4;
 
@@ -67,12 +75,25 @@ interface BookingFlowProps {
   initialSessionId?: string;
 }
 
-const STORAGE_KEY = "cinedoom_booking_state_v1";
-
 export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProps) {
   const router = useRouter();
   const { data: authSession, status: authStatus } = useSession();
   const { openLogin } = useAuthModal();
+
+  // Identificador e controle de isolamento do contexto da reserva
+  const [contextId, setContextId] = useState<string>(() => generateReservationContextId());
+  const contextIdRef = useRef<string>(contextId);
+  contextIdRef.current = contextId;
+
+  // AbortController para invalidar requisições pendentes de reservas anteriores
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Referência do bloqueio ativo atual para liberação no backend ao abandonar/trocar de filme
+  const activeHoldRef = useRef<{ holdToken: string; sessionId: string } | null>(null);
+
+  // Referências para detectar troca de filme ou sessão via navegação/props
+  const prevFilmIdRef = useRef<string | undefined>(initialFilmId);
+  const prevSessionIdRef = useRef<string | undefined>(initialSessionId);
 
   // Estados principais da jornada
   const [currentStep, setCurrentStep] = useState<BookingStep>(1);
@@ -110,6 +131,99 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
   const [generalLoading, setGeneralLoading] = useState<boolean>(true);
 
+  // 0. Função central de reinicialização para novas reservas isoladas
+  const resetForNewReservation = useCallback(
+    (targetFilmId?: string, targetSessionId?: string) => {
+      // 1. Cancela requisições assíncronas em andamento da reserva anterior
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
+
+      // 2. Libera assentos bloqueados no backend se existirem
+      if (activeHoldRef.current?.holdToken && activeHoldRef.current?.sessionId) {
+        releaseReservationHold(activeHoldRef.current.sessionId, activeHoldRef.current.holdToken);
+        activeHoldRef.current = null;
+      }
+
+      // 3. Gera um novo identificador de contexto
+      const newCtx = generateReservationContextId();
+      setContextId(newCtx);
+      contextIdRef.current = newCtx;
+
+      // 4. Limpa armazenamento da reserva anterior
+      clearReservationContext();
+
+      // 5. Restaura estados para o ponto inicial da nova jornada (Etapa 1)
+      setCurrentStep(1);
+      setSelectedSessionId(targetSessionId || "");
+      setSessionDetail(null);
+      setSeats([]);
+      setSelectedSeatIds([]);
+      setSeatsLoading(false);
+      setTicketQuantities({ inteira: 0, meia: 0 });
+      setHoldToken("");
+      setHoldExpiresAt(null);
+      setRemainingSeconds(600);
+      setIsHoldExpired(false);
+      setErrorNotice(null);
+      setSelectedDateIndex(0);
+
+      // 6. Associa imediatamente o novo filme se fornecido
+      if (targetFilmId) {
+        setSelectedFilm((prev) => {
+          const matched = availableFilms.find((f) => f.id === targetFilmId);
+          return matched || prev;
+        });
+      }
+    },
+    [availableFilms]
+  );
+
+  // Sincroniza activeHoldRef quando holdToken e selectedSessionId mudam
+  useEffect(() => {
+    if (holdToken && selectedSessionId) {
+      activeHoldRef.current = { holdToken, sessionId: selectedSessionId };
+    } else if (!holdToken) {
+      activeHoldRef.current = null;
+    }
+  }, [holdToken, selectedSessionId]);
+
+  // Cancela requisições assíncronas no unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
+  // Detecta mudança de filme via props (navegação entre filmes)
+  useEffect(() => {
+    if (initialFilmId && prevFilmIdRef.current && initialFilmId !== prevFilmIdRef.current) {
+      prevFilmIdRef.current = initialFilmId;
+      resetForNewReservation(initialFilmId, initialSessionId);
+    } else if (initialFilmId) {
+      prevFilmIdRef.current = initialFilmId;
+    }
+  }, [initialFilmId, initialSessionId, resetForNewReservation]);
+
+  // Detecta mudança de sessão via props
+  useEffect(() => {
+    if (
+      initialSessionId &&
+      prevSessionIdRef.current &&
+      initialSessionId !== prevSessionIdRef.current
+    ) {
+      prevSessionIdRef.current = initialSessionId;
+      if (sessionDetail && sessionDetail.id !== initialSessionId) {
+        resetForNewReservation(initialFilmId, initialSessionId);
+      }
+    } else if (initialSessionId) {
+      prevSessionIdRef.current = initialSessionId;
+    }
+  }, [initialSessionId, initialFilmId, resetForNewReservation, sessionDetail]);
+
   // 1. Gera as 7 abas de data a partir de hoje
   const dateTabs = useMemo(() => {
     return Array.from({ length: 7 }).map((_, i) => {
@@ -127,31 +241,48 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     });
   }, []);
 
-  // 2. Carrega catálogo de filmes para Etapa 1
+  // 2. Carrega catálogo de filmes para Etapa 1 com cancelamento assíncrono
   useEffect(() => {
+    const activeCtx = contextIdRef.current;
+
     async function loadCatalog() {
       try {
         setGeneralLoading(true);
-        const res = await fetch("/api/portal/filmes", { cache: "no-store" });
+        const res = await fetch("/api/portal/filmes", {
+          cache: "no-store",
+          signal: abortControllerRef.current?.signal,
+        });
         if (res.ok) {
           const data: FilmItem[] = await res.json();
+          if (contextIdRef.current !== activeCtx) return;
           setAvailableFilms(data);
 
           if (initialFilmId) {
             const found = data.find((f) => f.id === initialFilmId);
             if (found) setSelectedFilm(found);
           } else if (data.length > 0) {
-            setSelectedFilm(data[0]);
+            setSelectedFilm((prev) => prev || data[0]);
           }
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === "AbortError") return;
         console.error("Erro ao carregar catálogo de filmes:", err);
       } finally {
-        setGeneralLoading(false);
+        if (contextIdRef.current === activeCtx) {
+          setGeneralLoading(false);
+        }
       }
     }
     loadCatalog();
   }, [initialFilmId]);
+
+  // Sincroniza filme selecionado quando availableFilms carrega com initialFilmId
+  useEffect(() => {
+    if (initialFilmId && availableFilms.length > 0) {
+      const found = availableFilms.find((f) => f.id === initialFilmId);
+      if (found) setSelectedFilm(found);
+    }
+  }, [initialFilmId, availableFilms]);
 
   // 3. Se veio initialSessionId, posiciona
   useEffect(() => {
@@ -160,15 +291,21 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     }
   }, [initialSessionId]);
 
-  // 4. Carrega detalhes da sessão selecionada
+  // 4. Carrega detalhes da sessão selecionada com cancelamento assíncrono
   useEffect(() => {
     if (!selectedSessionId) return;
+    const activeCtx = contextIdRef.current;
+    const targetSessionId = selectedSessionId;
 
     async function loadSession() {
       try {
-        const res = await fetch(`/api/portal/sessoes/${selectedSessionId}`, { cache: "no-store" });
+        const res = await fetch(`/api/portal/sessoes/${targetSessionId}`, {
+          cache: "no-store",
+          signal: abortControllerRef.current?.signal,
+        });
         if (res.ok) {
           const data: SessionPortalDetail = await res.json();
+          if (contextIdRef.current !== activeCtx) return;
           setSessionDetail(data);
 
           if (data.film) {
@@ -188,33 +325,41 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
             });
           }
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === "AbortError") return;
         console.error("Erro ao carregar sessão:", err);
       }
     }
     loadSession();
   }, [selectedSessionId]);
 
-  // 5. Polling de Assentos (Etapa 2)
+  // 5. Polling de Assentos (Etapa 2) com verificação de contexto
   const fetchSeats = useCallback(async () => {
     if (!selectedSessionId) return;
+    const activeCtx = contextIdRef.current;
+    const targetSessionId = selectedSessionId;
+
     try {
-      const res = await fetch(`/api/portal/sessoes/${selectedSessionId}/assentos`, {
+      const res = await fetch(`/api/portal/sessoes/${targetSessionId}/assentos`, {
         cache: "no-store",
+        signal: abortControllerRef.current?.signal,
       }).catch(() => null);
 
       let data: GridSeatItem[] | null = null;
       if (res && res.ok) {
         data = await res.json();
       } else {
-        const fallbackRes = await fetch(`/api/sessoes/${selectedSessionId}/assentos`, {
+        const fallbackRes = await fetch(`/api/sessoes/${targetSessionId}/assentos`, {
           cache: "no-store",
           headers: sessionDetail?.tenantId ? { "x-tenant-id": sessionDetail.tenantId } : {},
+          signal: abortControllerRef.current?.signal,
         }).catch(() => null);
         if (fallbackRes && fallbackRes.ok) {
           data = await fallbackRes.json();
         }
       }
+
+      if (contextIdRef.current !== activeCtx) return;
 
       if (data && Array.isArray(data)) {
         setSeats(data);
@@ -225,7 +370,8 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
           })
         );
       }
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === "AbortError") return;
       console.error("Erro no polling de assentos:", err);
     }
   }, [selectedSessionId, sessionDetail?.tenantId]);
@@ -282,48 +428,84 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     return () => clearInterval(interval);
   }, [holdExpiresAt]);
 
-  // 9. Persistência em sessionStorage para sobreviver a refresh e login
+  // 9. Persistência em sessionStorage com isolamento estrito de contexto
   useEffect(() => {
     try {
-      const saved = sessionStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.holdExpiresAt && parsed.holdExpiresAt > Date.now()) {
-          setHoldToken(parsed.holdToken || "");
-          setHoldExpiresAt(parsed.holdExpiresAt);
-          if (parsed.selectedSeatIds) setSelectedSeatIds(parsed.selectedSeatIds);
-          if (parsed.ticketQuantities) setTicketQuantities(parsed.ticketQuantities);
-          if (parsed.selectedSessionId) setSelectedSessionId(parsed.selectedSessionId);
-          if (parsed.currentStep && parsed.currentStep >= 3) {
-            setCurrentStep(parsed.currentStep);
-          }
-        } else if (parsed.holdExpiresAt && parsed.holdExpiresAt <= Date.now()) {
-          setIsHoldExpired(true);
+      const saved = getSavedReservationContext();
+      if (!saved) return;
+
+      // Isolamento: Se o estado salvo for de outro filme ou de outra sessão, não restaure!
+      const isDifferentFilm = Boolean(
+        initialFilmId && saved.selectedFilmId && saved.selectedFilmId !== initialFilmId
+      );
+      const isDifferentSession = Boolean(
+        initialSessionId && saved.selectedSessionId && saved.selectedSessionId !== initialSessionId
+      );
+
+      if (isDifferentFilm || isDifferentSession) {
+        // Encerramento da reserva anterior e liberação de assentos no backend
+        if (saved.holdToken && saved.selectedSessionId) {
+          releaseReservationHold(saved.selectedSessionId, saved.holdToken);
         }
+        clearReservationContext();
+        return;
+      }
+
+      // Se for a mesma reserva e o bloqueio ainda estiver válido
+      if (saved.holdExpiresAt && saved.holdExpiresAt > Date.now()) {
+        if (saved.contextId) {
+          setContextId(saved.contextId);
+          contextIdRef.current = saved.contextId;
+        }
+        setHoldToken(saved.holdToken || "");
+        setHoldExpiresAt(saved.holdExpiresAt);
+        if (saved.selectedSeatIds) setSelectedSeatIds(saved.selectedSeatIds);
+        if (saved.ticketQuantities) setTicketQuantities(saved.ticketQuantities);
+        if (saved.selectedSessionId) setSelectedSessionId(saved.selectedSessionId);
+        if (saved.currentStep && saved.currentStep >= 2) {
+          setCurrentStep(saved.currentStep as BookingStep);
+        }
+      } else if (saved.holdExpiresAt && saved.holdExpiresAt <= Date.now()) {
+        // Expirou
+        if (saved.holdToken && saved.selectedSessionId) {
+          releaseReservationHold(saved.selectedSessionId, saved.holdToken);
+        }
+        clearReservationContext();
+        setIsHoldExpired(true);
       }
     } catch {
       // Ignora erro de storage
     }
-  }, []);
+  }, [initialFilmId, initialSessionId]);
 
   const saveStateToStorage = useCallback(
     (step: BookingStep, customToken?: string, customExpires?: number) => {
-      try {
-        const stateToSave = {
-          currentStep: step,
-          selectedFilmId: selectedFilm?.id,
-          selectedSessionId,
-          selectedSeatIds,
-          ticketQuantities,
-          holdToken: customToken || holdToken,
-          holdExpiresAt: customExpires || holdExpiresAt,
-        };
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-      } catch {
-        // Ignora erro de storage
-      }
+      saveReservationContext({
+        contextId: contextIdRef.current,
+        currentStep: step,
+        selectedFilmId: selectedFilm?.id,
+        selectedSessionId,
+        cinemaTenantId: sessionDetail?.tenantId,
+        roomId: sessionDetail?.room?.id,
+        roomName: sessionDetail?.room?.name,
+        selectedSeatIds,
+        ticketQuantities,
+        holdToken: customToken || holdToken,
+        holdExpiresAt: customExpires || holdExpiresAt,
+        createdAt: Date.now(),
+      });
     },
-    [selectedFilm?.id, selectedSessionId, selectedSeatIds, ticketQuantities, holdToken, holdExpiresAt]
+    [
+      selectedFilm?.id,
+      selectedSessionId,
+      sessionDetail?.tenantId,
+      sessionDetail?.room?.id,
+      sessionDetail?.room?.name,
+      selectedSeatIds,
+      ticketQuantities,
+      holdToken,
+      holdExpiresAt,
+    ]
   );
 
   // Valores monetários
@@ -372,6 +554,7 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     }
     setErrorNotice(null);
     setIsSubmitting(true);
+    const activeCtx = contextIdRef.current;
 
     try {
       const token =
@@ -385,9 +568,12 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
           holdToken: token,
           action: "HOLD",
         }),
+        signal: abortControllerRef.current?.signal,
       });
 
       const data = await res.json();
+      if (contextIdRef.current !== activeCtx) return;
+
       if (!res.ok) {
         if (res.status === 409) {
           setErrorNotice(
@@ -404,15 +590,20 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       setHoldToken(data.holdToken);
       setHoldExpiresAt(expiresTimestamp);
       setIsHoldExpired(false);
+      activeHoldRef.current = { holdToken: data.holdToken, sessionId: selectedSessionId };
       setCurrentStep(3);
       saveStateToStorage(3, data.holdToken, expiresTimestamp);
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === "AbortError") return;
+      if (contextIdRef.current !== activeCtx) return;
       console.error("Erro ao bloquear assentos:", err);
       const expiresTimestamp = Date.now() + 10 * 60 * 1000;
       setHoldExpiresAt(expiresTimestamp);
       setCurrentStep(3);
     } finally {
-      setIsSubmitting(false);
+      if (contextIdRef.current === activeCtx) {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -504,9 +695,9 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
         return;
       }
 
-      try {
-        sessionStorage.removeItem(STORAGE_KEY);
-      } catch {}
+      // Concluído com sucesso: libera referência ativa para não descartar e limpa o storage
+      activeHoldRef.current = null;
+      clearReservationContext();
 
       const reservationId = data.reservation.id;
       router.push(`/portal/reservas/${reservationId}/comprovante`);
@@ -519,22 +710,15 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
   };
 
   const handleRestart = () => {
-    try {
-      sessionStorage.removeItem(STORAGE_KEY);
-    } catch {}
-    setHoldExpiresAt(null);
-    setHoldToken("");
-    setSelectedSeatIds([]);
-    setTicketQuantities({ inteira: 0, meia: 0 });
-    setIsHoldExpired(false);
-    setErrorNotice(null);
-    setCurrentStep(1);
+    resetForNewReservation(selectedFilm?.id);
   };
 
   const handleExpiredOk = () => {
-    try {
-      sessionStorage.removeItem(STORAGE_KEY);
-    } catch {}
+    if (activeHoldRef.current?.holdToken && activeHoldRef.current?.sessionId) {
+      releaseReservationHold(activeHoldRef.current.sessionId, activeHoldRef.current.holdToken);
+      activeHoldRef.current = null;
+    }
+    clearReservationContext();
     window.location.href = "/";
   };
 
