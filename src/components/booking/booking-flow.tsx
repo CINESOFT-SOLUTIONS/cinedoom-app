@@ -838,12 +838,33 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       {/* ========================================================================= */}
       {/* ETAPA 2: ASSENTOS (Otimização do Viewport: Tela, Fileiras e Controles)    */}
       {/* ========================================================================= */}
-      {/* ETAPA 2: ASSENTOS (Layout 2 Colunas no Desktop: Sem Rolagem Vertical)     */}
+      {/* ETAPA 2: ASSENTOS (Mapa à Esquerda, Modais Laterais à Direita)            */}
       {/* ========================================================================= */}
       {currentStep === 2 && (
         <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
-            {/* Coluna Lateral: Resumo da Sessão, Poltronas, Legenda e Ação */}
+            {/* Coluna Principal (Esquerda): Mapa de Assentos com Tela de Projeção */}
+            <div className="lg:col-span-8 p-2.5 sm:p-3 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-xl flex flex-col justify-center items-center">
+              {seatsLoading && seats.length === 0 ? (
+                <div className="py-12 flex flex-col items-center justify-center space-y-2">
+                  <div className="w-8 h-8 border-2 border-cta border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-slate-400">Carregando poltronas...</span>
+                </div>
+              ) : (
+                <SeatingGrid
+                  seats={seats}
+                  selectedSeatIds={selectedSeatIds}
+                  onSeatToggle={handleSeatToggle}
+                  maxSelection={5}
+                  unitPrice={unitPrice}
+                  showLegend={false}
+                  showScreen={true}
+                  showSummary={false}
+                />
+              )}
+            </div>
+
+            {/* Painel Lateral (Direita): Resumo da Sessão, Poltronas, Legenda e Ação */}
             <div className="lg:col-span-4 flex flex-col gap-2.5">
               {/* Card de Sessão e Voltar */}
               <div className="p-3 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
@@ -951,87 +972,17 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                 </div>
               </div>
             </div>
-
-            {/* Coluna Central: Mapa de Assentos com Tela de Projeção */}
-            <div className="lg:col-span-8 p-2.5 sm:p-3 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-xl flex flex-col justify-center items-center">
-              {seatsLoading && seats.length === 0 ? (
-                <div className="py-12 flex flex-col items-center justify-center space-y-2">
-                  <div className="w-8 h-8 border-2 border-cta border-t-transparent rounded-full animate-spin" />
-                  <span className="text-xs text-slate-400">Carregando poltronas...</span>
-                </div>
-              ) : (
-                <SeatingGrid
-                  seats={seats}
-                  selectedSeatIds={selectedSeatIds}
-                  onSeatToggle={handleSeatToggle}
-                  maxSelection={5}
-                  unitPrice={unitPrice}
-                  showLegend={false}
-                  showScreen={true}
-                  showSummary={false}
-                />
-              )}
-            </div>
           </div>
         </section>
       )}
 
       {/* ========================================================================= */}
-      {/* ETAPA 3: INGRESSOS (Layout 2 Colunas no Desktop: Sem Rolagem Vertical)     */}
+      {/* ETAPA 3: INGRESSOS (Ingressos à Esquerda, Modal Lateral à Direita)        */}
       {/* ========================================================================= */}
       {currentStep === 3 && (
         <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-stretch">
-            {/* Coluna Esquerda: Resumo da Sessão e Assentos */}
-            <div className="lg:col-span-4 flex flex-col gap-2.5">
-              <div className="p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
-                <span className="text-[10px] font-bold text-cta uppercase tracking-wider block">
-                  Resumo da Escolha
-                </span>
-                <h2 className="text-sm font-bold text-white leading-tight">
-                  {selectedFilm?.title}
-                </h2>
-                <div className="text-xs text-slate-300 space-y-0.5">
-                  <p>{sessionDetail?.room.name || "Sala de Cinema"}</p>
-                  <p className="font-mono text-slate-400">
-                    {sessionDetail?.startsAt
-                      ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : ""}
-                  </p>
-                </div>
-
-                <div className="pt-2 border-t border-white/5 space-y-1">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">
-                    Poltronas Escolhidas ({selectedSeatIds.length})
-                  </span>
-                  <div className="flex flex-wrap gap-1">
-                    {selectedSeatIds.map((id) => {
-                      const s = seats.find((st) => st.id === id);
-                      return (
-                        <span
-                          key={id}
-                          className="px-1.5 py-0.5 rounded bg-cta/20 border border-cta/40 text-cta text-[10px] font-bold font-mono"
-                        >
-                          {s?.seatCode || id.slice(-2)}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
-                  <span className="text-slate-400">Total da Reserva:</span>
-                  <span className="text-base font-extrabold text-cta font-mono">
-                    R$ {totalAmount.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Coluna Direita: Cards dos Tipos de Ingressos */}
+            {/* Coluna Principal (Esquerda): Cards dos Tipos de Ingressos */}
             <div className="lg:col-span-8 flex flex-col gap-2.5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {/* Card Inteira */}
@@ -1171,6 +1122,55 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                   </span>
                 </span>
                 <span className="font-bold text-cta font-mono">R$ {totalAmount.toFixed(2)}</span>
+              </div>
+            </div>
+
+            {/* Coluna Lateral (Direita): Resumo da Sessão e Assentos */}
+            <div className="lg:col-span-4 flex flex-col gap-2.5">
+              <div className="p-3.5 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
+                <span className="text-[10px] font-bold text-cta uppercase tracking-wider block">
+                  Resumo da Escolha
+                </span>
+                <h2 className="text-sm font-bold text-white leading-tight">
+                  {selectedFilm?.title}
+                </h2>
+                <div className="text-xs text-slate-300 space-y-0.5">
+                  <p>{sessionDetail?.room.name || "Sala de Cinema"}</p>
+                  <p className="font-mono text-slate-400">
+                    {sessionDetail?.startsAt
+                      ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : ""}
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-white/5 space-y-1">
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">
+                    Poltronas Escolhidas ({selectedSeatIds.length})
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedSeatIds.map((id) => {
+                      const s = seats.find((st) => st.id === id);
+                      return (
+                        <span
+                          key={id}
+                          className="px-1.5 py-0.5 rounded bg-cta/20 border border-cta/40 text-cta text-[10px] font-bold font-mono"
+                        >
+                          {s?.seatCode || id.slice(-2)}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Total da Reserva:</span>
+                  <span className="text-base font-extrabold text-cta font-mono">
+                    R$ {totalAmount.toFixed(2)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
