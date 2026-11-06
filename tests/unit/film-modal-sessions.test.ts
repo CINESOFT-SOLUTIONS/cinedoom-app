@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { FilmModal } from "@/components/home/film-modal";
 import type { FilmItem } from "@/components/home/types";
 
-describe("Organização das Sessões no Modal do Filme (Padrão CineSIS no CineDoom)", () => {
+describe("Modal de Filme na Tela Inicial (Foco Exclusivo em Sinopse & Detalhes)", () => {
   const mockFilm: FilmItem = {
     id: "film-01",
     title: "Duna: Parte Dois",
@@ -22,132 +22,61 @@ describe("Organização das Sessões no Modal do Filme (Padrão CineSIS no CineD
         status: "OPEN",
         room: { id: "r-1", name: "Sala 1 - CLÁSSICA", capacity: 120 },
       },
-      {
-        id: "sess-02",
-        startsAt: "2026-10-25T21:30:00.000Z",
-        price: 42,
-        status: "OPEN",
-        room: { id: "r-1", name: "Sala 1 - CLÁSSICA", capacity: 120 },
-      },
-      {
-        id: "sess-03",
-        startsAt: "2026-10-25T20:00:00.000Z",
-        price: 54,
-        status: "OPEN",
-        room: { id: "r-3", name: "Sala 3 - IMAX", capacity: 120 },
-      },
-      {
-        id: "sess-04",
-        startsAt: "2026-10-25T22:15:00.000Z",
-        price: 60,
-        status: "OPEN",
-        room: { id: "r-4", name: "Sala 4 - VIP", capacity: 60 },
-      },
     ],
   };
 
-  const testDate = new Date("2026-10-25T12:00:00Z");
-
-  it("exibe as salas separadamente com seus nomes canônicos e categorias de experiência", () => {
+  it("renderiza o título da seção como 'Sinopse' e exibe a sinopse completa", () => {
     const html = renderToStaticMarkup(
       React.createElement(FilmModal, {
         film: mockFilm,
-        initialTab: "sessions",
-        selectedDate: testDate,
-        onClose: () => { },
+        onClose: () => {},
       })
     );
 
-    // Nomes das salas exibidos separadamente
-    expect(html).toContain("Sala 1");
-    expect(html).toContain("Sala 3");
-    expect(html).toContain("Sala 4");
-
-    // Badges das categorias de experiência
-    expect(html).toContain("CLÁSSICA");
-    expect(html).toContain("IMAX");
-    expect(html).toContain("VIP");
+    // Deve conter o título "Sinopse"
+    expect(html).toContain("Sinopse");
+    expect(html).toContain("Paul Atreides se une a Chani e aos Fremen enquanto busca vingança contra os conspiradores.");
   });
 
-  it("exibe os horários em botões compactos com link direto para seleção de assentos", () => {
+  it("exibe metadados completos (Gênero, Duração, Direção, Classificação) e pôster", () => {
     const html = renderToStaticMarkup(
       React.createElement(FilmModal, {
         film: mockFilm,
-        initialTab: "sessions",
-        selectedDate: testDate,
-        onClose: () => { },
+        onClose: () => {},
       })
     );
 
-    // Links diretos para /portal/sessoes/[sessId]
-    expect(html).toContain("/portal/sessoes/sess-01");
-    expect(html).toContain("/portal/sessoes/sess-02");
-    expect(html).toContain("/portal/sessoes/sess-03");
-    expect(html).toContain("/portal/sessoes/sess-04");
-  });
-
-  it("NÃO exibe preços nos botões de horário (regra obrigatória de interface)", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(FilmModal, {
-        film: mockFilm,
-        initialTab: "sessions",
-        selectedDate: testDate,
-        onClose: () => { },
-      })
-    );
-
-    // Não deve conter valores monetários nos botões
-    expect(html).not.toContain("R$ 42");
-    expect(html).not.toContain("R$ 54");
-    expect(html).not.toContain("R$ 60");
-    expect(html).not.toContain("R$");
-  });
-
-  it("exibe mensagem adequada quando não há sessões disponíveis para a data selecionada", () => {
-    const filmWithoutSessionsOnDate: FilmItem = {
-      ...mockFilm,
-      sessions: [
-        {
-          id: "sess-future",
-          startsAt: "2026-11-10T19:00:00.000Z", // data distante
-          price: 40,
-          status: "OPEN",
-          room: { id: "r-1", name: "Sala 1 - CLÁSSICA", capacity: 120 },
-        },
-      ],
-    };
-
-    const html = renderToStaticMarkup(
-      React.createElement(FilmModal, {
-        film: filmWithoutSessionsOnDate,
-        initialTab: "sessions",
-        selectedDate: testDate,
-        onClose: () => { },
-      })
-    );
-
-    // Mensagem de ausência de sessões
-    expect(html).toContain("Nenhuma sessão disponível para");
-  });
-
-  it("remove o botão redundante 'Ver Horários e Reservar' na aba Sinopse & Detalhes preservando os dados informativos", () => {
-    const html = renderToStaticMarkup(
-      React.createElement(FilmModal, {
-        film: mockFilm,
-        initialTab: "details",
-        selectedDate: testDate,
-        onClose: () => { },
-      })
-    );
-
-    // Botão redundante NÃO deve existir
-    expect(html).not.toContain("Ver Horários e Reservar");
-
-    // Metadados preservados na íntegra
-    expect(html).toContain("Paul Atreides se une a Chani");
     expect(html).toContain("Ficção científica");
     expect(html).toContain("166 min");
     expect(html).toContain("Denis Villeneuve");
+    expect(html).toContain("Duna: Parte Dois");
     expect(html).toContain("Não recomendado para menores de 14 anos");
+  });
+
+  it("NÃO exibe abas nem a parte antiga de sessões/salas no modal", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(FilmModal, {
+        film: mockFilm,
+        onClose: () => {},
+      })
+    );
+
+    // Não deve possuir abas de navegação nem listagem interna de salas/sessões
+    expect(html).not.toContain("Horários &amp; Sessões");
+    expect(html).not.toContain("Horários & Sessões");
+    expect(html).not.toContain("Sala 1 - CLÁSSICA");
+    expect(html).not.toContain("Nenhuma sessão disponível");
+  });
+
+  it("fornece botão de ação para 'Ver sessões' direcionando ao fluxo oficial /portal/reservas", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(FilmModal, {
+        film: mockFilm,
+        onClose: () => {},
+      })
+    );
+
+    expect(html).toContain("Ver sessões");
+    expect(html).toContain("/portal/reservas?filmeId=film-01");
   });
 });

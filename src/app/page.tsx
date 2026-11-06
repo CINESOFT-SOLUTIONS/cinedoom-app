@@ -23,7 +23,6 @@ export default function CinemarkStyleHomePage() {
   const [selectedFormat, setSelectedFormat] = useState<ProgramacaoFilter>("Todos");
   const [selectedDay, setSelectedDay] = useState<number>(0);
   const [selectedModalFilm, setSelectedModalFilm] = useState<FilmItem | null>(null);
-  const [modalInitialTab, setModalInitialTab] = useState<"sessions" | "details">("sessions");
 
   // Carrega catálogo público do cinema CineDoom
   useEffect(() => {
@@ -105,12 +104,11 @@ export default function CinemarkStyleHomePage() {
         heroIndex={heroIndex}
         onSelectHeroIndex={setHeroIndex}
         onOpenSessions={(f) => {
-          setSelectedModalFilm(f);
-          setModalInitialTab("sessions");
+          abandonPreviousReservationIfDifferent(f.id);
+          router.push(`/portal/reservas?filmeId=${f.id}`);
         }}
         onOpenDetails={(f) => {
           setSelectedModalFilm(f);
-          setModalInitialTab("details");
         }}
       />
 
@@ -168,7 +166,6 @@ export default function CinemarkStyleHomePage() {
                 }}
                 onOpenDetails={(f) => {
                   setSelectedModalFilm(f);
-                  setModalInitialTab("details");
                 }}
               />
             ))}
@@ -179,11 +176,9 @@ export default function CinemarkStyleHomePage() {
         <InstitutionalBanner />
       </main>
 
-      {/* 6. Modal Interativo de Sessões & Detalhes */}
+      {/* 6. Modal Interativo de Sinopse */}
       <FilmModal
         film={selectedModalFilm}
-        initialTab={modalInitialTab}
-        selectedDate={dateTabs[selectedDay]?.date}
         onClose={() => setSelectedModalFilm(null)}
       />
 
