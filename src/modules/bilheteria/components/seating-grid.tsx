@@ -127,7 +127,7 @@ const SeatButton = React.memo(function SeatButton({
       data-testid={`seat-${code}`}
       data-seat-id={seat.id}
       data-status={effectiveStatus}
-      className={`group relative w-6 h-7 sm:w-7 sm:h-7.5 md:w-7.5 md:h-8 flex flex-col items-center justify-center transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-1 focus:ring-offset-[#1A1A2E] select-none ${
+      className={`group relative w-6 h-7 sm:w-7 sm:h-7.5 md:w-7.5 md:h-8 flex flex-col items-center justify-center transition-transform duration-150 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 select-none ${
         isClickable ? "hover:scale-105 active:scale-95 cursor-pointer" : "cursor-not-allowed"
       }`}
     >

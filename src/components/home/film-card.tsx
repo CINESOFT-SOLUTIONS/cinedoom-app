@@ -63,7 +63,7 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
       tabIndex={0}
       role="button"
       aria-label={`Filme ${film.title}. Pressione Enter para ver sessões.`}
-      className="group relative flex flex-col cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-cta rounded-2xl select-none"
+      className="group relative flex flex-col cursor-pointer outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 rounded-2xl select-none"
     >
       {/* 1. Área do Pôster Vertical (Proporção 2:3 rigorosamente preservada) */}
       <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-lg group-hover:border-cta/50 group-hover:shadow-[0_12px_32px_rgba(233,69,96,0.22)] transition-all duration-300">

@@ -847,7 +847,7 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
             <div className="lg:col-span-8 p-2.5 sm:p-3 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-xl flex flex-col justify-center items-center">
               {seatsLoading && seats.length === 0 ? (
                 <div className="py-12 flex flex-col items-center justify-center space-y-2">
-                  <div className="w-8 h-8 border-2 border-cta border-t-transparent rounded-full animate-spin" />
+                  <div className="w-6 h-6 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" />
                   <span className="text-xs text-slate-400">Carregando poltronas...</span>
                 </div>
               ) : (
@@ -919,7 +919,7 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                       return (
                         <span
                           key={id}
-                          className="px-2 py-0.5 rounded-md bg-cta/20 text-cta border border-cta/30 text-xs font-bold font-mono"
+                          className="px-2 py-0.5 rounded-md bg-white/10 text-white border border-white/15 text-xs font-bold font-mono"
                         >
                           {s?.seatCode || id.slice(-2)}
                         </span>

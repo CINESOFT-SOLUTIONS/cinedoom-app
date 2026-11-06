@@ -340,7 +340,7 @@ export function FilmModal({
                               key={sess.id}
                               href={`/portal/sessoes/${sess.id}`}
                               onClick={onClose}
-                              className="px-3 py-2 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white font-mono font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm hover:shadow-cta/30 hover:scale-105 active:scale-95 text-center min-w-[72px] flex items-center justify-center cursor-pointer"
+                              className="px-3 py-2 rounded-xl bg-[#141A2D] hover:bg-cta border border-borderDark hover:border-cta text-slate-200 hover:text-white font-mono font-bold text-xs sm:text-sm tracking-wide transition-all shadow-sm hover:shadow-cta/30 hover:scale-105 active:scale-95 text-center min-w-[72px] flex items-center justify-center cursor-pointer outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
                               title={`Reservar assento para sessão das ${time} na ${displayName}`}
                               aria-label={`Sessão às ${time} na ${displayName}`}
                             >
