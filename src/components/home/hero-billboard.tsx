@@ -11,15 +11,35 @@ interface HeroBillboardProps {
   films: FilmItem[];
   heroIndex: number;
   onSelectHeroIndex: (idx: number) => void;
+  onOpenSessions?: (film: FilmItem) => void;
+  onOpenDetails?: (film: FilmItem) => void;
 }
 
 export function HeroBillboard({
   films,
   heroIndex,
   onSelectHeroIndex,
+  onOpenSessions,
+  onOpenDetails,
 }: HeroBillboardProps) {
   const [detailModalFilm, setDetailModalFilm] = useState<FilmItem | null>(null);
   const activeHeroFilm = films[heroIndex] || films[0];
+
+  const handleOpenSessions = () => {
+    if (activeHeroFilm && onOpenSessions) {
+      onOpenSessions(activeHeroFilm);
+    }
+  };
+
+  const handleOpenDetails = () => {
+    if (activeHeroFilm) {
+      if (onOpenDetails) {
+        onOpenDetails(activeHeroFilm);
+      } else {
+        setDetailModalFilm(activeHeroFilm);
+      }
+    }
+  };
 
   return (
     <>
@@ -83,19 +103,20 @@ export function HeroBillboard({
             </p>
 
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5">
-              <a
-                href="#programacao"
-                className="px-6 py-3 sm:py-3.5 rounded-xl bg-cta hover:bg-cta-hover text-white font-semibold text-xs sm:text-sm shadow-xl shadow-cta/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              <button
+                type="button"
+                onClick={handleOpenSessions}
+                className="px-6 py-3 sm:py-3.5 rounded-xl bg-cta hover:bg-cta-hover text-white font-semibold text-xs sm:text-sm shadow-xl shadow-cta/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Ticket className="w-4 h-4" />
                 <span>Ver Sessões & Reservar</span>
-              </a>
+              </button>
 
               {activeHeroFilm && (
                 <button
                   type="button"
-                  onClick={() => setDetailModalFilm(activeHeroFilm)}
-                  className="px-5 py-3 sm:py-3.5 rounded-xl bg-surface/80 hover:bg-surface border border-borderDark text-white font-medium text-xs sm:text-sm transition-all hover:border-slate-400 flex items-center justify-center gap-2"
+                  onClick={handleOpenDetails}
+                  className="px-5 py-3 sm:py-3.5 rounded-xl bg-surface/80 hover:bg-surface border border-borderDark text-white font-medium text-xs sm:text-sm transition-all hover:border-slate-400 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Play className="w-4 h-4 text-cta fill-cta" />
                   <span>Ver Detalhes</span>

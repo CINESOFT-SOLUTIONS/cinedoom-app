@@ -101,6 +101,14 @@ export default function CinemarkStyleHomePage() {
         films={films}
         heroIndex={heroIndex}
         onSelectHeroIndex={setHeroIndex}
+        onOpenSessions={(f) => {
+          setSelectedModalFilm(f);
+          setModalInitialTab("sessions");
+        }}
+        onOpenDetails={(f) => {
+          setSelectedModalFilm(f);
+          setModalInitialTab("details");
+        }}
       />
 
       {/* 3. Barra de Programação por Data & Filtros */}
