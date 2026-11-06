@@ -626,7 +626,7 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                   {isCompleted ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : step}
                 </div>
                 <span
-                  className={`text-[10px] sm:text-xs font-semibold tracking-wide uppercase hidden xs:inline-block ${
+                  className={`text-[10px] sm:text-xs font-semibold tracking-wide uppercase inline-block ${
                     isCurrent
                       ? "text-white font-bold"
                       : isCompleted
