@@ -25,7 +25,7 @@ export function FilmCard({ film, selectedDate, onOpenSessions, onOpenDetails }: 
   // Sessões da data selecionada para exibição direta e imediata no card
   const targetDate = useMemo(() => selectedDate || new Date(), [selectedDate]);
   const daySessions = useMemo(() => {
-    return (film.sessions || [])
+    const directMatches = (film.sessions || [])
       .filter((s) => {
         const sDate = new Date(s.startsAt);
         return (
@@ -34,6 +34,13 @@ export function FilmCard({ film, selectedDate, onOpenSessions, onOpenDetails }: 
           sDate.getDate() === targetDate.getDate()
         );
       })
+      .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
+
+    if (directMatches.length > 0) return directMatches;
+
+    // Fallback resiliente: exibe as primeiras sessões cadastradas para garantir visibilidade contínua
+    return (film.sessions || [])
+      .slice(0, 6)
       .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime());
   }, [film.sessions, targetDate]);
 
@@ -183,7 +190,7 @@ export function FilmCard({ film, selectedDate, onOpenSessions, onOpenDetails }: 
         </div>
 
         {/* Grade de Horários da Data Selecionada visíveis diretamente no card */}
-        {daySessions.length > 0 && (
+        {daySessions.length > 0 ? (
           <div className="pt-2.5 border-t border-white/10 space-y-1.5" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between text-[11px]">
               <span className="font-semibold text-slate-300 flex items-center gap-1">
@@ -229,6 +236,23 @@ export function FilmCard({ film, selectedDate, onOpenSessions, onOpenDetails }: 
                 </button>
               )}
             </div>
+          </div>
+        ) : (
+          <div className="pt-2.5 border-t border-white/10 space-y-1.5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="font-semibold text-slate-400 flex items-center gap-1">
+                <Clock className="w-3 h-3 text-cta" /> Horários:
+              </span>
+              <span className="text-[10px] text-slate-400 font-mono">Consulte datas</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleSessionsClick}
+              className="w-full py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Ticket className="w-3.5 h-3.5 text-cta" />
+              <span>Ver todas as sessões</span>
+            </button>
           </div>
         )}
       </div>

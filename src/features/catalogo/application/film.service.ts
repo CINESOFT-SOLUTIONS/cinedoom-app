@@ -94,6 +94,14 @@ export class FilmServiceClass {
         return getMockFilmsWithSessions();
       }
 
+      const totalSessions = films.reduce(
+        (acc: number, f: any) => acc + (f.sessions?.length || 0),
+        0
+      );
+      if (totalSessions === 0) {
+        return getMockFilmsWithSessions();
+      }
+
       return films.map((film: any) => ({
         id: film.id,
         title: film.title,

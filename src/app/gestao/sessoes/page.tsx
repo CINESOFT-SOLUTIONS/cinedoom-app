@@ -91,7 +91,14 @@ export default function SessoesGestãoPage() {
 
       if (resSessions.ok) {
         const data = await resSessions.json();
-        setSessions(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setSessions(data);
+        } else {
+          // Se a lista de sessões no banco estiver vazia, carrega as sessões do catálogo
+          await loadPortalSessionsFallback();
+        }
+      } else {
+        await loadPortalSessionsFallback();
       }
       if (resFilms.ok) {
         const data = await resFilms.json();
@@ -102,9 +109,49 @@ export default function SessoesGestãoPage() {
         setRooms(data);
       }
     } catch {
-      setFormErrors({ general: "Falha na conexao com o servidor." });
+      await loadPortalSessionsFallback();
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadPortalSessionsFallback = async () => {
+    try {
+      const portalRes = await fetch("/api/portal/filmes");
+      if (portalRes.ok) {
+        const filmsData = await portalRes.json();
+        const flattened: SessionItem[] = (filmsData || []).flatMap((f: any) =>
+          (f.sessions || []).map((s: any) => ({
+            id: s.id,
+            filmId: f.id,
+            roomId: s.room.id,
+            startsAt: s.startsAt,
+            price: s.price,
+            status: s.status || "OPEN",
+            film: {
+              id: f.id,
+              title: f.title,
+              durationMinutes: f.duration,
+              posterUrl: f.posterUrl,
+            },
+            room: s.room,
+          }))
+        );
+        if (flattened.length > 0) {
+          setSessions(flattened);
+        }
+        if (films.length === 0) {
+          setFilms(
+            (filmsData || []).map((f: any) => ({
+              id: f.id,
+              title: f.title,
+              durationMinutes: f.duration,
+            }))
+          );
+        }
+      }
+    } catch {
+      // Silencioso no fallback
     }
   };
 

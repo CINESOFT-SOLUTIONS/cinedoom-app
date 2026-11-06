@@ -112,11 +112,28 @@ const DIVERTIDA_MENTE_TEMPLATES: SessionTemplate[] = [
   { roomIndex: 1, hour: 20, minute: 45, price: 30.0, idCode: "0362" }, // Sessão noturna adicional
 ];
 
-function generateSessions(templates: SessionTemplate[], baseDate: Date, totalDays = 7) {
+function getCinemaBaseDate(): Date {
+  const now = new Date();
+  try {
+    const brDateStr = now.toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+    const [year, month, day] = brDateStr.split("-").map(Number);
+    if (year && month && day) {
+      return new Date(year, month - 1, day, 12, 0, 0);
+    }
+  } catch {
+    // Fallback caso Intl falhe
+  }
+  return new Date();
+}
+
+function generateSessions(templates: SessionTemplate[], baseDate: Date) {
   const sessions = [];
 
-  for (let dayOffset = 0; dayOffset < totalDays; dayOffset++) {
-    const dayHex = dayOffset.toString(16);
+  // Gera sessões de -1 (cobrindo fuso horário / transição noturna) até +8 dias (total 10 dias)
+  for (let dayOffset = -1; dayOffset <= 8; dayOffset++) {
+    // dayHex seguro de 0 a f mantendo formato estrito de UUID v4
+    // dayOffset 0 usa '0' para manter retrocompatibilidade com IDs canônicos pré-definidos
+    const dayHex = dayOffset === 0 ? "0" : dayOffset < 0 ? "f" : (dayOffset % 15).toString(16);
 
     for (const t of templates) {
       const room = MOCK_ROOMS[t.roomIndex];
@@ -148,7 +165,7 @@ function generateSessions(templates: SessionTemplate[], baseDate: Date, totalDay
 }
 
 export function getMockFilmsWithSessions() {
-  const today = new Date();
+  const today = getCinemaBaseDate();
 
   return [
     {
