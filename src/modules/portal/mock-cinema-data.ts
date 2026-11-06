@@ -126,7 +126,7 @@ function getCinemaBaseDate(): Date {
   return new Date();
 }
 
-function generateSessions(templates: SessionTemplate[], baseDate: Date) {
+function generateSessions(templates: SessionTemplate[], baseDate: Date, _totalDays = 7) {
   const sessions = [];
 
   // Gera sessões de -1 (cobrindo fuso horário / transição noturna) até +8 dias (total 10 dias)
