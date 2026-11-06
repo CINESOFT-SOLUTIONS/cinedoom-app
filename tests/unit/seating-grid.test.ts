@@ -54,7 +54,7 @@ describe("Componente SeatingGrid - Design System & Estados Cromáticos (TASK-17 
   });
 
   describe("Mapeamento de Estados Cromáticos e Acessibilidade ARIA", () => {
-    it("assento AVAILABLE possui cor verde (#22C55E), tabIndex=0 e não está desabilitado", () => {
+    it("assento AVAILABLE possui cor azul royal (#3B82F6), tabIndex=0 e não está desabilitado", () => {
       const html = renderToStaticMarkup(
         React.createElement(SeatingGrid, {
           seats: mockSeats,
@@ -64,7 +64,7 @@ describe("Componente SeatingGrid - Design System & Estados Cromáticos (TASK-17 
 
       expect(html).toContain('data-testid="seat-A1"');
       expect(html).toContain('data-status="AVAILABLE"');
-      expect(html).toContain("bg-[#22C55E]");
+      expect(html).toContain("bg-[#3B82F6]");
       expect(html).toContain('aria-label="Fileira A, Assento 1 - Disponivel"');
       expect(html).toContain('tabindex="0"');
       expect(html).not.toContain('disabled="" data-testid="seat-A1"');

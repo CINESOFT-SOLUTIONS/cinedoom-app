@@ -4,12 +4,12 @@ import React, { useMemo } from "react";
 import { Monitor, Check, MoveHorizontal } from "lucide-react";
 
 /**
- * Estados cromaticos oficiais do mapa de assentos (ui-mockups / FRAME-2 / AC-1 / AC-2)
- * AVAILABLE: #22C55E (Verde esmeralda / disponivel)
- * SELECTED: #E94560 (Vermelho destaque CineDoom / selecionado para checkout)
- * SOLD: #EF4444 (Vermelho mudo / vendido / desabilitado)
- * RESERVED: #F59E0B (Ambar / reserva online pendente)
- * BLOCKED: #9CA3AF (Cinza / bloqueado por manutencao)
+ * Estados cromaticos oficiais do mapa de assentos (CineDoom Design System / AC-1 / AC-2)
+ * AVAILABLE: #3B82F6 (Azul Royal Cinema / Disponivel - paleta escura sem verde)
+ * SELECTED: #E94560 (Vermelho destaque CineDoom / Selecionado para checkout)
+ * SOLD: #EF4444 (Vermelho mudo / Vendido / Desabilitado)
+ * RESERVED: #F59E0B (Ambar / Reserva online pendente)
+ * BLOCKED: #9CA3AF (Cinza / Bloqueado por manutencao)
  */
 export type SeatChromaticStatus = "AVAILABLE" | "SELECTED" | "SOLD" | "RESERVED" | "BLOCKED";
 
@@ -36,29 +36,55 @@ export interface SeatingGridProps {
   className?: string;
 }
 
-const statusColorClasses: Record<SeatChromaticStatus, { base: string; text: string; label: string }> = {
+interface SeatStyleConfig {
+  base: string;
+  backrest: string;
+  armrest: string;
+  cushion: string;
+  text: string;
+  label: string;
+}
+
+const statusColorClasses: Record<SeatChromaticStatus, SeatStyleConfig> = {
   AVAILABLE: {
-    base: "bg-[#22C55E] hover:bg-[#16A34A] border-[#16A34A] text-white hover:scale-105 active:scale-95 shadow-sm shadow-[#22C55E]/30",
+    base: "bg-[#3B82F6]",
+    backrest: "bg-[#2563EB] border border-[#1D4ED8] group-hover:bg-[#3B82F6]",
+    armrest: "bg-[#1D4ED8] border border-[#1E40AF] group-hover:bg-[#2563EB]",
+    cushion:
+      "bg-[#3B82F6] border-[#2563EB] text-white group-hover:bg-[#60A5FA] group-hover:shadow-[0_0_12px_rgba(59,130,246,0.5)] shadow-[#3B82F6]/30",
     text: "text-white",
     label: "Disponivel",
   },
   SELECTED: {
-    base: "bg-[#E94560] hover:bg-[#D63D56] border-[#D63D56] text-white ring-2 ring-white/80 scale-105 shadow-md shadow-[#E94560]/40 font-bold",
+    base: "bg-[#E94560]",
+    backrest: "bg-[#D63D56] border border-[#C12E46] ring-1 ring-white/60",
+    armrest: "bg-[#C12E46] border border-[#9E1B32] ring-1 ring-white/60",
+    cushion:
+      "bg-[#E94560] border-[#D63D56] text-white ring-2 ring-white/90 shadow-md shadow-[#E94560]/50 font-bold scale-105",
     text: "text-white",
     label: "Selecionado",
   },
   SOLD: {
-    base: "bg-[#EF4444]/20 border-[#EF4444]/40 text-[#EF4444]/60 cursor-not-allowed line-through opacity-70",
+    base: "bg-[#EF4444]/20",
+    backrest: "bg-[#EF4444]/15 border border-[#EF4444]/25 opacity-60",
+    armrest: "bg-[#EF4444]/15 border border-[#EF4444]/25 opacity-60",
+    cushion: "bg-[#EF4444]/20 border-[#EF4444]/40 text-[#EF4444]/60 line-through opacity-70",
     text: "text-[#EF4444]/60",
     label: "Vendido",
   },
   RESERVED: {
-    base: "bg-[#F59E0B] border-[#D97706] text-amber-950 font-semibold cursor-not-allowed opacity-85",
+    base: "bg-[#F59E0B]",
+    backrest: "bg-[#D97706] border border-[#B45309] opacity-85",
+    armrest: "bg-[#B45309] border border-[#92400E] opacity-85",
+    cushion: "bg-[#F59E0B] border-[#D97706] text-amber-950 font-semibold opacity-90",
     text: "text-amber-950",
     label: "Reservado",
   },
   BLOCKED: {
-    base: "bg-[#9CA3AF]/20 border-[#9CA3AF]/40 text-[#9CA3AF]/40 cursor-not-allowed opacity-50",
+    base: "bg-[#9CA3AF]/20",
+    backrest: "bg-[#9CA3AF]/15 border border-[#9CA3AF]/25 opacity-50",
+    armrest: "bg-[#9CA3AF]/15 border border-[#9CA3AF]/25 opacity-50",
+    cushion: "bg-[#9CA3AF]/20 border-[#9CA3AF]/40 text-[#9CA3AF]/40 opacity-50",
     text: "text-[#9CA3AF]/40",
     label: "Bloqueado",
   },
@@ -101,13 +127,40 @@ const SeatButton = React.memo(function SeatButton({
       data-testid={`seat-${code}`}
       data-seat-id={seat.id}
       data-status={effectiveStatus}
-      className={`w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-md border flex items-center justify-center text-[10px] sm:text-xs transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#E94560] select-none ${style.base}`}
+      className={`group relative w-7 h-8 sm:w-8 sm:h-9 md:w-9 md:h-10 flex flex-col items-center justify-between p-0.5 rounded-t-lg transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-[#E94560] focus:ring-offset-1 focus:ring-offset-[#1A1A2E] select-none ${
+        isClickable ? "hover:scale-110 active:scale-95 cursor-pointer" : "cursor-not-allowed"
+      }`}
     >
-      {effectiveStatus === "SELECTED" ? (
-        <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[3]" />
-      ) : (
-        <span className="font-semibold text-[10px] sm:text-[11px] leading-none">{seat.columnNumber}</span>
-      )}
+      {/* 1. Encosto superior ergonomico com curvatura suave */}
+      <div
+        className={`w-5 sm:w-6 md:w-7 h-2 sm:h-2.5 rounded-t-md shadow-xs transition-colors duration-150 ${style.backrest}`}
+      />
+
+      {/* 2. Regiao do assento e apoios de braco laterais */}
+      <div className="w-full flex items-center justify-between gap-0.5">
+        {/* Apoio de braco esquerdo */}
+        <div
+          className={`w-1 sm:w-1 h-4 sm:h-5 rounded-full shadow-xs transition-colors duration-150 ${style.armrest}`}
+        />
+
+        {/* Assento / Almofada central */}
+        <div
+          className={`flex-1 h-4 sm:h-5 rounded-sm border flex items-center justify-center font-bold transition-all duration-150 shadow-xs ${style.cushion}`}
+        >
+          {effectiveStatus === "SELECTED" ? (
+            <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3] text-white" />
+          ) : (
+            <span className="text-[9px] sm:text-[10px] md:text-xs leading-none">
+              {seat.columnNumber}
+            </span>
+          )}
+        </div>
+
+        {/* Apoio de braco direito */}
+        <div
+          className={`w-1 sm:w-1 h-4 sm:h-5 rounded-full shadow-xs transition-colors duration-150 ${style.armrest}`}
+        />
+      </div>
     </button>
   );
 });
@@ -169,13 +222,43 @@ export function SeatingGrid({
 
   return (
     <div className={`flex flex-col items-center w-full max-w-4xl mx-auto space-y-6 ${className}`}>
-      {/* Visual da Tela de Projecao */}
+      {/* Visual da Tela de Projecao Curvada */}
       {showScreen && (
-        <div className="w-full flex flex-col items-center space-y-2 mb-4">
-          <div className="w-3/4 max-w-xl h-2 bg-gradient-to-r from-transparent via-[#E94560] to-transparent rounded-full shadow-[0_0_15px_rgba(233,69,96,0.6)]" />
-          <div className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-gray-400">
-            <Monitor className="w-3.5 h-3.5 text-[#E94560]" />
-            <span>TELA / PROJECAO</span>
+        <div className="w-full flex flex-col items-center mb-4 pt-2 select-none">
+          <div className="relative w-full max-w-2xl px-4 flex flex-col items-center">
+            {/* Feixe sutil de iluminacao difusa da tela */}
+            <div className="w-3/4 max-w-lg h-6 bg-gradient-to-b from-[#E94560]/15 via-[#E94560]/5 to-transparent blur-sm rounded-t-full pointer-events-none" />
+
+            {/* SVG da Tela Curvada */}
+            <div className="w-full max-w-lg -mt-3 flex flex-col items-center">
+              <svg
+                viewBox="0 0 500 45"
+                className="w-full h-8 sm:h-9 text-[#E94560] overflow-visible drop-shadow-[0_0_15px_rgba(233,69,96,0.6)]"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient id="screenCurveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#E94560" stopOpacity="0.2" />
+                    <stop offset="25%" stopColor="#E94560" stopOpacity="0.9" />
+                    <stop offset="50%" stopColor="#FFFFFF" stopOpacity="1" />
+                    <stop offset="75%" stopColor="#E94560" stopOpacity="0.9" />
+                    <stop offset="100%" stopColor="#E94560" stopOpacity="0.2" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M 25 38 Q 250 8 475 38"
+                  fill="none"
+                  stroke="url(#screenCurveGrad)"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+              </svg>
+
+              <div className="flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-gray-400 mt-2 shadow-[0_0_15px_rgba(233,69,96,0.6)]">
+                <Monitor className="w-3.5 h-3.5 text-[#E94560]" />
+                <span>TELA / PROJECAO</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -186,55 +269,85 @@ export function SeatingGrid({
         <span>Arraste para os lados para visualizar todos os assentos</span>
       </div>
 
-      {/* Grid de Assentos com Fileiras */}
+      {/* Grid de Assentos com Poltronas Estilizadas e Corredor Central */}
       <div
         role="grid"
         aria-label="Mapa interativo de assentos"
         className="w-full overflow-x-auto pb-4 flex flex-col items-center touch-pan-x"
       >
-        <div className="min-w-fit space-y-2 sm:space-y-2.5 p-2">
-          {groupedRows.map(({ label, seats: rowSeats }) => (
-            <div key={label} role="row" className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
-              {/* Rotulo da fileira a esquerda */}
-              <span className="w-5 sm:w-6 text-center text-[10px] sm:text-xs font-bold text-gray-400 select-none">
-                {label}
-              </span>
+        <div className="min-w-fit space-y-3 sm:space-y-3.5 md:space-y-4 p-2">
+          {groupedRows.map(({ label, seats: rowSeats }) => {
+            const hasCentralAisle = rowSeats.length >= 4;
+            const splitIndex = hasCentralAisle ? Math.ceil(rowSeats.length / 2) : rowSeats.length;
+            const leftBlock = rowSeats.slice(0, splitIndex);
+            const rightBlock = hasCentralAisle ? rowSeats.slice(splitIndex) : [];
 
-              {/* Botoes de assento */}
-              <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
-                {rowSeats.map((seat) => {
-                  const isSelected = selectedSet.has(seat.id) && seat.status === "AVAILABLE";
-                  const effectiveStatus: SeatChromaticStatus = isSelected
-                    ? "SELECTED"
-                    : (seat.status as SeatChromaticStatus);
-                  const isClickable = !readOnly && seat.status === "AVAILABLE";
+            const renderSeat = (seat: GridSeatItem) => {
+              const isSelected = selectedSet.has(seat.id) && seat.status === "AVAILABLE";
+              const effectiveStatus: SeatChromaticStatus = isSelected
+                ? "SELECTED"
+                : (seat.status as SeatChromaticStatus);
+              const isClickable = !readOnly && seat.status === "AVAILABLE";
 
-                  return (
-                    <SeatButton
-                      key={seat.id}
-                      seat={seat}
-                      effectiveStatus={effectiveStatus}
-                      isClickable={isClickable}
-                      onClick={handleSeatClick}
-                    />
-                  );
-                })}
+              return (
+                <SeatButton
+                  key={seat.id}
+                  seat={seat}
+                  effectiveStatus={effectiveStatus}
+                  isClickable={isClickable}
+                  onClick={handleSeatClick}
+                />
+              );
+            };
+
+            return (
+              <div key={label} role="row" className="flex items-center gap-2 sm:gap-3 md:gap-4">
+                {/* Rotulo da fileira a esquerda */}
+                <div className="w-6 sm:w-7 flex items-center justify-center">
+                  <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/5 border border-white/10 text-center text-[10px] sm:text-xs font-bold text-gray-400 flex items-center justify-center select-none shadow-xs">
+                    {label}
+                  </span>
+                </div>
+
+                {/* Bloco lateral esquerdo */}
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  {leftBlock.map(renderSeat)}
+                </div>
+
+                {/* Corredor central mais amplo dividindo os blocos laterais */}
+                {hasCentralAisle && (
+                  <div
+                    className="w-6 sm:w-8 md:w-10 flex items-center justify-center pointer-events-none select-none"
+                    aria-hidden="true"
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/15" />
+                  </div>
+                )}
+
+                {/* Bloco lateral direito */}
+                {rightBlock.length > 0 && (
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    {rightBlock.map(renderSeat)}
+                  </div>
+                )}
+
+                {/* Rotulo da fileira a direita */}
+                <div className="w-6 sm:w-7 flex items-center justify-center">
+                  <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/5 border border-white/10 text-center text-[10px] sm:text-xs font-bold text-gray-400 flex items-center justify-center select-none shadow-xs">
+                    {label}
+                  </span>
+                </div>
               </div>
-
-              {/* Rotulo da fileira a direita */}
-              <span className="w-5 sm:w-6 text-center text-[10px] sm:text-xs font-bold text-gray-400 select-none">
-                {label}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Legenda Cromatica */}
+      {/* Legenda Cromatica (Azul Royal Cinema para Disponivel) */}
       {showLegend && (
-        <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 md:gap-6 pt-3 border-t border-gray-800 text-[11px] sm:text-xs text-gray-300">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 pt-3 border-t border-gray-800 text-[11px] sm:text-xs text-gray-300">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="w-3.5 h-3.5 rounded bg-[#22C55E] border border-[#16A34A] shadow-sm shadow-[#22C55E]/30" />
+            <span className="w-3.5 h-3.5 rounded bg-[#3B82F6] border border-[#2563EB] shadow-sm shadow-[#3B82F6]/30" />
             <span>Disponivel</span>
           </div>
           <div className="flex items-center gap-2">
@@ -270,7 +383,7 @@ export function SeatingGrid({
                 selectedSeatsList.map((s) => (
                   <span
                     key={s.id}
-                    className="px-2 py-0.5 bg-[#0F3460] text-[#E94560] rounded border border-[#E94560]/30 text-xs"
+                    className="px-2 py-0.5 bg-[#0F3460] text-[#E94560] rounded border border-[#E94560]/30 text-xs font-semibold"
                   >
                     {s.seatCode || `${s.rowLabel}${s.columnNumber}`}
                   </span>
@@ -281,7 +394,7 @@ export function SeatingGrid({
 
           <div className="text-center sm:text-right">
             <div className="text-xs text-gray-400 uppercase font-semibold">Valor Total</div>
-            <div className="text-xl font-extrabold text-emerald-400">
+            <div className="text-xl font-extrabold text-[#E94560]">
               R$ {totalPrice.toFixed(2)}
             </div>
           </div>
