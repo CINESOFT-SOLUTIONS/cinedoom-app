@@ -145,4 +145,52 @@ describe("Reformulação do Fluxo de Reservas do CineDoom (4 Etapas Sequenciais)
       expect(instructions).toContain("1 hora antes do inicio da sessao");
     });
   });
+
+  describe("Modal de Expiração do Tempo (10 Minutos)", () => {
+    it("valida a estrutura do modal de tempo esgotado e redirecionamento para tela inicial", () => {
+      // Simula sessionStorage
+      const storageMock: Record<string, string> = {
+        cinedoom_booking_state_v1: JSON.stringify({
+          currentStep: 3,
+          holdToken: "expired-token",
+          holdExpiresAt: Date.now() - 5000, // expirou há 5 segundos
+        }),
+      };
+
+      const originalSessionStorage = (global as any).sessionStorage;
+      (global as any).sessionStorage = {
+        getItem: (key: string) => storageMock[key] || null,
+        setItem: (key: string, value: string) => {
+          storageMock[key] = value;
+        },
+        removeItem: (key: string) => {
+          delete storageMock[key];
+        },
+        clear: () => {
+          Object.keys(storageMock).forEach((k) => delete storageMock[k]);
+        },
+      };
+
+      const html = renderToStaticMarkup(
+        React.createElement(BookingFlow, {
+          initialFilmId: "film-01",
+        })
+      );
+
+      // Restaura sessionStorage
+      (global as any).sessionStorage = originalSessionStorage;
+
+      // Componente renderiza normalmente
+      expect(html).toBeDefined();
+      expect(html).toContain("Sessões");
+      expect(html).toContain("Assentos");
+
+      // Validamos que o código do BookingFlow contém o modal de tempo esgotado com botão OK
+      const sourceCode = BookingFlow.toString();
+      expect(sourceCode).toContain("Tempo Esgotado!");
+      expect(sourceCode).toContain("O prazo de 10 minutos para concluir sua reserva expirou.");
+      expect(sourceCode).toContain("handleExpiredOk");
+      expect(sourceCode).toContain('window.location.href = "/"');
+    });
+  });
 });

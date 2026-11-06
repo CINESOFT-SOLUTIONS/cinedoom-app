@@ -296,6 +296,8 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
           if (parsed.currentStep && parsed.currentStep >= 3) {
             setCurrentStep(parsed.currentStep);
           }
+        } else if (parsed.holdExpiresAt && parsed.holdExpiresAt <= Date.now()) {
+          setIsHoldExpired(true);
         }
       }
     } catch {
@@ -527,6 +529,26 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     setErrorNotice(null);
     setCurrentStep(1);
   };
+
+  const handleExpiredOk = () => {
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {}
+    window.location.href = "/";
+  };
+
+  useEffect(() => {
+    if (!isHoldExpired) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" || e.key === "Enter") {
+        handleExpiredOk();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isHoldExpired]);
 
   // Sessões agrupadas por sala para a data selecionada na Etapa 1
   const sessionsByRoom = useMemo(() => {
@@ -1393,16 +1415,51 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
             {isHoldExpired ? (
               <button
                 type="button"
-                onClick={handleRestart}
+                onClick={handleExpiredOk}
                 className="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold transition-all shadow-xs cursor-pointer"
               >
-                Reiniciar
+                OK
               </button>
             ) : (
               <span className="text-[10px] text-slate-400 hidden sm:inline-block">
                 Poltronas bloqueadas temporariamente
               </span>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE TEMPO ESGOTADO (10 MINUTOS) */}
+      {isHoldExpired && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="expired-modal-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+        >
+          <div className="relative w-full max-w-sm bg-[#121829] border border-white/20 rounded-3xl p-6 shadow-2xl text-center space-y-4">
+            <div className="w-14 h-14 rounded-full bg-rose-500/20 text-rose-400 mx-auto flex items-center justify-center border border-rose-500/30">
+              <Timer className="w-7 h-7 animate-pulse" />
+            </div>
+
+            <div className="space-y-1.5">
+              <h3 id="expired-modal-title" className="text-lg font-bold text-white">
+                Tempo Esgotado!
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                O prazo de 10 minutos para concluir sua reserva expirou. As poltronas selecionadas foram liberadas.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={handleExpiredOk}
+                className="w-full py-2.5 px-4 rounded-xl bg-cta hover:bg-cta-hover text-white font-bold text-sm tracking-wide shadow-lg shadow-cta/30 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+              >
+                OK
+              </button>
+            </div>
           </div>
         </div>
       )}
