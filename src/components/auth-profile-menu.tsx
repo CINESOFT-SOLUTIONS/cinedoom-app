@@ -140,7 +140,7 @@ export function AuthProfileMenu() {
       {isOpen && (
         <div
           role="menu"
-          className="fixed top-16 md:top-20 right-3 sm:right-6 lg:right-8 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] pt-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150"
+          className="absolute top-full mt-2 sm:mt-3 right-0 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] z-50 animate-in fade-in slide-in-from-top-1 duration-150"
         >
           <div className="w-full liquid-glass-menu rounded-3xl p-3.5 space-y-3">
             {/* Card de Identificacao (Sem superfície aninhada opaca — Regra 3 Liquid Glass) */}
