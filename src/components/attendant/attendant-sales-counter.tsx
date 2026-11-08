@@ -116,7 +116,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
 
   return (
     <div className="w-full flex-1 flex flex-col space-y-6">
-      {/* Título Oficial do Balcão de Vendas */}
+      {/* Título Oficial da Bilheteria */}
       <div className="border-b border-borderDark/60 pb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
@@ -124,7 +124,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
             <span>Escolha a sessão para um filme</span>
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
-            Balcão de Vendas CineDoom • Atendente de Bilheteria
+            Bilheteria CineDoom • Atendente de Bilheteria
           </p>
         </div>
         <div className="flex items-center gap-2">

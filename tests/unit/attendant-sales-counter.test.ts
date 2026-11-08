@@ -86,7 +86,7 @@ describe("Bilheteria do Atendente de Bilheteria", () => {
     );
 
     expect(html).toContain("Escolha a sessão para um filme");
-    expect(html).toContain("Balcão de Vendas CineDoom");
+    expect(html).toContain("Bilheteria CineDoom");
   });
 
   it("organiza os filmes em cards com pôster à esquerda e sessões à direita", () => {

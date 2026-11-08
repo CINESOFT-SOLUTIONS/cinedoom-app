@@ -89,7 +89,7 @@ export class PrismaCounterRepository implements ICounterRepository {
 
       if (reservation.status !== "PENDING") {
         throw new ReservationNotCancellableError(
-          "Apenas reservas PENDING podem ser confirmadas no balcão."
+          "Apenas reservas PENDING podem ser confirmadas na bilheteria."
         );
       }
 
@@ -99,7 +99,7 @@ export class PrismaCounterRepository implements ICounterRepository {
 
       if (!reservation.buyerId) {
         throw new ReservationNotCancellableError(
-          "Reserva sem comprador vinculado não pode ser confirmada no balcão."
+          "Reserva sem comprador vinculado não pode ser confirmada na bilheteria."
         );
       }
 

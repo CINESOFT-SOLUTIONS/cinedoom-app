@@ -125,7 +125,7 @@ export function CineDoomFooter({ className = "", simple = false }: CineDoomFoote
                 <strong className="text-slate-300 font-semibold">Validade das reservas:</strong> os assentos selecionados pelo portal ficam garantidos até 1 hora antes do início da sessão.
               </p>
               <p className="text-[11px] text-slate-500 text-justify [text-justify:inter-word] hyphens-auto">
-                O pagamento e a retirada dos ingressos são concluídos diretamente no balcão da bilheteria física.
+                O pagamento e a retirada dos ingressos são concluídos diretamente na bilheteria física.
               </p>
             </div>
 
@@ -156,7 +156,7 @@ export function CineDoomFooter({ className = "", simple = false }: CineDoomFoote
               </p>
             </div>
 
-            {/* Formas de Pagamento Aceitas no Balcão */}
+            {/* Formas de Pagamento Aceitas na Bilheteria */}
             <div className="pt-1 space-y-2">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                 Pagamento na Bilheteria Física

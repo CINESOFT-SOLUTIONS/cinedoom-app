@@ -150,7 +150,7 @@ export default function BaixaReservaPage() {
               <span>Baixa Presencial de Reservas</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Confirmação de pagamento e liberação presencial de ingressos no balcão da bilheteria
+              Confirmação de pagamento e liberação presencial de ingressos na bilheteria física
             </p>
           </div>
 

@@ -4,7 +4,7 @@ import { authOptions } from "@/modules/auth/auth-options";
 import { CounterService, ReservationNotFoundError } from "@/features/bilheteria";
 
 /**
- * Controller para Busca de Reserva no Balcao de Bilheteria
+ * Controller para Busca de Reserva na Bilheteria
  * Rastreabilidade: Controller-Service-Repository, ISO/IEC/IEEE 12207:2021
  */
 export async function GET(request: NextRequest) {
