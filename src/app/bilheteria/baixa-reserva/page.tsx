@@ -12,10 +12,14 @@ import {
   Film,
   Building,
   RefreshCw,
-  Filter,
   Check,
+  Eye,
+  Printer,
+  X,
+  Copy,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { getRoomWithExperience } from "@/shared/experiences";
 
 interface ReservationItem {
   id: string;
@@ -44,6 +48,45 @@ export default function BaixaReservaPage() {
   const [loadingList, setLoadingList] = useState(false);
   const [statusFilter, setStatusFilter] = useState<"PENDING" | "CONFIRMED" | "ALL">("PENDING");
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+  // Modal para ver ingressos emitidos
+  const [ticketModalData, setTicketModalData] = useState<any | null>(null);
+  const [loadingTicketDetails, setLoadingTicketDetails] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
+
+  async function abrirIngressos(reservationIdOrCode: string) {
+    setLoadingTicketDetails(true);
+    setCopiedCode(false);
+    try {
+      const res = await fetch(`/api/portal/reservas/${reservationIdOrCode}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTicketModalData(data);
+      } else {
+        // Fallback construído a partir da reserva local
+        const item = reservationsList.find(
+          (r) => r.id === reservationIdOrCode || r.code === reservationIdOrCode
+        );
+        if (item) {
+          setTicketModalData({
+            id: item.id,
+            code: item.code,
+            status: item.status,
+            totalPrice: item.totalAmount,
+            film: { title: item.filmTitle },
+            room: { name: item.roomName },
+            session: { startsAt: item.sessionStartsAt },
+            seats: item.seats.map((seatCode) => ({ seatCode })),
+            buyer: { name: item.buyerName, cpfMasked: item.buyerCpfMasked },
+          });
+        }
+      }
+    } catch {
+      // Ignora erro de rede no modal
+    } finally {
+      setLoadingTicketDetails(false);
+    }
+  }
 
   async function carregarListaReservas() {
     setLoadingList(true);
@@ -114,6 +157,8 @@ export default function BaixaReservaPage() {
         if (reservation && reservation.code === targetCode) {
           setReservation((r: any) => ({ ...r, status: "CONFIRMED" }));
         }
+        // Abre imediatamente os ingressos gerados para conferência / impressão
+        await abrirIngressos(targetCode);
         // Atualiza a lista na hora
         await carregarListaReservas();
       }
@@ -267,7 +312,16 @@ export default function BaixaReservaPage() {
 
             {/* Ação */}
             {reservation.status === "PENDING" ? (
-              <div className="pt-2 border-t border-white/5 flex justify-end">
+              <div className="pt-2 border-t border-white/5 flex justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => abrirIngressos(reservation.code)}
+                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 hover:text-white font-medium text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                  title="Pré-visualizar ingressos da reserva"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Ver Ingressos</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => confirmar()}
@@ -279,11 +333,20 @@ export default function BaixaReservaPage() {
                 </button>
               </div>
             ) : (
-              <div className="pt-2 border-t border-white/5 flex justify-end">
+              <div className="pt-2 border-t border-white/5 flex items-center justify-between">
                 <span className="text-xs text-slate-400 flex items-center gap-1.5">
                   <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Ingressos emitidos</span>
                 </span>
+                <button
+                  type="button"
+                  onClick={() => abrirIngressos(reservation.code)}
+                  className="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 hover:text-white font-medium text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                  title="Ver ingressos emitidos desta reserva"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Ver Ingressos</span>
+                </button>
               </div>
             )}
           </div>
@@ -428,8 +491,18 @@ export default function BaixaReservaPage() {
                       </div>
                     </div>
 
-                    {/* Bloco 4: Ação Administrativa Limpa */}
-                    <div className="shrink-0 flex items-center justify-end lg:w-32 border-t lg:border-t-0 pt-2 lg:pt-0 border-white/5">
+                    {/* Bloco 4: Ação Administrativa Limpa com Visualização de Ingressos */}
+                    <div className="shrink-0 flex items-center justify-end gap-2 border-t lg:border-t-0 pt-2 lg:pt-0 border-white/5">
+                      <button
+                        type="button"
+                        onClick={() => abrirIngressos(item.code)}
+                        className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                        title="Ver ingressos"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Ver Ingressos</span>
+                      </button>
+
                       {isPending ? (
                         <button
                           type="button"
@@ -445,9 +518,9 @@ export default function BaixaReservaPage() {
                           <span>Dar Baixa</span>
                         </button>
                       ) : (
-                        <span className="text-xs text-slate-400 flex items-center gap-1.5 select-none">
+                        <span className="text-xs text-slate-400 flex items-center gap-1.5 select-none px-2 py-1">
                           <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>Ingressos emitidos</span>
+                          <span>Emitidos</span>
                         </span>
                       )}
                     </div>
@@ -458,6 +531,186 @@ export default function BaixaReservaPage() {
           )}
         </div>
       </main>
+
+      {/* Modal Canônico de Visualização e Impressão de Ingressos */}
+      {ticketModalData && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setTicketModalData(null);
+          }}
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-xl bg-[#121624] text-slate-200 rounded-3xl border border-white/15 shadow-2xl overflow-hidden font-sans my-auto cursor-default animate-in fade-in zoom-in-95 duration-150"
+          >
+            {/* Top Bar com Ações */}
+            <div className="p-4 sm:p-5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Ticket className="w-5 h-5 text-cta" />
+                <span className="font-bold text-white text-sm">
+                  Ingressos CineDoom • {ticketModalData.code}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-xs font-semibold text-slate-200 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Printer className="w-3.5 h-3.5 text-slate-300" />
+                  <span>Imprimir</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTicketModalData(null)}
+                  className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  title="Fechar"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Cabeçalho do Filme */}
+            <div className="p-6 sm:p-7 bg-white/[0.02]">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold tracking-widest uppercase text-slate-400">
+                    CineDoom • Bilheteria Oficial
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                    {ticketModalData.film?.title}
+                  </h2>
+                  <p className="text-xs text-slate-300 font-medium">
+                    {getRoomWithExperience(ticketModalData.room?.name || "Sala")}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
+                    Status
+                  </span>
+                  <span
+                    className={`inline-block mt-0.5 text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                      ticketModalData.status === "CONFIRMED"
+                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                        : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                    }`}
+                  >
+                    {ticketModalData.status === "CONFIRMED" ? "Confirmada" : "Aguardando"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Picote Visual de Ingresso */}
+            <div className="relative py-2 bg-[#121624]">
+              <div className="absolute -left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-[#0E1322] border-r border-white/15" />
+              <div className="border-b-2 border-dashed border-white/15 mx-5" />
+              <div className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-[#0E1322] border-l border-white/15" />
+            </div>
+
+            {/* Informações dos Ingressos */}
+            <div className="p-6 sm:p-7 space-y-5">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                <div>
+                  <span className="text-[10px] font-semibold uppercase text-slate-400 block mb-0.5">
+                    Data
+                  </span>
+                  <p className="font-semibold text-white">
+                    {ticketModalData.session?.startsAt
+                      ? new Date(ticketModalData.session.startsAt).toLocaleDateString("pt-BR")
+                      : "Hoje"}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-semibold uppercase text-slate-400 block mb-0.5">
+                    Horário
+                  </span>
+                  <p className="font-semibold text-white">
+                    {ticketModalData.session?.startsAt
+                      ? new Date(ticketModalData.session.startsAt).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "—"}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-semibold uppercase text-slate-400 block mb-0.5">
+                    Assentos ({ticketModalData.seats?.length || 0})
+                  </span>
+                  <p className="font-bold text-cta">
+                    {ticketModalData.seats?.map((s: any) => s.seatCode).join(", ") || "—"}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-semibold uppercase text-slate-400 block mb-0.5">
+                    Total Pago
+                  </span>
+                  <p className="font-bold text-emerald-400 text-sm">
+                    R$ {Number(ticketModalData.totalPrice || 0).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div>
+                  <span className="text-[10px] font-semibold uppercase text-slate-400 block">
+                    Titular do Ingresso
+                  </span>
+                  <p className="text-white font-medium">
+                    {ticketModalData.buyer?.name || "Cliente"}
+                    {ticketModalData.buyer?.cpfMasked && (
+                      <span className="text-slate-400 font-mono text-[11px] ml-1.5">
+                        ({ticketModalData.buyer.cpfMasked})
+                      </span>
+                    )}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-mono font-bold text-slate-300">
+                    {ticketModalData.code}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(ticketModalData.code);
+                      setCopiedCode(true);
+                      setTimeout(() => setCopiedCode(false), 2000);
+                    }}
+                    className="p-1 rounded bg-white/10 hover:bg-white/15 text-slate-300 transition-colors cursor-pointer"
+                    title="Copiar código"
+                  >
+                    {copiedCode ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Rodapé com Fechamento */}
+            <div className="p-4 bg-white/[0.02] border-t border-white/10 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setTicketModalData(null)}
+                className="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-colors cursor-pointer"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
