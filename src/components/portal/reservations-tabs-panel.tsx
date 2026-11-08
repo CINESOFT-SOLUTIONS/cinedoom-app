@@ -165,11 +165,12 @@ export function ReservationsTabsPanel({
             return (
               <div
                 key={res.id}
-                className={`w-full rounded-2xl liquid-glass-card transition-all duration-200 border ${
+                onClick={() => handleOpenVoucherModal(res)}
+                className={`group w-full rounded-2xl liquid-glass-card transition-all duration-200 border ${
                   isCurrentExpired
-                    ? "opacity-75 border-white/5 hover:opacity-95 hover:border-white/20"
-                    : "border-white/10 hover:border-white/25"
-                } p-4 sm:p-5`}
+                    ? "opacity-75 border-white/5 hover:opacity-95 hover:border-white/20 hover:bg-white/[0.04]"
+                    : "border-white/10 hover:border-white/30 hover:shadow-xl hover:shadow-black/30 hover:bg-white/[0.06]"
+                } p-4 sm:p-5 cursor-pointer`}
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   {/* Bloco Principal: Informações essenciais do filme e sessão */}
@@ -178,7 +179,7 @@ export function ReservationsTabsPanel({
                       <h3
                         className={`text-base font-bold tracking-tight truncate ${
                           isCurrentExpired ? "text-slate-300" : "text-white"
-                        }`}
+                        } group-hover:text-cta transition-colors`}
                       >
                         {res.session.film.title}
                       </h3>
@@ -221,7 +222,7 @@ export function ReservationsTabsPanel({
                     </div>
                   </div>
 
-                  {/* Bloco Lateral: Status e Botão Explicito "Ver Mais" */}
+                  {/* Bloco Lateral: Status e Botão "Ver Mais" */}
                   <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2.5 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-white/10">
                     {!isCurrentExpired && (
                       <div className="flex items-center">
@@ -237,15 +238,12 @@ export function ReservationsTabsPanel({
                       </div>
                     )}
 
-                    <button
-                      type="button"
-                      onClick={() => handleOpenVoucherModal(res)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-cta hover:text-white border border-white/15 text-white font-semibold text-xs transition-all shadow-sm cursor-pointer"
-                      title="Ver detalhes da reserva"
+                    <div
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/10 group-hover:bg-cta group-hover:border-cta/40 group-hover:text-white border border-white/15 text-white font-semibold text-xs transition-all shadow-sm"
                     >
                       <span>Ver Mais</span>
                       <ExternalLink className="w-3.5 h-3.5 text-slate-300 group-hover:text-white transition-colors" />
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>

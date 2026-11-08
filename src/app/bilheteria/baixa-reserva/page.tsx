@@ -426,11 +426,12 @@ export default function BaixaReservaPage() {
                 return (
                   <div
                     key={item.id}
-                    className="p-4 rounded-xl liquid-glass-card border border-white/5 hover:border-white/15 transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-3.5"
+                    onClick={() => abrirIngressos(item.code)}
+                    className="p-4 rounded-xl liquid-glass-card border border-white/5 hover:border-white/20 hover:bg-white/[0.04] transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 cursor-pointer group"
                   >
                     {/* Bloco 1: Informações Principais (Código, Status, Horário) */}
                     <div className="flex items-center gap-3 shrink-0 lg:w-64">
-                      <span className="font-mono font-bold text-sm text-white tracking-wide">
+                      <span className="font-mono font-bold text-sm text-white tracking-wide group-hover:text-cta transition-colors">
                         {item.code}
                       </span>
                       <span
@@ -454,7 +455,7 @@ export default function BaixaReservaPage() {
                     <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
                       <div className="truncate">
                         <span className="text-slate-400 text-[11px] block">Filme</span>
-                        <span className="font-semibold text-white truncate block" title={item.filmTitle}>
+                        <span className="font-semibold text-white truncate block group-hover:text-cta transition-colors" title={item.filmTitle}>
                           {item.filmTitle}
                         </span>
                       </div>
@@ -482,14 +483,17 @@ export default function BaixaReservaPage() {
                       </div>
                       <div className="text-right">
                         <span className="text-slate-400 text-[11px] block">Total</span>
-                        <span className="font-bold text-emerald-400 text-sm">
+                        <span className="font-bold text-white text-sm">
                           R$ {item.totalAmount.toFixed(2)}
                         </span>
                       </div>
                     </div>
 
                     {/* Bloco 4: Ação Administrativa Limpa com Visualização de Ingressos */}
-                    <div className="shrink-0 flex items-center justify-end gap-2 border-t lg:border-t-0 pt-2 lg:pt-0 border-white/5">
+                    <div
+                      className="shrink-0 flex items-center justify-end gap-2 border-t lg:border-t-0 pt-2 lg:pt-0 border-white/5"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         type="button"
                         onClick={() => abrirIngressos(item.code)}
