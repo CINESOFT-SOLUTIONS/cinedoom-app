@@ -108,7 +108,7 @@ export default function CinemarkStyleHomePage() {
   // Se o usuário autenticado for ATENDENTE, exibe a interface operacional do Balcão de Vendas
   if (authStatus === "authenticated" && userRole === "ATENDENTE") {
     return (
-      <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
+      <div className="min-h-screen liquid-glass-backdrop text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
         <CineDoomHeader activePage="filmes" />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col">
           <AttendantSalesCounter films={films} loading={loading} />
@@ -119,7 +119,7 @@ export default function CinemarkStyleHomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
+    <div className="min-h-screen liquid-glass-backdrop text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
       {/* 1. Header CineDoom Liquid Glass */}
       <CineDoomHeader activePage="filmes" />
 
@@ -160,7 +160,7 @@ export default function CinemarkStyleHomePage() {
               Clique nos pôsteres ou em &quot;Ver sessões&quot; para conferir salas, horários e reservar
             </p>
           </div>
-          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-surface border border-borderDark text-slate-300">
+          <span className="liquid-glass-chip text-xs font-semibold text-slate-200">
             {filteredFilms.length} filmes em exibição
           </span>
         </div>

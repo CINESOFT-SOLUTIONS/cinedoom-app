@@ -139,11 +139,12 @@ export function AuthProfileMenu() {
       {/* Modulo Flutuante Aberto exclusivamente no Clique do Usuario Autenticado */}
       {isOpen && (
         <div
+          role="menu"
           className="absolute top-full mt-1.5 right-0 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] z-50 animate-in fade-in slide-in-from-top-1 duration-150"
         >
-          <div className="w-full bg-[#12182B] rounded-3xl p-3.5 border border-white/25 shadow-[0_20px_50px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.2)] space-y-3">
-            {/* Card de Identificacao */}
-            <div className="p-3.5 rounded-2xl bg-white/[0.06] border border-white/10 space-y-2">
+          <div className="w-full liquid-glass-menu rounded-3xl p-3.5 space-y-3">
+            {/* Card de Identificacao (Sem superfície aninhada opaca — Regra 3 Liquid Glass) */}
+            <div className="p-3 rounded-2xl bg-white/[0.04] space-y-2">
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-bold text-sm text-white break-words leading-snug">

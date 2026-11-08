@@ -33,8 +33,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={poppins.variable}>
-      <body className={`${poppins.variable} font-sans min-h-screen bg-darkBg text-neutralBg antialiased`}>
+    <html lang="pt-BR" data-theme="dark" className={poppins.variable}>
+      <body className={`${poppins.variable} font-sans min-h-screen liquid-glass-backdrop bg-darkBg text-neutralBg antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -48,14 +48,14 @@ export function FilmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 overflow-y-auto"
+      className="liquid-glass-scrim z-50 p-3 sm:p-4 md:p-6 animate-in fade-in duration-200 overflow-y-auto"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="film-modal-title"
     >
       <div
-        className="liquid-glass-card rounded-3xl max-w-2xl w-full p-5 sm:p-7 shadow-2xl relative border border-white/15 my-auto animate-in zoom-in-95 duration-200 overflow-hidden"
+        className="liquid-glass liquid-glass--modal rounded-3xl max-w-2xl w-full p-5 sm:p-7 relative my-auto animate-in zoom-in-95 duration-200 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Botão Fechar */}

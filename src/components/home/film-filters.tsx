@@ -33,7 +33,7 @@ export function FilmFilters({
   return (
     <section
       id="programacao"
-      className="sticky top-16 md:top-20 z-40 bg-[#12182B]/98 backdrop-blur-md border-b border-borderDark/80 shadow-md scroll-mt-16 md:scroll-mt-20"
+      className="sticky top-16 md:top-20 z-40 liquid-glass-menu rounded-none border-x-0 border-t-0 scroll-mt-16 md:scroll-mt-20"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-3">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4">

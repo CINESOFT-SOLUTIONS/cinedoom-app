@@ -122,7 +122,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-surface border border-borderDark text-slate-300">
+          <span className="liquid-glass-chip text-xs font-semibold text-slate-200">
             {films.length} filmes no catálogo de hoje
           </span>
         </div>
@@ -135,7 +135,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
           <p className="text-xs text-slate-400">Carregando balcão de vendas...</p>
         </div>
       ) : filmsWithTodaySessions.length === 0 ? (
-        <div className="py-20 text-center bg-surface/40 border border-borderDark rounded-2xl p-8 space-y-3">
+        <div className="py-20 text-center liquid-glass rounded-2xl p-8 space-y-3">
           <Film className="w-12 h-12 text-slate-600 mx-auto" />
           <h2 className="text-lg font-bold text-white">Nenhum filme disponível no momento</h2>
           <p className="text-xs text-slate-400">
@@ -151,7 +151,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
               <div
                 key={film.id}
                 data-testid={`attendant-card-${film.id}`}
-                className="bg-[#12182B]/95 border border-white/10 rounded-2xl p-3 sm:p-3.5 shadow-lg flex flex-col justify-between hover:border-white/20 transition-all duration-200"
+                className="liquid-glass liquid-glass--hover rounded-2xl p-3 sm:p-3.5 flex flex-col justify-between"
               >
                 {/* Divisão Horizontal: Pôster à Esquerda | Informações e Horários à Direita */}
                 <div className="flex gap-3 sm:gap-3.5 items-start">
@@ -194,7 +194,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                     {/* Informação da Sala em Destaque */}
                     {hasSessions && film.roomName && (
                       <div className="flex items-center gap-1.5 text-xs font-bold text-slate-200">
-                        <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300">
+                        <span className="liquid-glass-chip text-[11px] text-slate-200">
                           {film.roomName}
                         </span>
                       </div>
@@ -275,9 +275,9 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
           role="dialog"
           aria-modal="true"
           aria-labelledby="attendant-booking-title"
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
+          className="liquid-glass-scrim z-50 p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
         >
-          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto bg-[#0E1322] border border-white/15 rounded-3xl shadow-2xl p-2 sm:p-5 flex flex-col justify-between">
+          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-2 sm:p-5 flex flex-col justify-between">
             <h2 id="attendant-booking-title" className="sr-only">
               Fluxo de Venda de Ingressos
             </h2>
@@ -297,9 +297,9 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
+          className="liquid-glass-scrim z-50 p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
         >
-          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto bg-[#0E1322] border border-white/15 rounded-3xl shadow-2xl p-2 sm:p-5 flex flex-col justify-between">
+          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-2 sm:p-5 flex flex-col justify-between">
             <BookingFlow
               initialFilmId={moreDatesFilm.id}
               initialStep={1}
