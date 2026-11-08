@@ -4,6 +4,36 @@ import { rawPrisma } from "@/shared/db/prisma";
 import { verifyPassword } from "./auth-service";
 import "./auth-types";
 
+const LEGACY_GENERIC_NAMES = new Set([
+  "gerente geral cinedoom",
+  "gerente cinedoom",
+  "gerente",
+  "atendente bilheteria",
+  "atendente cinedoom",
+  "atendente",
+  "cliente cinedoom",
+  "cliente",
+]);
+
+function resolveCanonicalUserName(
+  name?: string | null,
+  role?: string | null,
+  email?: string | null
+): string {
+  const trimmed = (name || "").trim();
+  if (trimmed && !LEGACY_GENERIC_NAMES.has(trimmed.toLowerCase())) {
+    return trimmed;
+  }
+  const normalizedEmail = (email || "").toLowerCase().trim();
+  if (role === "GERENTE" || normalizedEmail === "gerente@cinedoom.com") {
+    return "Eduardo Vasconcelos";
+  }
+  if (role === "ATENDENTE" || normalizedEmail === "atendente@cinedoom.com") {
+    return "Camila Ribeiro";
+  }
+  return "Lucas Mendes";
+}
+
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
@@ -47,7 +77,7 @@ export const authOptions: NextAuthOptions = {
             if (isPasswordValid) {
               return {
                 id: user.id,
-                name: user.name,
+                name: resolveCanonicalUserName(user.name, user.role, user.email),
                 email: user.email,
                 role: user.role as "ATENDENTE" | "GERENTE" | "CLIENTE",
                 tenantId: user.tenantId,
@@ -91,6 +121,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.name = resolveCanonicalUserName(user.name, user.role, user.email);
         token.role = user.role;
         token.tenantId = user.tenantId;
         token.active = user.active ?? true;
@@ -101,17 +132,24 @@ export const authOptions: NextAuthOptions = {
         try {
           const dbUser = await rawPrisma.user.findUnique({
             where: { id: token.id as string },
-            select: { active: true, role: true },
+            select: { active: true, role: true, name: true, email: true },
           });
 
           if (dbUser) {
             token.active = dbUser.active;
             token.role = dbUser.role as "ATENDENTE" | "GERENTE" | "CLIENTE";
+            token.name = resolveCanonicalUserName(dbUser.name, dbUser.role, dbUser.email);
           }
         } catch {
           // Mantem o token caso a conexao direta falhe em mock
         }
       }
+
+      token.name = resolveCanonicalUserName(
+        token.name as string | undefined,
+        token.role as string | undefined,
+        token.email as string | undefined
+      );
 
       return token;
     },
@@ -121,6 +159,11 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as "ATENDENTE" | "GERENTE" | "CLIENTE";
         session.user.tenantId = token.tenantId as string;
         session.user.active = token.active !== false;
+        session.user.name = resolveCanonicalUserName(
+          (token.name as string) || session.user.name,
+          session.user.role,
+          session.user.email
+        );
       }
       return session;
     },

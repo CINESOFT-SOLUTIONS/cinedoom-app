@@ -148,8 +148,11 @@ export function getRoomExperienceCategory(roomName?: string | null): ExperienceC
   if (
     lower.includes("imax") ||
     lower.includes("sala 3") ||
+    lower.includes("sala 03") ||
     lower.includes("sala3") ||
-    lower === "3"
+    lower.includes("sala03") ||
+    lower === "3" ||
+    lower === "03"
   ) {
     return "IMAX";
   }
@@ -158,14 +161,48 @@ export function getRoomExperienceCategory(roomName?: string | null): ExperienceC
   if (
     lower.includes("vip") ||
     lower.includes("sala 4") ||
+    lower.includes("sala 04") ||
     lower.includes("sala4") ||
-    lower === "4"
+    lower.includes("sala04") ||
+    lower === "4" ||
+    lower === "04"
   ) {
     return "VIP";
   }
 
   // Salas 1 e 2 -> CLÁSSICA
   return "CLÁSSICA";
+}
+
+/**
+ * Retorna o identificador padronizado com 2 dígitos apenas com o número da sala
+ * (ex: "Sala 01", "Sala 02", "Sala 03", "Sala 04"), sem sufixo de especificação.
+ */
+export function getCanonicalRoomName(roomName?: string | null): string {
+  if (!roomName || typeof roomName !== "string") return "Sala 01";
+  const lower = roomName.toLowerCase().trim();
+  if (lower.includes("sala 01") || lower.includes("sala 1") || lower.includes("sala01") || lower.includes("sala1") || lower === "1" || lower === "01") {
+    return "Sala 01";
+  }
+  if (lower.includes("sala 02") || lower.includes("sala 2") || lower.includes("sala02") || lower.includes("sala2") || lower === "2" || lower === "02") {
+    return "Sala 02";
+  }
+  if (lower.includes("sala 03") || lower.includes("sala 3") || lower.includes("sala03") || lower.includes("sala3") || lower === "3" || lower === "03") {
+    return "Sala 03";
+  }
+  if (lower.includes("sala 04") || lower.includes("sala 4") || lower.includes("sala04") || lower.includes("sala4") || lower === "4" || lower === "04") {
+    return "Sala 04";
+  }
+
+  const match = roomName.match(/Sala\s*(\d+)/i);
+  if (match && match[1]) {
+    const num = parseInt(match[1], 10);
+    if (!isNaN(num)) {
+      return `Sala ${String(num).padStart(2, "0")}`;
+    }
+  }
+
+  return roomName.trim();
 }
 
 /**

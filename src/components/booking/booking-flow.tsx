@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { SeatingGrid, type GridSeatItem } from "@/modules/bilheteria/components/seating-grid";
 import { AgeRatingBadge } from "@/components/home/age-rating-badge";
-import { getRoomExperienceCategory, getRoomDisplayName } from "@/shared/experiences";
+import { getRoomExperienceCategory, getCanonicalRoomName } from "@/shared/experiences";
 import { useAuthModal } from "@/contexts/auth-modal-context";
 import { formatDuration, getPrimaryGenre } from "@/components/home/film-utils";
 import type { FilmItem, SessionItem } from "@/components/home/types";
@@ -791,7 +791,7 @@ export function BookingFlow({
 
     const map: Record<string, SessionItem[]> = {};
     filtered.forEach((sess) => {
-      const room = sess.room.name;
+      const room = getCanonicalRoomName(sess.room.name);
       if (!map[room]) map[room] = [];
       map[room].push(sess);
     });
@@ -1021,7 +1021,7 @@ export function BookingFlow({
                   {roomNames.map((roomName) => {
                     const roomSessions = sessionsByRoom[roomName];
                     const category = getRoomExperienceCategory(roomName);
-                    const displayName = getRoomDisplayName(roomName);
+                    const displayName = getCanonicalRoomName(roomName);
 
                     return (
                       <div
@@ -1130,7 +1130,7 @@ export function BookingFlow({
                       {selectedFilm?.title}
                     </h2>
                     <span className="text-[11px] text-slate-400">
-                      {sessionDetail?.room.name || "Sala"}
+                      {getCanonicalRoomName(sessionDetail?.room.name)}
                     </span>
                   </div>
                   <span className="px-2 py-0.5 rounded-lg bg-cta/20 text-cta border border-cta/30 font-bold font-mono text-xs shrink-0">
@@ -1444,7 +1444,7 @@ export function BookingFlow({
                       {selectedFilm?.title}
                     </h2>
                     <p className="text-[11px] text-slate-300 truncate">
-                      CineDoom • {sessionDetail?.room.name || "Sala"} •{" "}
+                      CineDoom • {getCanonicalRoomName(sessionDetail?.room.name)} •{" "}
                       <span className="font-mono text-white">
                         {sessionDetail?.startsAt
                           ? new Date(sessionDetail.startsAt).toLocaleTimeString("pt-BR", {

@@ -1,7 +1,15 @@
 import { getMockFilmsWithSessions } from "@/modules/portal/mock-cinema-data";
+import { getCanonicalRoomName } from "@/shared/experiences";
 import type { IFilmRepository } from "../domain/film-repository.interface";
 import { defaultFilmRepository } from "../infrastructure/prisma-film.repository";
 import type { CreateFilmInput, UpdateFilmInput } from "./film.schema";
+
+const OFFICIAL_CATALOG_FILM_IDS = new Set([
+  "00000000-0000-4000-a000-000000000101",
+  "00000000-0000-4000-a000-000000000102",
+  "00000000-0000-4000-a000-000000000103",
+  "00000000-0000-4000-a000-000000000104",
+]);
 
 export class FilmNotFoundError extends Error {
   constructor(message = "Filme nao encontrado no catalogo deste cinema.") {
@@ -114,11 +122,11 @@ export class FilmServiceClass {
         sessions: (film.sessions || []).map((session: any) => ({
           id: session.id,
           startsAt: session.startsAt,
-          price: Number(session.price),
+          price: OFFICIAL_CATALOG_FILM_IDS.has(film.id) ? 30.0 : Number(session.price),
           status: session.status,
           room: {
             id: session.room.id,
-            name: session.room.name,
+            name: getCanonicalRoomName(session.room.name),
             capacity: session.room.capacity,
           },
         })),

@@ -2,7 +2,7 @@
 
 import { CineDoomHeader } from "@/components/cinedoom-header";
 import { CineDoomFooter } from "@/components/cinedoom-footer";
-import { getRoomWithExperience } from "@/shared/experiences";
+import { getCanonicalRoomName } from "@/shared/experiences";
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -172,7 +172,7 @@ export default function ReservationComprovantePage() {
                   {voucher.film.title}
                 </h1>
                 <p className="text-xs text-slate-400 font-medium">
-                  {getRoomWithExperience(voucher.room.name)}
+                  {getCanonicalRoomName(voucher.room.name)}
                 </p>
               </div>
               <div className="shrink-0 text-right">

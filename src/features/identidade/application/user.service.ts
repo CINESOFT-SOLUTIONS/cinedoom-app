@@ -39,6 +39,28 @@ export class InvalidRoleAssignmentError extends Error {
   }
 }
 
+const LEGACY_GENERIC_USER_NAMES = new Set([
+  "gerente geral cinedoom",
+  "gerente cinedoom",
+  "atendente bilheteria",
+  "atendente cinedoom",
+]);
+
+function normalizeLegacyUser(user: SafeUser): SafeUser {
+  const trimmed = (user.name || "").trim();
+  if (!LEGACY_GENERIC_USER_NAMES.has(trimmed.toLowerCase())) {
+    return user;
+  }
+  const canonicalName =
+    user.role === "GERENTE" || user.email?.toLowerCase() === "gerente@cinedoom.com"
+      ? "Eduardo Vasconcelos"
+      : "Camila Ribeiro";
+  return {
+    ...user,
+    name: canonicalName,
+  };
+}
+
 export class UserServiceClass {
   constructor(private userRepo: IUserRepository = defaultUserRepository) {}
 
@@ -51,7 +73,8 @@ export class UserServiceClass {
       throw new Error("Contexto de tenantId e obrigatorio.");
     }
 
-    return this.userRepo.findMany(tenantId, roleFilter);
+    const users = await this.userRepo.findMany(tenantId, roleFilter);
+    return users.map(normalizeLegacyUser);
   }
 
   /**
@@ -67,7 +90,7 @@ export class UserServiceClass {
       throw new UserNotFoundError();
     }
 
-    return user;
+    return normalizeLegacyUser(user);
   }
 
   /**

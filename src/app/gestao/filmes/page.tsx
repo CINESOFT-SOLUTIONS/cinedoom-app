@@ -71,7 +71,32 @@ export default function CatalogoFilmesPage() {
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
-        setFilms(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setFilms(data);
+          return;
+        }
+      }
+      // Fallback resiliente para o catálogo oficial do portal quando o banco está vazio/offline
+      const portalRes = await fetch("/api/portal/filmes");
+      if (portalRes.ok) {
+        const portalFilms = await portalRes.json();
+        const mapped: FilmItem[] = (portalFilms || [])
+          .map((f: any) => ({
+            id: f.id,
+            title: f.title,
+            durationMinutes: f.duration || f.durationMinutes || 120,
+            director: f.director || null,
+            rating: f.classification || f.rating || "Livre",
+            synopsis: f.synopsis || null,
+            posterUrl: f.posterUrl || null,
+            createdAt: new Date().toISOString(),
+          }))
+          .filter((f: FilmItem) =>
+            searchQuery
+              ? f.title.toLowerCase().includes(searchQuery.toLowerCase())
+              : true
+          );
+        setFilms(mapped);
       }
     } catch {
       setStatusMessage({

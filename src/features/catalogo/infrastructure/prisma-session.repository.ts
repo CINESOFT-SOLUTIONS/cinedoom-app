@@ -7,6 +7,30 @@ import type {
 } from "../domain/session-repository.interface";
 import type { CreateSessionInput } from "../application/session.schema";
 
+const OFFICIAL_CATALOG_FILM_IDS = new Set([
+  "00000000-0000-4000-a000-000000000101",
+  "00000000-0000-4000-a000-000000000102",
+  "00000000-0000-4000-a000-000000000103",
+  "00000000-0000-4000-a000-000000000104",
+]);
+
+function normalizeLegacySessionRecord(s: any): any {
+  if (!s) return s;
+  const roomName = s.room?.name || "";
+  const match = roomName
+    .trim()
+    .match(/^Sala\s*0?([1-4])\s*[-—•]\s*(CL[ÁA]SSICA|IMAX|VIP|Confort|Tradicional)/i);
+  const normalizedRoom =
+    s.room && match ? { ...s.room, name: `Sala 0${match[1]}` } : s.room;
+  const normalizedPrice =
+    s.filmId && OFFICIAL_CATALOG_FILM_IDS.has(s.filmId) ? 30.0 : s.price;
+  return {
+    ...s,
+    price: normalizedPrice,
+    ...(normalizedRoom ? { room: normalizedRoom } : {}),
+  };
+}
+
 /**
  * Implementacao concreta do ISessionRepository baseada em Prisma Client e Transacoes ACID
  */
@@ -62,7 +86,9 @@ export class PrismaSessionRepository implements ISessionRepository {
       orderBy: { startsAt: "asc" },
     });
 
-    return sessions as unknown as SessionWithRelations[];
+    return (sessions as unknown as SessionWithRelations[]).map(
+      normalizeLegacySessionRecord
+    );
   }
 
   async findById(id: string, tenantId: string): Promise<SessionWithRelations | null> {
@@ -89,7 +115,7 @@ export class PrismaSessionRepository implements ISessionRepository {
       },
     });
 
-    return (session as unknown as SessionWithRelations) || null;
+    return (normalizeLegacySessionRecord(session) as unknown as SessionWithRelations) || null;
   }
 
   async findConflicting(

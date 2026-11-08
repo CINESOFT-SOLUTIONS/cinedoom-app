@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Clock, Ticket, ExternalLink, CheckCircle2, History } from "lucide-react";
-import { getRoomWithExperience } from "@/shared/experiences";
+import { getCanonicalRoomName } from "@/shared/experiences";
 
 export interface ReservationItem {
   id: string;
@@ -144,7 +144,7 @@ export function ReservationsTabsPanel({
                       </h3>
                       {!isCurrentExpired && (
                         <span className="text-[11px] font-semibold text-cta bg-cta/10 border border-cta/25 px-2 py-0.5 rounded-full">
-                          {getRoomWithExperience(res.session.room.name)}
+                          {getCanonicalRoomName(res.session.room.name)}
                         </span>
                       )}
                     </div>

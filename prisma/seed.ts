@@ -138,14 +138,14 @@ async function main() {
   const sala1 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000201" },
     update: {
-      name: "Sala 1 - CLÁSSICA",
+      name: "Sala 01",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
     create: {
       id: "00000000-0000-4000-a000-000000000201",
       tenantId: tenant.id,
-      name: "Sala 1 - CLÁSSICA",
+      name: "Sala 01",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
@@ -154,14 +154,14 @@ async function main() {
   const sala2 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000202" },
     update: {
-      name: "Sala 2 - CLÁSSICA",
+      name: "Sala 02",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
     create: {
       id: "00000000-0000-4000-a000-000000000202",
       tenantId: tenant.id,
-      name: "Sala 2 - CLÁSSICA",
+      name: "Sala 02",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
@@ -170,14 +170,14 @@ async function main() {
   const sala3 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000203" },
     update: {
-      name: "Sala 3 - IMAX",
+      name: "Sala 03",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
     create: {
       id: "00000000-0000-4000-a000-000000000203",
       tenantId: tenant.id,
-      name: "Sala 3 - IMAX",
+      name: "Sala 03",
       capacity: 120,
       layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
     },
@@ -186,14 +186,14 @@ async function main() {
   const sala4 = await prisma.room.upsert({
     where: { id: "00000000-0000-4000-a000-000000000204" },
     update: {
-      name: "Sala 4 - VIP",
+      name: "Sala 04",
       capacity: 60,
       layoutMetadata: { rows: 6, columns: 10, totalSeats: 60 },
     },
     create: {
       id: "00000000-0000-4000-a000-000000000204",
       tenantId: tenant.id,
-      name: "Sala 4 - VIP",
+      name: "Sala 04",
       capacity: 60,
       layoutMetadata: { rows: 6, columns: 10, totalSeats: 60 },
     },
@@ -274,56 +274,56 @@ async function main() {
 
   for (let dia = 0; dia <= 6; dia++) {
     // Duna: Parte Dois
-    const duna19 = await criarSessao(filmes[0].id, sala3.id, 19, 42.0, 0, dia);
+    await criarSessao(filmes[0].id, sala3.id, 11, 30.0, 0, dia);
+    await criarSessao(filmes[0].id, sala3.id, 14, 30.0, 0, dia);
+    await criarSessao(filmes[0].id, sala4.id, 14, 30.0, 30, dia);
+    await criarSessao(filmes[0].id, sala1.id, 16, 30.0, 0, dia);
+    await criarSessao(filmes[0].id, sala4.id, 16, 30.0, 30, dia);
+    const duna19 = await criarSessao(filmes[0].id, sala3.id, 19, 30.0, 0, dia);
     if (dia === 0) {
       sessaoLotada = duna19; // Guarda referência da sessão de hoje para pré-lotação demo de ~90%
     }
-    await criarSessao(filmes[0].id, sala3.id, 11, 42.0, 0, dia);
-    await criarSessao(filmes[0].id, sala3.id, 14, 42.0, 0, dia);
-    await criarSessao(filmes[0].id, sala4.id, 14, 54.0, 30, dia);
-    await criarSessao(filmes[0].id, sala1.id, 16, 36.0, 0, dia);
-    await criarSessao(filmes[0].id, sala4.id, 16, 54.0, 30, dia);
-    await criarSessao(filmes[0].id, sala1.id, 20, 36.0, 15, dia);
-    await criarSessao(filmes[0].id, sala3.id, 21, 42.0, 45, dia);
-    await criarSessao(filmes[0].id, sala4.id, 22, 54.0, 30, dia);
-    await criarSessao(filmes[0].id, sala2.id, 23, 36.0, 0, dia);
+    await criarSessao(filmes[0].id, sala1.id, 20, 30.0, 15, dia);
+    await criarSessao(filmes[0].id, sala3.id, 21, 30.0, 45, dia);
+    await criarSessao(filmes[0].id, sala4.id, 22, 30.0, 30, dia);
+    await criarSessao(filmes[0].id, sala2.id, 23, 30.0, 0, dia);
 
     // Oppenheimer
-    await criarSessao(filmes[1].id, sala3.id, 10, 46.0, 30, dia);
-    await criarSessao(filmes[1].id, sala1.id, 13, 34.0, 30, dia);
-    await criarSessao(filmes[1].id, sala4.id, 14, 54.0, 15, dia);
-    await criarSessao(filmes[1].id, sala2.id, 16, 34.0, 45, dia);
-    await criarSessao(filmes[1].id, sala3.id, 17, 46.0, 15, dia);
-    await criarSessao(filmes[1].id, sala1.id, 17, 34.0, 30, dia);
-    await criarSessao(filmes[1].id, sala4.id, 20, 54.0, 0, dia);
-    await criarSessao(filmes[1].id, sala2.id, 21, 34.0, 15, dia);
-    await criarSessao(filmes[1].id, sala3.id, 22, 46.0, 0, dia);
-    await criarSessao(filmes[1].id, sala4.id, 23, 54.0, 15, dia);
+    await criarSessao(filmes[1].id, sala3.id, 10, 30.0, 30, dia);
+    await criarSessao(filmes[1].id, sala1.id, 13, 30.0, 30, dia);
+    await criarSessao(filmes[1].id, sala4.id, 14, 30.0, 15, dia);
+    await criarSessao(filmes[1].id, sala2.id, 16, 30.0, 45, dia);
+    await criarSessao(filmes[1].id, sala3.id, 17, 30.0, 15, dia);
+    await criarSessao(filmes[1].id, sala1.id, 17, 30.0, 30, dia);
+    await criarSessao(filmes[1].id, sala4.id, 20, 30.0, 0, dia);
+    await criarSessao(filmes[1].id, sala2.id, 21, 30.0, 15, dia);
+    await criarSessao(filmes[1].id, sala3.id, 22, 30.0, 0, dia);
+    await criarSessao(filmes[1].id, sala4.id, 23, 30.0, 15, dia);
 
     // Pobres Criaturas
-    await criarSessao(filmes[2].id, sala1.id, 11, 32.0, 15, dia);
-    await criarSessao(filmes[2].id, sala1.id, 13, 32.0, 45, dia);
-    await criarSessao(filmes[2].id, sala1.id, 14, 32.0, 30, dia);
-    await criarSessao(filmes[2].id, sala2.id, 15, 32.0, 0, dia);
-    await criarSessao(filmes[2].id, sala4.id, 16, 50.0, 15, dia);
-    await criarSessao(filmes[2].id, sala1.id, 18, 32.0, 30, dia);
-    await criarSessao(filmes[2].id, sala2.id, 19, 32.0, 30, dia);
-    await criarSessao(filmes[2].id, sala4.id, 20, 50.0, 30, dia);
-    await criarSessao(filmes[2].id, sala1.id, 21, 32.0, 0, dia);
-    await criarSessao(filmes[2].id, sala4.id, 22, 50.0, 15, dia);
+    await criarSessao(filmes[2].id, sala1.id, 11, 30.0, 15, dia);
+    await criarSessao(filmes[2].id, sala1.id, 13, 30.0, 45, dia);
+    await criarSessao(filmes[2].id, sala1.id, 14, 30.0, 30, dia);
+    await criarSessao(filmes[2].id, sala2.id, 15, 30.0, 0, dia);
+    await criarSessao(filmes[2].id, sala4.id, 16, 30.0, 15, dia);
+    await criarSessao(filmes[2].id, sala1.id, 18, 30.0, 30, dia);
+    await criarSessao(filmes[2].id, sala2.id, 19, 30.0, 30, dia);
+    await criarSessao(filmes[2].id, sala4.id, 20, 30.0, 30, dia);
+    await criarSessao(filmes[2].id, sala1.id, 21, 30.0, 0, dia);
+    await criarSessao(filmes[2].id, sala4.id, 22, 30.0, 15, dia);
 
     // Divertida Mente 2
-    await criarSessao(filmes[3].id, sala1.id, 9, 28.0, 30, dia);
-    await criarSessao(filmes[3].id, sala2.id, 10, 28.0, 15, dia);
-    await criarSessao(filmes[3].id, sala2.id, 11, 28.0, 30, dia);
-    await criarSessao(filmes[3].id, sala4.id, 12, 45.0, 30, dia);
+    await criarSessao(filmes[3].id, sala1.id, 9, 30.0, 30, dia);
+    await criarSessao(filmes[3].id, sala2.id, 10, 30.0, 15, dia);
+    await criarSessao(filmes[3].id, sala2.id, 11, 30.0, 30, dia);
+    await criarSessao(filmes[3].id, sala4.id, 12, 30.0, 30, dia);
     await criarSessao(filmes[3].id, sala2.id, 13, 30.0, 30, dia);
     await criarSessao(filmes[3].id, sala1.id, 14, 30.0, 15, dia);
-    await criarSessao(filmes[3].id, sala2.id, 15, 32.0, 30, dia);
-    await criarSessao(filmes[3].id, sala3.id, 16, 40.0, 0, dia);
+    await criarSessao(filmes[3].id, sala2.id, 15, 30.0, 30, dia);
+    await criarSessao(filmes[3].id, sala3.id, 16, 30.0, 0, dia);
     await criarSessao(filmes[3].id, sala1.id, 17, 30.0, 0, dia);
-    await criarSessao(filmes[3].id, sala2.id, 17, 32.0, 45, dia);
-    await criarSessao(filmes[3].id, sala3.id, 18, 40.0, 30, dia);
+    await criarSessao(filmes[3].id, sala2.id, 17, 30.0, 45, dia);
+    await criarSessao(filmes[3].id, sala3.id, 18, 30.0, 30, dia);
     await criarSessao(filmes[3].id, sala1.id, 20, 30.0, 0, dia);
     await criarSessao(filmes[3].id, sala2.id, 20, 30.0, 45, dia);
   }
@@ -358,7 +358,7 @@ async function main() {
         buyerId: buyer.id,
         soldByUserId: atendente!.id,
         status: "SOLD",
-        price: 39.9,
+        price: 30.0,
       },
     });
   }

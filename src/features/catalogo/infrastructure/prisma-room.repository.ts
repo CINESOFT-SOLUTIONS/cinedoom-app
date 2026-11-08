@@ -10,6 +10,20 @@ import {
 } from "../application/room.schema";
 
 /**
+ * Normaliza nomes de salas legados com sufixo de especificacao (ex: "Sala 4 - VIP" -> "Sala 04"),
+ * preservando nomes customizados em testes e novos cadastros.
+ */
+function normalizeLegacySeedRoomName(name: string): string {
+  const match = (name || "")
+    .trim()
+    .match(/^Sala\s*0?([1-4])\s*[-—•]\s*(CL[ÁA]SSICA|IMAX|VIP|Confort|Tradicional)/i);
+  if (match) {
+    return `Sala 0${match[1]}`;
+  }
+  return name;
+}
+
+/**
  * Implementacao concreta do IRoomRepository baseada em Prisma Client e Transacoes ACID
  */
 export class PrismaRoomRepository implements IRoomRepository {
@@ -27,7 +41,10 @@ export class PrismaRoomRepository implements IRoomRepository {
       orderBy: { createdAt: "asc" },
     });
 
-    return rooms as unknown as RoomWithDetails[];
+    return (rooms as unknown as RoomWithDetails[]).map((r) => ({
+      ...r,
+      name: normalizeLegacySeedRoomName(r.name),
+    }));
   }
 
   async findById(id: string, tenantId: string): Promise<RoomWithDetails | null> {
@@ -43,7 +60,12 @@ export class PrismaRoomRepository implements IRoomRepository {
       },
     });
 
-    return (room as unknown as RoomWithDetails) || null;
+    if (!room) return null;
+    const details = room as unknown as RoomWithDetails;
+    return {
+      ...details,
+      name: normalizeLegacySeedRoomName(details.name),
+    };
   }
 
   async createWithSeats(

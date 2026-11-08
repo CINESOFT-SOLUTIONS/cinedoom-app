@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { SeatingGrid, type GridSeatItem } from "@/modules/bilheteria/components/seating-grid";
 import { useSessionSeats } from "@/modules/bilheteria/hooks/use-session-seats";
-import { getRoomWithExperience } from "@/shared/experiences";
+import { getCanonicalRoomName } from "@/shared/experiences";
 import { CineDoomHeader } from "@/components/cinedoom-header";
 
 interface SessionOption {
@@ -278,7 +278,7 @@ export default function BilheteriaMapaAssentosPage() {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Building className="w-3.5 h-3.5 text-cta" />
-                    {getRoomWithExperience(activeSession.room.name)} ({activeSession.room.capacity} lugares)
+                    {getCanonicalRoomName(activeSession.room.name)} ({activeSession.room.capacity} lugares)
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-cta" />
@@ -305,7 +305,7 @@ export default function BilheteriaMapaAssentosPage() {
                 >
                   {sessions.map((s) => (
                     <option key={s.id} value={s.id} className="bg-[#0E1322] text-white">
-                      {s.film.title} - {getRoomWithExperience(s.room.name)} ({new Date(s.startsAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })})
+                      {s.film.title} - {getCanonicalRoomName(s.room.name)} ({new Date(s.startsAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })})
                     </option>
                   ))}
                 </select>

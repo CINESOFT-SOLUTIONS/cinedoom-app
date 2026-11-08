@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Film, Search, Ticket, AlertCircle } from "lucide-react";
 import { AgeRatingBadge } from "@/components/home/age-rating-badge";
-import { getRoomDisplayName, getRoomExperienceCategory } from "@/shared/experiences";
+import { getCanonicalRoomName, getRoomExperienceCategory } from "@/shared/experiences";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { abandonPreviousReservationIfDifferent } from "@/components/booking/reservation-lifecycle";
 import type { FilmItem, SessionItem } from "@/components/home/types";
@@ -80,17 +80,9 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
         (a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
       );
 
-      // Identifica a sala principal da sessão ou agrupa se houver
+      // Identifica a sala principal da sessão no padrão canônico (ex: Sala 01 .. Sala 04)
       const firstRoomRaw = todaySessions[0]?.room?.name;
-      const roomCategory = getRoomExperienceCategory(firstRoomRaw);
-      const roomClean = firstRoomRaw ? getRoomDisplayName(firstRoomRaw) : null;
-      const roomName = roomClean
-        ? roomCategory === "VIP"
-          ? `${roomClean} Vip`
-          : roomCategory === "IMAX"
-            ? `${roomClean} IMAX`
-            : roomClean
-        : null;
+      const roomName = firstRoomRaw ? getCanonicalRoomName(firstRoomRaw) : null;
 
       return {
         ...film,

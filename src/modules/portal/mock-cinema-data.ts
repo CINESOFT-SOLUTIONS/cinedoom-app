@@ -12,7 +12,7 @@ export interface MockRoom {
 export const MOCK_ROOMS: MockRoom[] = [
   {
     id: "00000000-0000-4000-a000-000000000201",
-    name: "Sala 1 - Clássica",
+    name: "Sala 01",
     capacity: 120,
     rows: 10,
     columns: 12,
@@ -20,7 +20,7 @@ export const MOCK_ROOMS: MockRoom[] = [
   },
   {
     id: "00000000-0000-4000-a000-000000000202",
-    name: "Sala 2 - Clássica",
+    name: "Sala 02",
     capacity: 120,
     rows: 10,
     columns: 12,
@@ -28,7 +28,7 @@ export const MOCK_ROOMS: MockRoom[] = [
   },
   {
     id: "00000000-0000-4000-a000-000000000203",
-    name: "Sala 3 - IMAX",
+    name: "Sala 03",
     capacity: 120,
     rows: 10,
     columns: 12,
@@ -36,7 +36,7 @@ export const MOCK_ROOMS: MockRoom[] = [
   },
   {
     id: "00000000-0000-4000-a000-000000000204",
-    name: "Sala 4 - VIP",
+    name: "Sala 04",
     capacity: 60,
     rows: 6,
     columns: 10,

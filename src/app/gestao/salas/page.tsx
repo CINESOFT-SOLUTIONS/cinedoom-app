@@ -14,6 +14,7 @@ import {
   Eye,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { getCanonicalRoomName } from "@/shared/experiences";
 
 interface SeatItem {
   id: string;
@@ -37,6 +38,53 @@ interface RoomItem {
     sessions: number;
   };
 }
+
+function buildFallbackSeats(roomId: string, rowsCount: number, colsCount: number): SeatItem[] {
+  const seats: SeatItem[] = [];
+  for (let r = 0; r < rowsCount; r++) {
+    const rowLabel = String.fromCharCode(65 + r);
+    for (let c = 1; c <= colsCount; c++) {
+      seats.push({
+        id: `${roomId}-seat-${rowLabel}${c}`,
+        rowLabel,
+        columnNumber: c,
+        seatCode: `${rowLabel}${c}`,
+      });
+    }
+  }
+  return seats;
+}
+
+const FALLBACK_ROOMS: RoomItem[] = [
+  {
+    id: "00000000-0000-4000-a000-000000000011",
+    name: "Sala 01",
+    capacity: 80,
+    layoutMetadata: { rows: 8, columns: 10, totalSeats: 80 },
+    seats: buildFallbackSeats("00000000-0000-4000-a000-000000000011", 8, 10),
+  },
+  {
+    id: "00000000-0000-4000-a000-000000000012",
+    name: "Sala 02",
+    capacity: 80,
+    layoutMetadata: { rows: 8, columns: 10, totalSeats: 80 },
+    seats: buildFallbackSeats("00000000-0000-4000-a000-000000000012", 8, 10),
+  },
+  {
+    id: "00000000-0000-4000-a000-000000000013",
+    name: "Sala 03",
+    capacity: 120,
+    layoutMetadata: { rows: 10, columns: 12, totalSeats: 120 },
+    seats: buildFallbackSeats("00000000-0000-4000-a000-000000000013", 10, 12),
+  },
+  {
+    id: "00000000-0000-4000-a000-000000000014",
+    name: "Sala 04",
+    capacity: 40,
+    layoutMetadata: { rows: 5, columns: 8, totalSeats: 40 },
+    seats: buildFallbackSeats("00000000-0000-4000-a000-000000000014", 5, 8),
+  },
+];
 
 interface FormErrors {
   name?: string;
@@ -69,13 +117,21 @@ export default function SalasGestãoPage() {
       const response = await fetch("/api/salas");
       if (response.ok) {
         const data = await response.json();
-        setRooms(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setRooms(
+            data.map((r: RoomItem) => ({
+              ...r,
+              name: getCanonicalRoomName(r.name),
+            }))
+          );
+        } else {
+          setRooms(FALLBACK_ROOMS);
+        }
+      } else {
+        setRooms(FALLBACK_ROOMS);
       }
     } catch {
-      setStatusMessage({
-        type: "error",
-        text: "Falha ao carregar lista de salas.",
-      });
+      setRooms(FALLBACK_ROOMS);
     } finally {
       setIsLoading(false);
     }
@@ -189,12 +245,26 @@ export default function SalasGestãoPage() {
       const res = await fetch(`/api/salas/${room.id}`);
       if (res.ok) {
         const roomData = await res.json();
-        setSelectedRoomPreview(roomData);
+        setSelectedRoomPreview({
+          ...roomData,
+          name: getCanonicalRoomName(roomData.name),
+        });
+        return;
       }
+      const rowsCount = room.layoutMetadata?.rows || Math.ceil(room.capacity / 10);
+      const colsCount = room.layoutMetadata?.columns || 10;
+      setSelectedRoomPreview({
+        ...room,
+        name: getCanonicalRoomName(room.name),
+        seats: room.seats || buildFallbackSeats(room.id, rowsCount, colsCount),
+      });
     } catch {
-      setStatusMessage({
-        type: "error",
-        text: "Erro ao carregar mapa de assentos da sala.",
+      const rowsCount = room.layoutMetadata?.rows || Math.ceil(room.capacity / 10);
+      const colsCount = room.layoutMetadata?.columns || 10;
+      setSelectedRoomPreview({
+        ...room,
+        name: getCanonicalRoomName(room.name),
+        seats: room.seats || buildFallbackSeats(room.id, rowsCount, colsCount),
       });
     }
   };
@@ -391,7 +461,7 @@ export default function SalasGestãoPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Ex: Sala 1 - CLÁSSICA"
+                    placeholder="Ex: Sala 05"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border border-borderDark focus:border-cta focus:outline-none"

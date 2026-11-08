@@ -19,7 +19,7 @@ import {
   Copy,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
-import { getRoomWithExperience } from "@/shared/experiences";
+import { getCanonicalRoomName } from "@/shared/experiences";
 
 interface ReservationItem {
   id: string;
@@ -284,7 +284,7 @@ export default function BaixaReservaPage() {
                 <p className="font-semibold text-white truncate text-sm">
                   {reservation.session?.film?.title}
                 </p>
-                <p className="text-slate-400 mt-0.5">{reservation.session?.room?.name}</p>
+                <p className="text-slate-400 mt-0.5">{getCanonicalRoomName(reservation.session?.room?.name)}</p>
               </div>
 
               <div>
@@ -460,7 +460,7 @@ export default function BaixaReservaPage() {
                       <div className="truncate">
                         <span className="text-slate-400 text-[11px] block">Sala</span>
                         <span className="text-slate-200 truncate block">
-                          {item.roomName}
+                          {getCanonicalRoomName(item.roomName)}
                         </span>
                       </div>
                       <div className="truncate">
@@ -576,7 +576,7 @@ export default function BaixaReservaPage() {
                     {ticketModalData.film?.title}
                   </h2>
                   <p className="text-xs text-slate-300 font-medium">
-                    {getRoomWithExperience(ticketModalData.room?.name || "Sala")}
+                    {getCanonicalRoomName(ticketModalData.room?.name || "Sala 01")}
                   </p>
                 </div>
                 <div className="shrink-0 text-right">

@@ -16,6 +16,36 @@ import {
   Ticket,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { getCanonicalRoomName } from "@/shared/experiences";
+
+const OFFICIAL_CATALOG_FILM_IDS = new Set([
+  "00000000-0000-4000-a000-000000000101",
+  "00000000-0000-4000-a000-000000000102",
+  "00000000-0000-4000-a000-000000000103",
+  "00000000-0000-4000-a000-000000000104",
+]);
+
+const FALLBACK_ROOMS_LIST: RoomItem[] = [
+  { id: "00000000-0000-4000-a000-000000000011", name: "Sala 01", capacity: 80 },
+  { id: "00000000-0000-4000-a000-000000000012", name: "Sala 02", capacity: 80 },
+  { id: "00000000-0000-4000-a000-000000000013", name: "Sala 03", capacity: 120 },
+  { id: "00000000-0000-4000-a000-000000000014", name: "Sala 04", capacity: 40 },
+];
+
+function formatSessionStatusLabel(status: SessionItem["status"]): string {
+  switch (status) {
+    case "OPEN":
+      return "Aberta";
+    case "SCHEDULED":
+      return "Agendada";
+    case "CLOSED":
+      return "Encerrada";
+    case "CANCELLED":
+      return "Cancelada";
+    default:
+      return status;
+  }
+}
 
 interface FilmItem {
   id: string;
@@ -68,15 +98,31 @@ export default function SessoesGestãoPage() {
   const [rooms, setRooms] = useState<RoomItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [dateFilter, setDateFilter] = useState<"TODAY" | "TOMORROW" | "UPCOMING" | "ALL">("TODAY");
 
   // Form states
   const [filmId, setFilmId] = useState("");
   const [roomId, setRoomId] = useState("");
   const [startsAt, setStartsAt] = useState("");
-  const [price, setPrice] = useState("35.00");
+  const [price, setPrice] = useState("30.00");
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const normalizeSessionItem = (s: any): SessionItem => {
+    const fId = s.filmId || s.film?.id || "";
+    const canonicalPrice = OFFICIAL_CATALOG_FILM_IDS.has(fId)
+      ? 30.0
+      : Number(s.price || 30.0);
+    return {
+      ...s,
+      price: canonicalPrice,
+      room: {
+        ...s.room,
+        name: getCanonicalRoomName(s.room?.name),
+      },
+    };
+  };
 
   // Load initial data
   const fetchData = async () => {
@@ -88,24 +134,52 @@ export default function SessoesGestãoPage() {
         fetch("/api/salas"),
       ]);
 
+      let loadedRooms: RoomItem[] = [];
+      if (resRooms.ok) {
+        const data = await resRooms.json();
+        if (Array.isArray(data) && data.length > 0) {
+          loadedRooms = data.map((r: RoomItem) => ({
+            ...r,
+            name: getCanonicalRoomName(r.name),
+          }));
+          setRooms(loadedRooms);
+        }
+      }
+      if (loadedRooms.length === 0) {
+        setRooms(FALLBACK_ROOMS_LIST);
+      }
+
+      if (resFilms.ok) {
+        const data = await resFilms.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setFilms(data);
+        }
+      }
+
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+
       if (resSessions.ok) {
         const data = await resSessions.json();
         if (Array.isArray(data) && data.length > 0) {
-          setSessions(data);
+          const validSessions = data
+            .map(normalizeSessionItem)
+            .filter((s: SessionItem) => new Date(s.startsAt) >= startOfToday)
+            .sort(
+              (a: SessionItem, b: SessionItem) =>
+                new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+            );
+
+          if (validSessions.length > 0) {
+            setSessions(validSessions);
+          } else {
+            await loadPortalSessionsFallback();
+          }
         } else {
-          // Se a lista de sessões no banco estiver vazia, carrega as sessões do catálogo
           await loadPortalSessionsFallback();
         }
       } else {
         await loadPortalSessionsFallback();
-      }
-      if (resFilms.ok) {
-        const data = await resFilms.json();
-        setFilms(data);
-      }
-      if (resRooms.ok) {
-        const data = await resRooms.json();
-        setRooms(data);
       }
     } catch {
       await loadPortalSessionsFallback();
@@ -119,35 +193,48 @@ export default function SessoesGestãoPage() {
       const portalRes = await fetch("/api/portal/filmes");
       if (portalRes.ok) {
         const filmsData = await portalRes.json();
-        const flattened: SessionItem[] = (filmsData || []).flatMap((f: any) =>
-          (f.sessions || []).map((s: any) => ({
-            id: s.id,
-            filmId: f.id,
-            roomId: s.room.id,
-            startsAt: s.startsAt,
-            price: s.price,
-            status: s.status || "OPEN",
-            film: {
-              id: f.id,
-              title: f.title,
-              durationMinutes: f.duration,
-              posterUrl: f.posterUrl,
-            },
-            room: s.room,
-          }))
-        );
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+
+        const flattened: SessionItem[] = (filmsData || [])
+          .flatMap((f: any) =>
+            (f.sessions || []).map((s: any) =>
+              normalizeSessionItem({
+                id: s.id,
+                filmId: f.id,
+                roomId: s.room.id,
+                startsAt: s.startsAt,
+                price: s.price,
+                status: s.status || "OPEN",
+                film: {
+                  id: f.id,
+                  title: f.title,
+                  durationMinutes: f.duration || f.durationMinutes || 120,
+                  posterUrl: f.posterUrl,
+                },
+                room: s.room,
+              })
+            )
+          )
+          .filter((s: SessionItem) => new Date(s.startsAt) >= startOfToday)
+          .sort(
+            (a: SessionItem, b: SessionItem) =>
+              new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
+          );
+
         if (flattened.length > 0) {
           setSessions(flattened);
         }
-        if (films.length === 0) {
-          setFilms(
-            (filmsData || []).map((f: any) => ({
-              id: f.id,
-              title: f.title,
-              durationMinutes: f.duration,
-            }))
-          );
-        }
+        setFilms((prev) =>
+          prev.length > 0
+            ? prev
+            : (filmsData || []).map((f: any) => ({
+                id: f.id,
+                title: f.title,
+                durationMinutes: f.duration || f.durationMinutes || 120,
+              }))
+        );
+        setRooms((prev) => (prev.length > 0 ? prev : FALLBACK_ROOMS_LIST));
       }
     } catch {
       // Silencioso no fallback
@@ -170,7 +257,7 @@ export default function SessoesGestãoPage() {
     const localISOTime = new Date(nextHour.getTime() - tzOffset).toISOString().slice(0, 16);
     setStartsAt(localISOTime);
     
-    setPrice("35.00");
+    setPrice("30.00");
     setFormErrors({});
     setIsCreateModalOpen(true);
   };
@@ -266,6 +353,33 @@ export default function SessoesGestãoPage() {
     }
   };
 
+  const filteredSessions = sessions.filter((sess) => {
+    if (dateFilter === "ALL") return true;
+    const sDate = new Date(sess.startsAt);
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+    const tomorrowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+    const dayAfterTomorrowStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 2,
+      0,
+      0,
+      0,
+      0
+    );
+
+    if (dateFilter === "TODAY") {
+      return sDate >= todayStart && sDate < tomorrowStart;
+    }
+    if (dateFilter === "TOMORROW") {
+      return sDate >= tomorrowStart && sDate < dayAfterTomorrowStart;
+    }
+    return sDate >= dayAfterTomorrowStart;
+  });
+
+  const displayedSessions = filteredSessions.length > 0 ? filteredSessions : sessions;
+
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
       {/* Header Oficial CineDoom */}
@@ -294,14 +408,64 @@ export default function SessoesGestãoPage() {
             </div>
           </div>
 
-          <button
-            onClick={handleOpenCreateModal}
-            disabled={films.length === 0 || rooms.length === 0}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cta hover:bg-cta-hover text-white text-sm font-semibold shadow-lg shadow-cta/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Nova Sessão</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Seletor de Período */}
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#0A0E1A] border border-borderDark/60 text-xs">
+              <button
+                type="button"
+                onClick={() => setDateFilter("TODAY")}
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  dateFilter === "TODAY"
+                    ? "bg-cta text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Hoje
+              </button>
+              <button
+                type="button"
+                onClick={() => setDateFilter("TOMORROW")}
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  dateFilter === "TOMORROW"
+                    ? "bg-cta text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Amanhã
+              </button>
+              <button
+                type="button"
+                onClick={() => setDateFilter("UPCOMING")}
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  dateFilter === "UPCOMING"
+                    ? "bg-cta text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Próximos dias
+              </button>
+              <button
+                type="button"
+                onClick={() => setDateFilter("ALL")}
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  dateFilter === "ALL"
+                    ? "bg-white/15 text-white font-semibold"
+                    : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Todas
+              </button>
+            </div>
+
+            <button
+              onClick={handleOpenCreateModal}
+              disabled={films.length === 0 || rooms.length === 0}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cta hover:bg-cta-hover text-white text-sm font-semibold shadow-lg shadow-cta/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Nova Sessão</span>
+            </button>
+          </div>
         </div>
 
         {/* Alerta de Sucesso */}
@@ -333,7 +497,7 @@ export default function SessoesGestãoPage() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E94560] mr-3" />
             Carregando sessões...
           </div>
-        ) : sessions.length === 0 ? (
+        ) : displayedSessions.length === 0 ? (
           <div className="text-center py-20 liquid-glass-card rounded-3xl p-8 space-y-4">
             <Calendar className="w-16 h-16 text-gray-600 mx-auto" />
             <h2 className="text-xl font-bold text-gray-300">Nenhuma sessão agendada</h2>
@@ -343,7 +507,7 @@ export default function SessoesGestãoPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sessions.map((sess) => {
+            {displayedSessions.map((sess) => {
               const startDate = new Date(sess.startsAt);
               const formattedDate = startDate.toLocaleDateString("pt-BR", {
                 day: "2-digit",
@@ -363,8 +527,8 @@ export default function SessoesGestãoPage() {
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="space-y-1">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#0F3460] text-[#E94560] border border-[#E94560]/30">
-                          {sess.status}
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+                          {formatSessionStatusLabel(sess.status)}
                         </span>
                         <h2 className="text-lg font-bold text-white line-clamp-1">
                           {sess.film.title}
@@ -383,12 +547,12 @@ export default function SessoesGestãoPage() {
                       <div className="flex items-center gap-2 text-gray-400">
                         <Clock className="w-4 h-4 text-[#E94560]" />
                         <span>
-                          {formattedDate} às {formattedTime} ({sess.film.durationMinutes} min)
+                          {formattedDate} às <strong className="text-white font-semibold">{formattedTime}</strong> ({sess.film.durationMinutes} min)
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-400">
                         <LayoutGrid className="w-4 h-4 text-[#E94560]" />
-                        <span>{sess.room.name}</span>
+                        <span>{getCanonicalRoomName(sess.room.name)}</span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-400">
                         <DollarSign className="w-4 h-4 text-emerald-400" />

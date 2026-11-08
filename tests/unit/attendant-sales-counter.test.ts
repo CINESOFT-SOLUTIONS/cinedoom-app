@@ -57,7 +57,7 @@ describe("Bilheteria do Atendente de Bilheteria", () => {
           startsAt: todayHour2,
           price: 30,
           status: "OPEN",
-          room: { id: "r-03", name: "Sala 03", capacity: 120 },
+          room: { id: "r-01", name: "Sala 01", capacity: 120 },
         },
       ],
     },

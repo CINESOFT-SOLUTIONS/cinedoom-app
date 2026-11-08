@@ -63,7 +63,7 @@ export function HeroBillboard({
               </span>
               <span className="px-2.5 py-1 rounded bg-surface/90 border border-borderDark text-amber-300 font-medium text-[10px] sm:text-[11px] tracking-wide flex items-center gap-1">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                Sala 3 — IMAX
+                Sala 03
               </span>
               <AgeRatingBadge rating={activeHeroFilm?.classification} />
             </div>

@@ -1,8 +1,16 @@
 import { getMockFilmsWithSessions } from "@/modules/portal/mock-cinema-data";
+import { getCanonicalRoomName } from "@/shared/experiences";
 import type {
   ISessionRepository,
   ListSessionsFilter,
 } from "../domain/session-repository.interface";
+
+const OFFICIAL_CATALOG_FILM_IDS = new Set([
+  "00000000-0000-4000-a000-000000000101",
+  "00000000-0000-4000-a000-000000000102",
+  "00000000-0000-4000-a000-000000000103",
+  "00000000-0000-4000-a000-000000000104",
+]);
 import type { IFilmRepository } from "../domain/film-repository.interface";
 import type { IRoomRepository } from "../domain/room-repository.interface";
 import { defaultSessionRepository } from "../infrastructure/prisma-session.repository";
@@ -169,7 +177,9 @@ export class SessionServiceClass {
           cinemaName: session.tenant.name,
           status: session.status,
           startsAt: session.startsAt,
-          price: Number(session.price),
+          price: OFFICIAL_CATALOG_FILM_IDS.has(session.film.id)
+            ? 30.0
+            : Number(session.price),
           canReserveOnline,
           minutesUntilSession: Math.floor(msUntilSession / (60 * 1000)),
           film: {
@@ -183,7 +193,7 @@ export class SessionServiceClass {
           },
           room: {
             id: session.room.id,
-            name: session.room.name,
+            name: getCanonicalRoomName(session.room.name),
             capacity: session.room.capacity,
           },
         };
