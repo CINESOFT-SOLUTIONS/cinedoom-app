@@ -16,7 +16,8 @@ import {
   CheckCircle2,
   ChevronDown,
   ArrowRight,
-  Briefcase
+  Briefcase,
+  X,
 } from "lucide-react";
 import { useAuthModal } from "@/contexts/auth-modal-context";
 
@@ -85,245 +86,203 @@ export function AuthProfileMenu() {
   const displayName = getFirstAndLastName(userName);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative ml-2 sm:ml-4 md:ml-8 lg:ml-10 shrink-0 flex items-center h-full"
-    >
-      {/* Botao de Perfil: Navy Liquid Glass (Abertura exclusivamente por clique) */}
-      <button
-        type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-        className={`h-9 sm:h-10 md:h-11 flex items-center justify-between gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] hover:from-[#133c6d] hover:to-[#1a2544] text-white border transition-all cursor-pointer group ${
-          isOpen
-            ? "border-white/40 shadow-[0_6px_22px_rgba(15,52,96,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.5)] from-[#0F3460] to-[#16213E]"
-            : "border-white/25 shadow-[0_4px_16px_rgba(15,52,96,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] hover:shadow-[0_6px_22px_rgba(15,52,96,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.5)]"
-        }`}
+    <>
+      <div
+        ref={containerRef}
+        className="relative ml-2 sm:ml-4 md:ml-6 lg:ml-8 shrink-0 flex items-center h-full"
       >
-        {/* Avatar / Icone com indicacao de perfil */}
-        <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full bg-white/15 border border-white/25 flex items-center justify-center text-white group-hover:bg-cta group-hover:border-cta group-hover:shadow-[0_0_12px_rgba(233,69,96,0.5)] transition-all shrink-0">
-          {role === "GERENTE" ? (
-            <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-amber-300" />
-          ) : role === "ATENDENTE" ? (
-            <Briefcase className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-blue-300" />
-          ) : (
-            <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
-          )}
-        </div>
+        {/* Botao de Perfil: Navy Liquid Glass */}
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          aria-expanded={isOpen}
+          aria-haspopup="dialog"
+          title={`Conectado como ${displayName} (${role || "CLIENTE"}). Clique para ver detalhes e opções.`}
+          className="h-9 sm:h-10 md:h-11 flex items-center justify-between gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] hover:from-[#133c6d] hover:to-[#1a2544] text-white border border-white/25 shadow-[0_4px_16px_rgba(15,52,96,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] hover:shadow-[0_6px_22px_rgba(15,52,96,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.5)] transition-all cursor-pointer group active:scale-95"
+        >
+          {/* Avatar / Icone com indicacao de perfil */}
+          <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full bg-white/15 border border-white/25 flex items-center justify-center text-white group-hover:bg-cta group-hover:border-cta group-hover:shadow-[0_0_12px_rgba(233,69,96,0.5)] transition-all shrink-0">
+            {role === "GERENTE" ? (
+              <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-amber-300" />
+            ) : role === "ATENDENTE" ? (
+              <Briefcase className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-blue-300" />
+            ) : (
+              <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
+            )}
+          </div>
 
-        {/* Texto do Botao */}
-        <div className="flex items-center gap-1 sm:gap-1.5 text-left">
-          <span className="font-semibold text-xs md:text-[13px] text-white tracking-wide whitespace-nowrap max-w-[70px] sm:max-w-[130px] md:max-w-[180px] truncate">
-            {displayName}
-          </span>
-          {role === "GERENTE" && (
-            <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-cta text-white shadow-xs">
-              Gerente
+          {/* Texto do Botao */}
+          <div className="flex items-center gap-1 sm:gap-1.5 text-left">
+            <span className="font-semibold text-xs md:text-[13px] text-white tracking-wide whitespace-nowrap max-w-[70px] sm:max-w-[130px] md:max-w-[180px] truncate">
+              {displayName}
             </span>
-          )}
-          {role === "ATENDENTE" && (
-            <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-blue-500 text-white shadow-xs">
-              Atendente
-            </span>
-          )}
+            {role === "GERENTE" && (
+              <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-cta text-white shadow-xs">
+                Gerente
+              </span>
+            )}
+            {role === "ATENDENTE" && (
+              <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-blue-500 text-white shadow-xs">
+                Atendente
+              </span>
+            )}
+          </div>
+        </button>
+      </div>
 
-          <ChevronDown
-            className={`w-3.5 h-3.5 text-slate-300 transition-transform duration-200 ${
-              isOpen ? "rotate-180 text-white" : "group-hover:translate-y-0.5"
-            }`}
-          />
-        </div>
-      </button>
-
-      {/* Modulo Flutuante Aberto exclusivamente no Clique do Usuario Autenticado */}
+      {/* Modal Central de Perfil / Logout (Opção 3 / Sem conflito com conteúdo da tela) */}
       {isOpen && (
         <div
-          role="menu"
-          className="absolute top-full mt-4 md:mt-5 right-0 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] z-50 animate-in fade-in slide-in-from-top-1 duration-150"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="profile-modal-title"
+          className="liquid-glass-scrim z-[100] p-4 animate-in fade-in duration-200 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsOpen(false);
+          }}
         >
-          <div className="w-full liquid-glass-menu rounded-3xl p-3.5 space-y-3">
-            {/* Card de Identificacao (Sem superfície aninhada opaca — Regra 3 Liquid Glass) */}
-            <div className="p-3 rounded-2xl bg-white/[0.04] space-y-2">
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-bold text-sm text-white break-words leading-snug">
-                    {userName}
-                  </span>
+          <div className="relative my-auto w-full max-w-sm liquid-glass liquid-glass--modal rounded-3xl p-6 shadow-2xl border border-white/20 animate-in zoom-in-95 duration-200 space-y-5">
+            {/* Botão Fechar */}
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
+              aria-label="Fechar"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Cabeçalho do Usuário */}
+            <div className="flex items-center gap-3.5 pr-6">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0F3460] to-cta flex items-center justify-center text-white shadow-lg shrink-0">
+                {role === "GERENTE" ? (
+                  <ShieldCheck className="w-6 h-6 text-amber-300" />
+                ) : role === "ATENDENTE" ? (
+                  <Briefcase className="w-6 h-6 text-blue-200" />
+                ) : (
+                  <User className="w-6 h-6 text-white" />
+                )}
+              </div>
+              <div className="min-w-0">
+                <h3 id="profile-modal-title" className="text-base font-bold text-white truncate">
+                  {userName}
+                </h3>
+                <p className="text-xs text-slate-400 truncate">{userEmail}</p>
+                <div className="mt-1">
                   {role === "GERENTE" ? (
-                    <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-cta to-rose-600 text-white shadow-sm">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cta text-white">
                       Gerente Geral
                     </span>
                   ) : role === "ATENDENTE" ? (
-                    <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500 text-white shadow-sm">
-                      Atendente
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500 text-white">
+                      Atendente de Bilheteria
                     </span>
                   ) : (
-                    <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/20 text-slate-200 shadow-sm">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/20 text-slate-200">
                       Cliente
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-400 break-all leading-tight">{userEmail}</p>
               </div>
             </div>
 
-            {/* Links de Sessao / Papeis */}
-            <div className="space-y-1 text-xs font-medium">
-              {role === "GERENTE" && (
+            {/* Atalhos Rápidos no Modal */}
+            <div className="space-y-1.5 pt-2 border-t border-white/10 text-xs font-medium">
+              {role === "ATENDENTE" ? (
                 <>
-                  <span className="px-2.5 pt-1 pb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Painel de Gestao
-                  </span>
-                  <Link
-                    href="/gestao"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <Briefcase className="w-4 h-4 text-cta shrink-0" />
-                    <span>Visao Geral da Gestao</span>
-                  </Link>
-                  <Link
-                    href="/gestao/filmes"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <Film className="w-4 h-4 text-cta shrink-0" />
-                    <span>Catalogo de Filmes</span>
-                  </Link>
-                  <Link
-                    href="/gestao/salas"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <LayoutGrid className="w-4 h-4 text-cta shrink-0" />
-                    <span>Salas e Disposicao de Assentos</span>
-                  </Link>
-                  <Link
-                    href="/gestao/sessoes"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <Calendar className="w-4 h-4 text-cta shrink-0" />
-                    <span>Agendamento de Sessoes</span>
-                  </Link>
-                  <Link
-                    href="/gestao/usuarios"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <Users className="w-4 h-4 text-cta shrink-0" />
-                    <span>Gestao de Atendentes</span>
-                  </Link>
-                  <Link
-                    href="/gestao/titulares"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <ShieldCheck className="w-4 h-4 text-cta shrink-0" />
-                    <span>Compliance LGPD (Art. 18)</span>
-                  </Link>
-                  <Link
-                    href="/bilheteria"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors border-t border-white/10 pt-2"
-                  >
-                    <Ticket className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Abrir Bilheteria Operacional</span>
-                  </Link>
-                </>
-              )}
-
-              {role === "ATENDENTE" && (
-                <>
-                  <span className="px-2.5 pt-1 pb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Operacao da Bilheteria
-                  </span>
                   <Link
                     href="/"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <Ticket className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Balcão de Vendas (Sessões de Hoje)</span>
+                    <div className="flex items-center gap-2.5">
+                      <Ticket className="w-4 h-4 text-cta" />
+                      <span>Balcão de Vendas (Hoje)</span>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
                   </Link>
                   <Link
                     href="/bilheteria"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <LayoutGrid className="w-4 h-4 text-cta shrink-0" />
-                    <span>Mapa de Sala (PDV Direto)</span>
+                    <div className="flex items-center gap-2.5">
+                      <LayoutGrid className="w-4 h-4 text-slate-400" />
+                      <span>Mapa de Sala (PDV Direto)</span>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
                   </Link>
                   <Link
                     href="/bilheteria/baixa-reserva"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
-                    <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-                    <span>Baixa Presencial de Reserva</span>
+                    <div className="flex items-center gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-blue-400" />
+                      <span>Baixa Presencial de Reserva</span>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
                   </Link>
                 </>
-              )}
-
-              {role === "CLIENTE" && (
+              ) : role === "GERENTE" ? (
                 <>
-                  <span className="px-2.5 pt-1 pb-1 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Area do Cliente
-                  </span>
+                  <Link
+                    href="/gestao"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Briefcase className="w-4 h-4 text-cta" />
+                      <span>Painel de Gestão Administrativa</span>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+                  <Link
+                    href="/bilheteria"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Ticket className="w-4 h-4 text-emerald-400" />
+                      <span>Abrir Bilheteria</span>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
+                  </Link>
+                </>
+              ) : (
+                <>
                   <Link
                     href="/portal/minhas-reservas"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/10 text-slate-200 hover:text-white transition-colors group"
+                    className="flex items-center justify-between px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
                     <div className="flex items-center gap-2.5">
-                      <Ticket className="w-4 h-4 text-cta shrink-0" />
-                      <span className="font-semibold">Minhas Reservas</span>
+                      <Ticket className="w-4 h-4 text-cta" />
+                      <span>Minhas Reservas</span>
                     </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:translate-x-1 transition-transform shrink-0" />
-                  </Link>
-                  <Link
-                    href="/#programacao"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <Film className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span>Programacao CineDoom</span>
-                  </Link>
-                  <Link
-                    href="/sobre"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <Info className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span>Sobre o CineDoom</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500" />
                   </Link>
                 </>
               )}
+            </div>
 
-              {/* Botao de Logout */}
-              <div className="pt-2 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsOpen(false);
-                    signOut({ callbackUrl: "/" });
-                  }}
-                  className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl hover:bg-rose-500/15 text-rose-300 hover:text-rose-100 transition-colors text-xs font-semibold cursor-pointer"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <LogOut className="w-4 h-4 text-rose-400 shrink-0" />
-                    <span className="truncate">Sair da Conta</span>
-                  </div>
-                  <span className="text-[11px] text-rose-400/80 font-normal truncate max-w-[120px]">
-                    {displayName}
-                  </span>
-                </button>
-              </div>
+            {/* Ação de Logout */}
+            <div className="pt-3 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  signOut({ callbackUrl: "/" });
+                }}
+                className="w-full py-2.5 px-4 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 hover:text-rose-100 border border-rose-500/30 font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <LogOut className="w-4 h-4 text-rose-400" />
+                <span>Sair da Conta ({displayName})</span>
+              </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
