@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
           if (normalizedEmail === "gerente@cinedoom.com") {
             return {
               id: "00000000-0000-4000-a000-000000000001",
-              name: "Gerente Geral CineDoom",
+              name: "Eduardo Vasconcelos",
               email: "gerente@cinedoom.com",
               role: "GERENTE",
               tenantId: "11111111-1111-4111-a111-111111111111",
@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
           if (normalizedEmail === "atendente@cinedoom.com") {
             return {
               id: "00000000-0000-4000-a000-000000000002",
-              name: "Atendente Bilheteria",
+              name: "Camila Ribeiro",
               email: "atendente@cinedoom.com",
               role: "ATENDENTE",
               tenantId: "11111111-1111-4111-a111-111111111111",

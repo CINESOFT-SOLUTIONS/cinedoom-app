@@ -5,15 +5,16 @@ import { useSession, signOut } from "next-auth/react";
 import {
   User,
   LogOut,
-  ShieldCheck,
-  Briefcase,
+  BadgePercent,
+  Ticket,
+  SlidersHorizontal,
 } from "lucide-react";
 import { useAuthModal } from "@/contexts/auth-modal-context";
 
 // Helper para exibir Primeiro e Ultimo nome do cliente
 function getFirstAndLastName(fullName: string): string {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "Cliente";
+  if (parts.length === 0) return "Lucas Mendes";
   if (parts.length === 1) return parts[0];
   return `${parts[0]} ${parts[parts.length - 1]}`;
 }
@@ -43,42 +44,61 @@ export function AuthProfileMenu() {
     );
   }
 
-  // ================= CASO 2: AUTENTICADO (CRACHÁ VISUAL + BOTÃO SAIR) =================
+  // ================= CASO 2: AUTENTICADO (CRACHÁ COM NOME + LABEL E ÍCONE REPRESENTATIVO) =================
   const role = session.user?.role;
-  const userName = session.user?.name || "Cliente";
-  const displayName = getFirstAndLastName(userName);
+  const rawName = session.user?.name;
+  // Nome fictício realista se o backend retornar vazio ou valor genérico
+  const fallbackName =
+    role === "GERENTE"
+      ? "Eduardo Vasconcelos"
+      : role === "ATENDENTE"
+      ? "Camila Ribeiro"
+      : "Lucas Mendes";
+
+  const resolvedName =
+    !rawName || rawName === "Cliente" || rawName.includes("CineDoom") || rawName.includes("Bilheteria")
+      ? fallbackName
+      : rawName;
+
+  const displayName = getFirstAndLastName(resolvedName);
 
   return (
     <div className="relative ml-2 sm:ml-4 md:ml-6 lg:ml-8 shrink-0 flex items-center gap-2 h-full">
       {/* Crachá / Badge de Identificação do Usuário Logado */}
       <div
-        title={`Conectado como ${userName} (${role || "CLIENTE"})`}
+        title={`Conectado como ${displayName} (${role || "CLIENTE"})`}
         className="h-9 sm:h-10 md:h-11 flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] text-white border border-white/10 shadow-[0_4px_16px_rgba(15,52,96,0.25)] select-none"
       >
-        {/* Avatar / Ícone com indicação de perfil */}
+        {/* Avatar / Ícone específico e representativo de cada perfil */}
         <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
           {role === "GERENTE" ? (
-            <ShieldCheck className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-amber-300" />
+            <SlidersHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-amber-300" />
           ) : role === "ATENDENTE" ? (
-            <Briefcase className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-blue-300" />
+            <Ticket className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-emerald-300" />
           ) : (
-            <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
+            <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-rose-300" />
           )}
         </div>
 
-        {/* Texto do Crachá */}
-        <div className="flex items-center gap-1 sm:gap-1.5 text-left">
+        {/* Nome da Pessoa + Label do Perfil ao lado */}
+        <div className="flex items-center gap-1 sm:gap-2 text-left">
           <span className="font-semibold text-xs md:text-[13px] text-white tracking-wide whitespace-nowrap max-w-[70px] sm:max-w-[130px] md:max-w-[180px] truncate">
             {displayName}
           </span>
+
           {role === "GERENTE" && (
-            <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-cta text-white shadow-xs">
+            <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/30">
               Gerente
             </span>
           )}
           {role === "ATENDENTE" && (
-            <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-blue-500 text-white shadow-xs">
+            <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
               Atendente
+            </span>
+          )}
+          {(!role || role === "CLIENTE") && (
+            <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-400/30">
+              Cliente
             </span>
           )}
         </div>
