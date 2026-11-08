@@ -455,22 +455,16 @@ describe("Reformulação do Fluxo de Reservas do CineDoom (4 Etapas Sequenciais)
       expect(html).toContain("Sessões");
     });
 
-    it("Isolamento de sessões — Gera mapa de assentos unitário e distinto por sessão", async () => {
+    it("Assentos nos mocks iniciam 100% disponíveis para reserva do usuário", async () => {
       const { generateMockSeats } = await import("@/modules/portal/mock-cinema-data");
 
-      const seatsSession1 = generateMockSeats(6, 8, 30, "session-alpha-101");
-      const seatsSession2 = generateMockSeats(6, 8, 30, "session-beta-202");
+      const seats = generateMockSeats(6, 8, 30, "session-alpha-101");
 
-      const reserved1 = seatsSession1.filter((s) => s.status === "RESERVED").map((s) => s.seatCode);
-      const reserved2 = seatsSession2.filter((s) => s.status === "RESERVED").map((s) => s.seatCode);
-
-      // As duas sessões devem ter mapas com assentos ocupados diferentes (não idênticos)
-      expect(reserved1).not.toEqual(reserved2);
-
-      // Chamadas para a mesma sessão devem ser determinísticas
-      const seatsSession1Again = generateMockSeats(6, 8, 30, "session-alpha-101");
-      const reserved1Again = seatsSession1Again.filter((s) => s.status === "RESERVED").map((s) => s.seatCode);
-      expect(reserved1).toEqual(reserved1Again);
+      // Nenhum assento mock deve vir pré-ocupado ou pré-reservado
+      const reserved = seats.filter((s) => s.status !== "AVAILABLE");
+      expect(reserved.length).toBe(0);
+      expect(seats.length).toBe(48);
+      expect(seats.every((s) => s.status === "AVAILABLE")).toBe(true);
     });
 
     it("Ao sair de uma sessão, todo o estado anterior é descartado", () => {

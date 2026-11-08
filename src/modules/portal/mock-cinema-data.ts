@@ -217,25 +217,12 @@ export function getMockFilmsWithSessions() {
 }
 
 export function generateMockSeats(rows: number, cols: number, price: number, sessionId?: string) {
-  // Gera padrão único e determinístico de assentos reservados/ocupados baseado no sessionId
-  let seed = 0;
-  if (sessionId) {
-    for (let i = 0; i < sessionId.length; i++) {
-      seed = (seed * 31 + sessionId.charCodeAt(i)) >>> 0;
-    }
-  }
-
   const seats = [];
   for (let r = 0; r < rows; r++) {
     const rowLabel = String.fromCharCode(65 + r);
     for (let c = 1; c <= cols; c++) {
-      // Cálculo determinístico com base na posição e no sessionId
-      // Varia entre ~8% e ~20% de assentos ocupados, diferente em cada sessão
-      const hash = ((seed + r * 17 + c * 37) ^ (seed >>> 3)) % 100;
-      const isReserved = sessionId
-        ? hash < 14 // ~14% de assentos ocupados por sessão, variando conforme a sessão
-        : (r === 2 && (c === 5 || c === 6)) || (r === 3 && (c === 4 || c === 5));
-
+      // Nos mocks, todos os assentos iniciam disponíveis (AVAILABLE).
+      // As reservas e bloqueios são feitos exclusivamente pelo usuário em tempo de execução.
       seats.push({
         id: `seat-${rowLabel}${c}`,
         seat_id: `seat-${rowLabel}${c}`,
@@ -245,7 +232,7 @@ export function generateMockSeats(rows: number, cols: number, price: number, ses
         number: c,
         columnNumber: c,
         seatCode: `${rowLabel}${c}`,
-        status: isReserved ? "RESERVED" : "AVAILABLE",
+        status: "AVAILABLE",
         price,
       });
     }
