@@ -227,15 +227,15 @@ export function ReservationsTabsPanel({
                   <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2.5 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-white/10">
                     {!isCurrentExpired && (
                       <div className="flex items-center">
-                        {isConfirmed ? (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                            Confirmada
-                          </span>
-                        ) : (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                            Aguardando Pagamento
-                          </span>
-                        )}
+                        <span
+                          className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                            isConfirmed
+                              ? "bg-emerald-500/15 text-emerald-400"
+                              : "bg-amber-500/15 text-amber-300"
+                          }`}
+                        >
+                          {isConfirmed ? "Confirmada" : "Aguardando retirada"}
+                        </span>
                       </div>
                     )}
 
