@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { Clock, Ticket, ExternalLink, CheckCircle2, History } from "lucide-react";
 import { getCanonicalRoomName } from "@/shared/experiences";
+import { TicketModal, type TicketVoucherData } from "@/components/tickets/ticket-modal";
 
 export interface ReservationItem {
   id: string;
@@ -46,9 +46,50 @@ export function ReservationsTabsPanel({
   expiredReservations,
 }: ReservationsTabsPanelProps) {
   const [activeTab, setActiveTab] = useState<"active" | "expired">("active");
+  const [selectedVoucher, setSelectedVoucher] = useState<TicketVoucherData | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
 
   const displayedList = activeTab === "active" ? activeReservations : expiredReservations;
   const isCurrentExpired = activeTab === "expired";
+
+  const handleOpenVoucherModal = async (res: ReservationItem) => {
+    // Carrega dados ricos do voucher via API com fallback para os dados locais da reserva
+    setLoadingDetails(true);
+    try {
+      const resp = await fetch(`/api/portal/reservas/${res.id}`);
+      if (resp.ok) {
+        const fullData: TicketVoucherData = await resp.json();
+        setSelectedVoucher(fullData);
+        return;
+      }
+    } catch {
+      // Ignora erro e usa fallback estruturado
+    } finally {
+      setLoadingDetails(false);
+    }
+
+    // Fallback com dados disponíveis
+    setSelectedVoucher({
+      id: res.id,
+      code: res.code,
+      status: res.status,
+      totalPrice: Number(res.totalPrice),
+      expiresAt: res.expiresAt,
+      film: {
+        title: res.session.film.title,
+      },
+      room: {
+        name: res.session.room.name,
+      },
+      session: {
+        startsAt: res.session.startsAt,
+      },
+      seats: res.sessionSeats.map((s, idx) => ({
+        id: String(idx),
+        seatCode: s.seat.seatCode,
+      })),
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -122,10 +163,11 @@ export function ReservationsTabsPanel({
             const isConfirmed = res.status === "CONFIRMED";
 
             return (
-              <Link
+              <button
                 key={res.id}
-                href={`/portal/reservas/${res.id}/comprovante`}
-                className={`group block rounded-2xl liquid-glass-card transition-all duration-200 border ${
+                type="button"
+                onClick={() => handleOpenVoucherModal(res)}
+                className={`group w-full text-left rounded-2xl liquid-glass-card transition-all duration-200 border ${
                   isCurrentExpired
                     ? "opacity-75 border-white/5 hover:opacity-95 hover:border-white/20 hover:bg-white/[0.04]"
                     : "border-white/10 hover:border-white/30 hover:shadow-xl hover:shadow-black/30 hover:bg-white/[0.06]"
@@ -207,11 +249,19 @@ export function ReservationsTabsPanel({
                     </div>
                   </div>
                 </div>
-              </Link>
+              </button>
             );
           })}
         </div>
       )}
+
+      {/* Modal Canônico do Ingresso / Voucher do Cliente */}
+      <TicketModal
+        isOpen={!!selectedVoucher}
+        onClose={() => setSelectedVoucher(null)}
+        data={selectedVoucher}
+        isFinalTicket={selectedVoucher?.status === "CONFIRMED"}
+      />
     </div>
   );
 }
