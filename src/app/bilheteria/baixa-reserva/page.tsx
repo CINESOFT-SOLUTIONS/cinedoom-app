@@ -147,7 +147,7 @@ export default function BaixaReservaPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
               <Ticket className="w-7 h-7 text-cta" />
-              <span>Baixa Presencial de Reservas</span>
+              <span>Reservas</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
               Confirmação de pagamento e liberação presencial de ingressos na bilheteria física
@@ -170,7 +170,7 @@ export default function BaixaReservaPage() {
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="Digite o código da reserva (ex: RES-12345) ou nome do cliente..."
+              placeholder="Digite o código da reserva, CPF ou nome do cliente..."
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               onKeyDown={(e) => {
@@ -213,11 +213,10 @@ export default function BaixaReservaPage() {
                 <h2 className="text-lg font-bold text-white">Reserva {reservation.code}</h2>
               </div>
               <span
-                className={`text-xs px-3 py-1 rounded-full font-semibold border ${
-                  reservation.status === "CONFIRMED"
+                className={`text-xs px-3 py-1 rounded-full font-semibold border ${reservation.status === "CONFIRMED"
                     ? "bg-emerald-950/60 text-emerald-300 border-emerald-500/30"
                     : "bg-amber-950/60 text-amber-300 border-amber-500/30"
-                }`}
+                  }`}
               >
                 {reservation.status === "CONFIRMED" ? "PAGA / CONFIRMADA" : "AGUARDANDO RETIRADA"}
               </span>
@@ -282,9 +281,6 @@ export default function BaixaReservaPage() {
                   {filteredList.length}
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
-                Localize e dê baixa imediata nas reservas feitas pelo portal
-              </p>
             </div>
 
             {/* Filtro de Status */}
@@ -292,33 +288,30 @@ export default function BaixaReservaPage() {
               <button
                 type="button"
                 onClick={() => setStatusFilter("PENDING")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  statusFilter === "PENDING"
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === "PENDING"
                     ? "bg-amber-500/20 text-amber-300 font-bold shadow-xs"
                     : "text-slate-400 hover:text-white"
-                }`}
+                  }`}
               >
                 Aguardando Retirada
               </button>
               <button
                 type="button"
                 onClick={() => setStatusFilter("CONFIRMED")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  statusFilter === "CONFIRMED"
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === "CONFIRMED"
                     ? "bg-emerald-500/20 text-emerald-300 font-bold shadow-xs"
                     : "text-slate-400 hover:text-white"
-                }`}
+                  }`}
               >
                 Confirmadas
               </button>
               <button
                 type="button"
                 onClick={() => setStatusFilter("ALL")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  statusFilter === "ALL"
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === "ALL"
                     ? "bg-white/15 text-white font-bold shadow-xs"
                     : "text-slate-400 hover:text-white"
-                }`}
+                  }`}
               >
                 Todas
               </button>
@@ -359,11 +352,10 @@ export default function BaixaReservaPage() {
                           {item.code}
                         </span>
                         <span
-                          className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${
-                            isPending
+                          className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${isPending
                               ? "bg-amber-950/60 text-amber-300 border-amber-500/30"
                               : "bg-emerald-950/60 text-emerald-300 border-emerald-500/30"
-                          }`}
+                            }`}
                         >
                           {isPending ? "Aguardando Retirada" : "Confirmada"}
                         </span>

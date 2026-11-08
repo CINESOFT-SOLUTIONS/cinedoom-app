@@ -178,7 +178,7 @@ export default function GestaoUsuariosPage() {
   const handleToggleStatus = async (user: UserItem) => {
     const actionLabel = user.active ? "inativar" : "ativar";
     if (user.id === currentUserId) {
-      alert("Operacao bloqueada: O gerente nao pode inativar a propria conta.");
+      alert("Operação bloqueada: O gerente não pode inativar a própria conta.");
       return;
     }
 

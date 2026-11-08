@@ -180,15 +180,15 @@ export default function SessoesGestãoPage() {
     setFormErrors({});
 
     if (!filmId) {
-      setFormErrors({ filmId: "Selecione um filme para a sessao." });
+      setFormErrors({ filmId: "Selecione um filme para a sessão." });
       return;
     }
     if (!roomId) {
-      setFormErrors({ roomId: "Selecione uma sala para a sessao." });
+      setFormErrors({ roomId: "Selecione uma sala para a sessão." });
       return;
     }
     if (!startsAt) {
-      setFormErrors({ startsAt: "Informe a data e horario de inicio." });
+      setFormErrors({ startsAt: "Informe a data e horário de início." });
       return;
     }
     const numPrice = parseFloat(price);
@@ -232,7 +232,7 @@ export default function SessoesGestãoPage() {
           }
           setFormErrors(errorsObj);
         } else {
-          setFormErrors({ general: data.error || "Erro ao agendar sessao." });
+          setFormErrors({ general: data.error || "Erro ao agendar sessão." });
         }
       } catch {
         setFormErrors({ general: "Erro inesperado de conexão com o servidor." });
@@ -243,7 +243,7 @@ export default function SessoesGestãoPage() {
   const handleDeleteSession = async (session: SessionItem) => {
     if (
       !confirm(
-        `Deseja realmente cancelar/excluir a sessao do filme "${session.film.title}" na ${session.room.name}?`
+        `Deseja realmente cancelar/excluir a sessão do filme "${session.film.title}" na ${session.room.name}?`
       )
     ) {
       return;
@@ -255,14 +255,14 @@ export default function SessoesGestãoPage() {
       });
 
       if (res.status === 204) {
-        setActionSuccess("Sessao excluida com sucesso.");
+        setActionSuccess("Sessão excluída com sucesso.");
         fetchData();
       } else {
         const data = await res.json();
-        alert(data.error || "Nao foi possivel excluir a sessao.");
+        alert(data.error || "Não foi possível excluir a sessão.");
       }
     } catch {
-      alert("Erro ao tentar excluir a sessao.");
+      alert("Erro ao tentar excluir a sessão.");
     }
   };
 
@@ -317,26 +317,26 @@ export default function SessoesGestãoPage() {
           </div>
         )}
 
-        {/* Aviso se nao houver filmes ou salas cadastrados */}
+        {/* Aviso se não houver filmes ou salas cadastrados */}
         {!isLoading && (films.length === 0 || rooms.length === 0) && (
           <div className="p-4 bg-amber-950/40 border border-amber-500/40 rounded-xl text-amber-200 flex items-center gap-3 text-sm">
             <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
             <span>
-              E necessario cadastrar ao menos um <strong>Filme</strong> e uma <strong>Sala</strong> antes de agendar sessoes.
+              É necessário cadastrar ao menos um <strong>Filme</strong> e uma <strong>Sala</strong> antes de agendar sessões.
             </span>
           </div>
         )}
 
-        {/* Lista de Sessoes */}
+        {/* Lista de Sessões */}
         {isLoading ? (
           <div className="flex justify-center items-center py-24 text-gray-400">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E94560] mr-3" />
-            Carregando sessoes...
+            Carregando sessões...
           </div>
         ) : sessions.length === 0 ? (
           <div className="text-center py-20 liquid-glass-card rounded-3xl p-8 space-y-4">
             <Calendar className="w-16 h-16 text-gray-600 mx-auto" />
-            <h2 className="text-xl font-bold text-gray-300">Nenhuma sessao agendada</h2>
+            <h2 className="text-xl font-bold text-gray-300">Nenhuma sessão agendada</h2>
             <p className="text-sm text-gray-500 max-w-md mx-auto">
               Clique em &quot;Nova Sessão&quot; para programar um filme em uma de suas salas e disponibilizar as poltronas para venda.
             </p>
@@ -372,7 +372,7 @@ export default function SessoesGestãoPage() {
                       </div>
                       <button
                         onClick={() => handleDeleteSession(sess)}
-                        title="Cancelar / Excluir Sessao"
+                        title="Cancelar / Excluir Sessão"
                         className="text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-950/30 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -383,7 +383,7 @@ export default function SessoesGestãoPage() {
                       <div className="flex items-center gap-2 text-gray-400">
                         <Clock className="w-4 h-4 text-[#E94560]" />
                         <span>
-                          {formattedDate} as {formattedTime} ({sess.film.durationMinutes} min)
+                          {formattedDate} às {formattedTime} ({sess.film.durationMinutes} min)
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-gray-400">
@@ -428,7 +428,7 @@ export default function SessoesGestãoPage() {
             <div className="flex items-center justify-between border-b border-gray-800 pb-4">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-[#E94560]" />
-                Agendar Nova Sessao
+                Agendar Nova Sessão
               </h2>
               <button
                 onClick={() => setIsCreateModalOpen(false)}
@@ -468,7 +468,7 @@ export default function SessoesGestãoPage() {
 
               <div>
                 <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
-                  Sala de Exibicao
+                  Sala de Exibição
                 </label>
                 <select
                   value={roomId}
@@ -489,7 +489,7 @@ export default function SessoesGestãoPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
-                    Data e Horario de Inicio
+                    Data e Horário de Início
                   </label>
                   <input
                     type="datetime-local"
@@ -504,7 +504,7 @@ export default function SessoesGestãoPage() {
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
-                    Preco do Ingresso (R$)
+                    Preço do Ingresso (R$)
                   </label>
                   <input
                     type="number"
@@ -537,7 +537,7 @@ export default function SessoesGestãoPage() {
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl bg-[#E94560] hover:bg-[#d63d56] text-white text-sm font-bold shadow-lg shadow-[#E94560]/30 transition-all disabled:opacity-50"
                 >
-                  {isPending ? "Agendando..." : "Criar Sessao"}
+                  {isPending ? "Agendando..." : "Criar Sessão"}
                 </button>
               </div>
             </form>

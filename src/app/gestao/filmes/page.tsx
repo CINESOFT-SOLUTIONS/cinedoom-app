@@ -76,7 +76,7 @@ export default function CatalogoFilmesPage() {
     } catch {
       setStatusMessage({
         type: "error",
-        text: "Falha ao carregar o catalogo de filmes.",
+        text: "Falha ao carregar o catálogo de filmes.",
       });
     } finally {
       setIsLoading(false);
@@ -147,7 +147,7 @@ export default function CatalogoFilmesPage() {
             type: "success",
             text: isEditing
               ? "Filme atualizado com sucesso!"
-              : "Filme cadastrado com sucesso no catalogo!",
+              : "Filme cadastrado com sucesso no catálogo!",
           });
           closeModal();
           fetchFilms(searchTerm);
@@ -173,11 +173,11 @@ export default function CatalogoFilmesPage() {
 
         const errJson = await res.json().catch(() => null);
         setErrors({
-          general: errJson?.error || "Ocorreu um erro ao processar a operacao.",
+          general: errJson?.error || "Ocorreu um erro ao processar a operação.",
         });
       } catch {
         setErrors({
-          general: "Erro de conexao com o servidor.",
+          general: "Erro de conexão com o servidor.",
         });
       }
     });
@@ -186,7 +186,7 @@ export default function CatalogoFilmesPage() {
   const handleDelete = async (film: FilmItem) => {
     if (
       !confirm(
-        `Tem certeza que deseja excluir o filme "${film.title}" do catalogo? Esta acao nao pode ser desfeita.`
+        `Tem certeza que deseja excluir o filme "${film.title}" do catálogo? Esta ação não pode ser desfeita.`
       )
     ) {
       return;
@@ -200,20 +200,20 @@ export default function CatalogoFilmesPage() {
       if (res.status === 204) {
         setStatusMessage({
           type: "success",
-          text: `Filme "${film.title}" excluido com sucesso.`,
+          text: `Filme "${film.title}" excluído com sucesso.`,
         });
         fetchFilms(searchTerm);
       } else {
         const errJson = await res.json().catch(() => null);
         setStatusMessage({
           type: "error",
-          text: errJson?.error || "Nao foi possivel excluir o filme.",
+          text: errJson?.error || "Não foi possível excluir o filme.",
         });
       }
     } catch {
       setStatusMessage({
         type: "error",
-        text: "Erro de comunicacao ao tentar excluir filme.",
+        text: "Erro de comunicação ao tentar excluir filme.",
       });
     }
   };

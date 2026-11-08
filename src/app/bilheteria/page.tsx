@@ -322,10 +322,10 @@ export default function BilheteriaMapaAssentosPage() {
               <Link
                 href="/bilheteria/baixa-reserva"
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cta/15 hover:bg-cta/25 border border-cta/30 text-xs font-semibold text-cta transition-colors"
-                title="Baixa de Reservas"
+                title="Gestão de Reservas"
               >
                 <Ticket className="w-3.5 h-3.5" />
-                <span>Baixa Reserva</span>
+                <span>Reservas</span>
               </Link>
             </div>
           </div>

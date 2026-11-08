@@ -391,7 +391,7 @@ export default function SalasGestãoPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Ex: Sala 1 VIP"
+                    placeholder="Ex: Sala 1 - CLÁSSICA"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border border-borderDark focus:border-cta focus:outline-none"
