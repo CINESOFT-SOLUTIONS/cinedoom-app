@@ -82,8 +82,8 @@ html[data-theme='dark'] {
   --glass-menu-shadow: 0 16px 40px rgba(0, 0, 0, 0.55),
     0 4px 12px rgba(0, 0, 0, 0.35);
 
-  --glass-modal-tint: rgba(14, 19, 34, 0.55);
-  --glass-scrim: rgba(0, 0, 0, 0.55);
+  --glass-modal-tint: rgba(14, 19, 34, 0.92);
+  --glass-scrim: rgba(5, 8, 16, 0.78);
 
   /* Ambient mesh tuned for CineDoom dark cinema backdrop */
   --glass-page-bg: #0e1322;
@@ -210,12 +210,20 @@ body {
 
 /* ─────────────────────────────────────────────────────────
    Modal tier — `class="liquid-glass liquid-glass--modal"`
+   Opacidade reforçada e desfoque profundo para legibilidade
    ───────────────────────────────────────────────────────── */
 .liquid-glass--modal {
   border-radius: var(--glass-radius-lg);
   background:
     linear-gradient(180deg, var(--glass-modal-tint), var(--glass-modal-tint)),
     linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
+  backdrop-filter: blur(32px) saturate(160%);
+  -webkit-backdrop-filter: blur(32px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.8),
+    0 8px 24px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .liquid-glass-scrim {
@@ -225,8 +233,8 @@ body {
   align-items: center;
   justify-content: center;
   background: var(--glass-scrim);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 
 /* ─────────────────────────────────────────────────────────

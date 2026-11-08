@@ -30,7 +30,7 @@ vi.mock("next-auth/react", () => ({
   }),
 }));
 
-describe("Balcão de Vendas do Atendente de Bilheteria", () => {
+describe("Bilheteria do Atendente de Bilheteria", () => {
   const now = new Date();
   const todayHour1 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 13, 20).toISOString();
   const todayHour2 = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15, 0).toISOString();

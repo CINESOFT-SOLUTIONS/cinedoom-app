@@ -77,7 +77,7 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                           : "text-slate-600 hover:text-slate-950 font-medium transition-colors"
                       }
                     >
-                      Balcão de Vendas
+                      Bilheteria
                     </span>
                     {activePage === "filmes" ? (
                       <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cta to-rose-500 rounded-full shadow-[0_2px_6px_rgba(233,69,96,0.45)]" />
@@ -291,7 +291,7 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                       : "text-slate-800 hover:bg-slate-100/70"
                   }`}
                 >
-                  Balcão de Vendas
+                  Bilheteria
                 </Link>
                 <Link
                   href="/bilheteria/baixa-reserva"

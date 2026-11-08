@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { X, Ticket, Clock, Film } from "lucide-react";
@@ -18,6 +19,11 @@ export function FilmModal({
   film,
   onClose,
 }: FilmModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   // Bloqueio de rolagem da página (html e body) enquanto o modal estiver aberto e fechar no Escape
   useEffect(() => {
     if (!film) return;
@@ -46,9 +52,9 @@ export function FilmModal({
   const primaryGenre = getPrimaryGenre(film.genre);
   const durationStr = formatDuration(film.duration);
 
-  return (
+  const content = (
     <div
-      className="liquid-glass-scrim z-50 p-3 sm:p-4 md:p-6 animate-in fade-in duration-200 overflow-y-auto"
+      className="liquid-glass-scrim z-[100] p-3 sm:p-4 md:p-6 animate-in fade-in duration-200 overflow-y-auto"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -179,4 +185,6 @@ export function FilmModal({
       </div>
     </div>
   );
+
+  return mounted ? createPortal(content, document.body) : content;
 }

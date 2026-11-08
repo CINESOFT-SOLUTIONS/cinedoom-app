@@ -105,7 +105,7 @@ export default function CinemarkStyleHomePage() {
     });
   }, [films, searchQuery, selectedFormat]);
 
-  // Se o usuário autenticado for ATENDENTE, exibe a interface operacional do Balcão de Vendas
+  // Se o usuário autenticado for ATENDENTE, exibe a interface operacional da Bilheteria.
   if (authStatus === "authenticated" && userRole === "ATENDENTE") {
     return (
       <div className="min-h-screen liquid-glass-backdrop text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">

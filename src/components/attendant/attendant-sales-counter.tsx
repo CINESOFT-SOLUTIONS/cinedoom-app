@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Film, Search, Ticket, AlertCircle } from "lucide-react";
 import { AgeRatingBadge } from "@/components/home/age-rating-badge";
@@ -41,15 +42,20 @@ function getSessionFormatAndLanguage(session: SessionItem, film: FilmItem) {
 }
 
 /**
- * Balcão de Vendas - Homepage Operacional do Atendente CineDoom
+ * Bilheteria - Homepage Operacional do Atendente CineDoom
  */
 export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterProps) {
+  const [mounted, setMounted] = useState(false);
   const [activeSessionBooking, setActiveSessionBooking] = useState<{
     filmId: string;
     sessionId: string;
   } | null>(null);
 
   const [moreDatesFilm, setMoreDatesFilm] = useState<FilmItem | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Filtra as sessões de hoje para cada filme
   const today = useMemo(() => new Date(), []);
@@ -132,7 +138,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
       {loading ? (
         <div className="py-24 text-center space-y-3">
           <div className="w-10 h-10 border-2 border-cta border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs text-slate-400">Carregando balcão de vendas...</p>
+          <p className="text-xs text-slate-400">Carregando bilheteria...</p>
         </div>
       ) : filmsWithTodaySessions.length === 0 ? (
         <div className="py-20 text-center liquid-glass rounded-2xl p-8 space-y-3">
@@ -269,15 +275,15 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
         </div>
       )}
 
-      {/* Modal do Fluxo de Reserva Integrado com Contexto da Sessão */}
-      {activeSessionBooking && (
+      {/* Modal do Fluxo de Reserva Integrado com Contexto da Sessão (Portal para cobrir 100% da viewport) */}
+      {mounted && activeSessionBooking && createPortal(
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="attendant-booking-title"
-          className="liquid-glass-scrim z-50 p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
+          className="liquid-glass-scrim z-[100] p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
         >
-          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-2 sm:p-5 flex flex-col justify-between">
+          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-3 sm:p-6 flex flex-col justify-between my-auto">
             <h2 id="attendant-booking-title" className="sr-only">
               Fluxo de Venda de Ingressos
             </h2>
@@ -289,17 +295,18 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
               onClose={handleCloseModal}
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* Modal de Outras Datas para o Filme Selecionado */}
-      {moreDatesFilm && (
+      {/* Modal de Outras Datas para o Filme Selecionado (Portal para cobrir 100% da viewport sem cortes) */}
+      {mounted && moreDatesFilm && createPortal(
         <div
           role="dialog"
           aria-modal="true"
-          className="liquid-glass-scrim z-50 p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
+          className="liquid-glass-scrim z-[100] p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
         >
-          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-2 sm:p-5 flex flex-col justify-between">
+          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-3 sm:p-6 flex flex-col justify-between my-auto">
             <BookingFlow
               initialFilmId={moreDatesFilm.id}
               initialStep={1}
@@ -307,7 +314,8 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
               onClose={() => setMoreDatesFilm(null)}
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
