@@ -123,14 +123,6 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
             <Ticket className="w-6 h-6 text-cta" />
             <span>Escolha a sessão para um filme</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Bilheteria CineDoom • Atendente de Bilheteria
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="liquid-glass-chip text-xs font-semibold text-slate-200">
-            {films.length} filmes no catálogo de hoje
-          </span>
         </div>
       </div>
 
