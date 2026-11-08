@@ -21,6 +21,9 @@ import {
   Sparkles,
   Timer,
   AlertCircle,
+  CreditCard,
+  Banknote,
+  QrCode,
 } from "lucide-react";
 import { SeatingGrid, type GridSeatItem } from "@/modules/bilheteria/components/seating-grid";
 import { AgeRatingBadge } from "@/components/home/age-rating-badge";
@@ -36,7 +39,7 @@ import {
   saveReservationContext,
 } from "./reservation-lifecycle";
 
-export type BookingStep = 1 | 2 | 3 | 4;
+export type BookingStep = 1 | 2 | 3 | 4 | 5;
 
 interface SessionPortalDetail {
   id: string;
@@ -102,6 +105,29 @@ export function BookingFlow({
   const prevFilmIdRef = useRef<string | undefined>(initialFilmId);
   const prevSessionIdRef = useRef<string | undefined>(initialSessionId);
 
+  // Identifica perfil com privilégios de bilheteria presencial
+  const userRole = authSession?.user?.role;
+  const isAttendantOrManager = userRole === "ATENDENTE" || userRole === "GERENTE";
+
+  const stepsConfig = useMemo(() => {
+    if (isAttendantOrManager) {
+      return [
+        { step: 1, label: "Sessões", icon: Calendar },
+        { step: 2, label: "Assentos", icon: Ticket },
+        { step: 3, label: "Ingressos", icon: Sparkles },
+        { step: 4, label: "Pagamento", icon: Banknote },
+        { step: 5, label: "Resumo", icon: CheckCircle },
+      ];
+    }
+    return [
+      { step: 1, label: "Sessões", icon: Calendar },
+      { step: 2, label: "Assentos", icon: Ticket },
+      { step: 3, label: "Ingressos", icon: Sparkles },
+      { step: 4, label: "Resumo", icon: CheckCircle },
+    ];
+  }, [isAttendantOrManager]);
+
+  const maxSteps = stepsConfig.length;
   // Estados principais da jornada
   const [currentStep, setCurrentStep] = useState<BookingStep>(initialStep || (initialSessionId ? 2 : 1));
   const [availableFilms, setAvailableFilms] = useState<FilmItem[]>([]);
@@ -121,11 +147,14 @@ export function BookingFlow({
     meia: 0,
   });
 
-  // Estados de comprador (Etapa 4)
+  // Estados de comprador (Etapa Final de Dados)
   const [buyerName, setBuyerName] = useState<string>("");
   const [buyerEmail, setBuyerEmail] = useState<string>("");
   const [buyerCpf, setBuyerCpf] = useState<string>("");
   const [lgpdConsent, setLgpdConsent] = useState<boolean>(false);
+
+  // Forma de pagamento (Etapa 4 exclusiva para atendente / bilheteria presencial)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"DINHEIRO" | "DEBITO" | "CREDITO" | "PIX">("DINHEIRO");
 
   // Bloqueio temporario de 10 minutos
   const [holdToken, setHoldToken] = useState<string>("");
@@ -653,7 +682,7 @@ export function BookingFlow({
     }
   };
 
-  const handleProceedToSummary = () => {
+  const handleProceedFromTickets = () => {
     setErrorNotice(null);
 
     const totalTickets = ticketQuantities.inteira + ticketQuantities.meia;
@@ -669,20 +698,20 @@ export function BookingFlow({
       return;
     }
 
+    // Se for atendente/gerente, a próxima etapa é a Etapa 4 (Forma de Pagamento)
+    // Se for cliente, avança direto para o Resumo (Etapa 4 do cliente, ou seja, step 4)
     saveStateToStorage(4);
+    setCurrentStep(4);
+  };
 
-    if (authStatus !== "authenticated" || !authSession?.user) {
-      openLogin({
-        redirectOnLogin: false,
-        onSuccess: () => {
-          setCurrentStep(4);
-          saveStateToStorage(4);
-        },
-      });
+  const handleProceedToSummaryFromPayment = () => {
+    setErrorNotice(null);
+    if (isHoldExpired) {
+      setErrorNotice("O tempo limite de 10 minutos para concluir a reserva expirou. Reinicie a seleção.");
       return;
     }
-
-    setCurrentStep(4);
+    saveStateToStorage(5);
+    setCurrentStep(5);
   };
 
   const handleConfirmReservation = async () => {
@@ -833,15 +862,10 @@ export function BookingFlow({
           <div className="absolute top-1/2 left-5 right-5 -translate-y-1/2 h-0.5 bg-white/10 -z-0" />
           <div
             className="absolute top-1/2 left-5 -translate-y-1/2 h-0.5 bg-cta transition-all duration-300 -z-0"
-            style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
+            style={{ width: `${((currentStep - 1) / (maxSteps - 1)) * 100}%` }}
           />
 
-          {[
-            { step: 1, label: "Sessões", icon: Calendar },
-            { step: 2, label: "Assentos", icon: Ticket },
-            { step: 3, label: "Ingressos", icon: Sparkles },
-            { step: 4, label: "Resumo", icon: CheckCircle },
-          ].map(({ step, label }) => {
+          {stepsConfig.map(({ step, label }) => {
             const isCompleted = step < currentStep;
             const isCurrent = step === currentStep;
             const canClick = isCompleted;
@@ -1393,9 +1417,175 @@ export function BookingFlow({
                 ticketQuantities.inteira + ticketQuantities.meia !== selectedSeatIds.length ||
                 isHoldExpired
               }
-              onClick={handleProceedToSummary}
+              onClick={handleProceedFromTickets}
               className={`px-5 py-2.5 rounded-xl font-bold text-xs tracking-wide shadow-md transition-all flex items-center gap-2 cursor-pointer ${
                 ticketQuantities.inteira + ticketQuantities.meia !== selectedSeatIds.length ||
+                isHoldExpired
+                  ? "bg-slate-700/50 text-slate-400 cursor-not-allowed opacity-50"
+                  : "bg-cta hover:bg-cta-hover text-white shadow-cta/30 active:scale-95"
+              }`}
+            >
+              <span>{isAttendantOrManager ? "Avançar para Pagamento" : "Avançar para Resumo"}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* ========================================================================= */}
+      {/* ETAPA 4 (ATENDENTE): SELEÇÃO DA FORMA DE PAGAMENTO                        */}
+      {/* ========================================================================= */}
+      {isAttendantOrManager && currentStep === 4 && (
+        <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
+          <div className="max-w-2xl mx-auto w-full space-y-5">
+            <div className="p-5 rounded-2xl liquid-glass-card border border-white/10 space-y-4">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-cta/20 text-cta flex items-center justify-center border border-cta/30">
+                    <Banknote className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-white">Forma de Pagamento</h3>
+                    <p className="text-xs text-slate-400">
+                      Selecione a forma de pagamento presencial acordada com o cliente
+                    </p>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-[10px] uppercase font-semibold text-slate-400 block tracking-wider">
+                    Total a Cobrar
+                  </span>
+                  <span className="text-lg font-bold text-emerald-400 font-mono">
+                    R$ {totalAmount.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Grid de Formas de Pagamento */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setSelectedPaymentMethod("DINHEIRO")}
+                  className={`p-3.5 rounded-xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
+                    selectedPaymentMethod === "DINHEIRO"
+                      ? "bg-emerald-500/20 border-emerald-500/50 text-white shadow-md shadow-emerald-500/10 scale-[1.01]"
+                      : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20"
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                      selectedPaymentMethod === "DINHEIRO"
+                        ? "bg-emerald-500 text-white"
+                        : "bg-white/10 text-slate-400"
+                    }`}
+                  >
+                    <Banknote className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-semibold text-xs text-white">Dinheiro</div>
+                    <div className="text-[11px] text-slate-400">Espécie recebida no caixa</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedPaymentMethod("DEBITO")}
+                  className={`p-3.5 rounded-xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
+                    selectedPaymentMethod === "DEBITO"
+                      ? "bg-emerald-500/20 border-emerald-500/50 text-white shadow-md shadow-emerald-500/10 scale-[1.01]"
+                      : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20"
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                      selectedPaymentMethod === "DEBITO"
+                        ? "bg-emerald-500 text-white"
+                        : "bg-white/10 text-slate-400"
+                    }`}
+                  >
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-semibold text-xs text-white">Cartão de Débito</div>
+                    <div className="text-[11px] text-slate-400">Maquininha de cartão</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedPaymentMethod("CREDITO")}
+                  className={`p-3.5 rounded-xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
+                    selectedPaymentMethod === "CREDITO"
+                      ? "bg-emerald-500/20 border-emerald-500/50 text-white shadow-md shadow-emerald-500/10 scale-[1.01]"
+                      : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20"
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                      selectedPaymentMethod === "CREDITO"
+                        ? "bg-emerald-500 text-white"
+                        : "bg-white/10 text-slate-400"
+                    }`}
+                  >
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-semibold text-xs text-white">Cartão de Crédito</div>
+                    <div className="text-[11px] text-slate-400">Maquininha de cartão</div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedPaymentMethod("PIX")}
+                  className={`p-3.5 rounded-xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
+                    selectedPaymentMethod === "PIX"
+                      ? "bg-emerald-500/20 border-emerald-500/50 text-white shadow-md shadow-emerald-500/10 scale-[1.01]"
+                      : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20"
+                  }`}
+                >
+                  <div
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                      selectedPaymentMethod === "PIX"
+                        ? "bg-emerald-500 text-white"
+                        : "bg-white/10 text-slate-400"
+                    }`}
+                  >
+                    <QrCode className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-semibold text-xs text-white">PIX</div>
+                    <div className="text-[11px] text-slate-400">QR Code presencial</div>
+                  </div>
+                </button>
+              </div>
+
+              {/* Dica Operacional para o Atendente */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2 text-xs text-slate-400">
+                <Info className="w-4 h-4 text-cta shrink-0" />
+                <span>
+                  O ingresso será emitido imediatamente no status <strong>CONFIRMADO</strong> com a forma de pagamento selecionada.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Barra de Ações Inferior da Etapa de Pagamento */}
+          <div className="flex items-center justify-between pt-3 pb-8 sm:pb-6">
+            <button
+              type="button"
+              onClick={() => setCurrentStep(3)}
+              className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
+            >
+              Voltar para Ingressos
+            </button>
+
+            <button
+              type="button"
+              disabled={isHoldExpired}
+              onClick={handleProceedToSummaryFromPayment}
+              className={`px-5 py-2.5 rounded-xl font-bold text-xs tracking-wide shadow-md transition-all flex items-center gap-2 cursor-pointer ${
                 isHoldExpired
                   ? "bg-slate-700/50 text-slate-400 cursor-not-allowed opacity-50"
                   : "bg-cta hover:bg-cta-hover text-white shadow-cta/30 active:scale-95"
@@ -1409,9 +1599,10 @@ export function BookingFlow({
       )}
 
       {/* ========================================================================= */}
-      {/* ETAPA 4: RESUMO E CONFIRMAÇÃO (Layout 2 Colunas: Sem Rolagem Vertical)    */}
+      {/* ETAPA FINAL: RESUMO E CONFIRMAÇÃO                                         */}
+      {/* (Etapa 4 para Cliente | Etapa 5 para Atendente)                           */}
       {/* ========================================================================= */}
-      {currentStep === 4 && (
+      {((!isAttendantOrManager && currentStep === 4) || (isAttendantOrManager && currentStep === 5)) && (
         <section className="flex-1 flex flex-col justify-between animate-in fade-in duration-150">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-stretch">
             {/* Coluna Esquerda: Voucher e Poltronas */}
@@ -1594,10 +1785,10 @@ export function BookingFlow({
               <div className="flex items-center justify-between pt-1 pb-8 sm:pb-6">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(3)}
+                  onClick={() => setCurrentStep(isAttendantOrManager ? 4 : 3)}
                   className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
                 >
-                  Revisar
+                  {isAttendantOrManager ? "Voltar para Pagamento" : "Revisar"}
                 </button>
 
                 <button
@@ -1615,7 +1806,11 @@ export function BookingFlow({
                   ) : (
                     <>
                       <CheckCircle className="w-3.5 h-3.5" />
-                      <span>Confirmar Reserva (R$ {totalAmount.toFixed(2)})</span>
+                      <span>
+                        {isAttendantOrManager
+                          ? `Confirmar e Emitir (${selectedPaymentMethod} • R$ ${totalAmount.toFixed(2)})`
+                          : `Confirmar Reserva (R$ ${totalAmount.toFixed(2)})`}
+                      </span>
                     </>
                   )}
                 </button>
