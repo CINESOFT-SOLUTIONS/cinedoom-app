@@ -73,9 +73,18 @@ interface SessionPortalDetail {
 interface BookingFlowProps {
   initialFilmId?: string;
   initialSessionId?: string;
+  initialStep?: BookingStep;
+  onClose?: () => void;
+  isModal?: boolean;
 }
 
-export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProps) {
+export function BookingFlow({
+  initialFilmId,
+  initialSessionId,
+  initialStep,
+  onClose,
+  isModal,
+}: BookingFlowProps) {
   const router = useRouter();
   const { data: authSession, status: authStatus } = useSession();
   const { openLogin } = useAuthModal();
@@ -96,7 +105,7 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
   const prevSessionIdRef = useRef<string | undefined>(initialSessionId);
 
   // Estados principais da jornada
-  const [currentStep, setCurrentStep] = useState<BookingStep>(1);
+  const [currentStep, setCurrentStep] = useState<BookingStep>(initialStep || (initialSessionId ? 2 : 1));
   const [availableFilms, setAvailableFilms] = useState<FilmItem[]>([]);
   const [selectedFilm, setSelectedFilm] = useState<FilmItem | null>(null);
   const [sessionDetail, setSessionDetail] = useState<SessionPortalDetail | null>(null);
@@ -819,8 +828,19 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
       {/* 1. BARRA DE PROGRESSO SUPERIOR COMPACTA */}
       <nav
         aria-label="Progresso da Reserva"
-        className="w-full bg-[#121829]/95 border border-white/10 rounded-xl px-4 py-2 sm:py-2.5 shadow-md backdrop-blur-md mb-2 sm:mb-3 shrink-0"
+        className="w-full bg-[#121829]/95 border border-white/10 rounded-xl px-4 py-2 sm:py-2.5 shadow-md backdrop-blur-md mb-2 sm:mb-3 shrink-0 relative"
       >
+        {isModal && onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-1/2 -translate-y-1/2 right-3 w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer z-20"
+            title="Fechar"
+            aria-label="Fechar"
+          >
+            <span className="text-base font-bold leading-none">×</span>
+          </button>
+        )}
         <div className="flex items-center justify-between relative max-w-2xl mx-auto">
           <div className="absolute top-1/2 left-5 right-5 -translate-y-1/2 h-0.5 bg-white/10 -z-0" />
           <div

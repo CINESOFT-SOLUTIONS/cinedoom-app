@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
 import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { HeroBillboard } from "@/components/home/hero-billboard";
@@ -9,6 +10,7 @@ import { FilmFilters } from "@/components/home/film-filters";
 import { FilmCard } from "@/components/home/film-card";
 import { FilmModal } from "@/components/home/film-modal";
 import { InstitutionalBanner } from "@/components/home/institutional-banner";
+import { AttendantSalesCounter } from "@/components/attendant/attendant-sales-counter";
 import { abandonPreviousReservationIfDifferent } from "@/components/booking/reservation-lifecycle";
 import type { FilmItem } from "@/components/home/types";
 import { Film } from "lucide-react";
@@ -16,6 +18,9 @@ import { type ProgramacaoFilter, matchesProgramacaoFilter } from "@/shared/exper
 
 export default function CinemarkStyleHomePage() {
   const router = useRouter();
+  const { data: session, status: authStatus } = useSession();
+  const userRole = session?.user?.role;
+
   const [films, setFilms] = useState<FilmItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
@@ -24,7 +29,14 @@ export default function CinemarkStyleHomePage() {
   const [selectedDay, setSelectedDay] = useState<number>(0);
   const [selectedModalFilm, setSelectedModalFilm] = useState<FilmItem | null>(null);
 
-  // Carrega catálogo público do cinema CineDoom
+  // Redireciona Gerente para a área administrativa se acessar a raiz
+  useEffect(() => {
+    if (authStatus === "authenticated" && userRole === "GERENTE") {
+      router.push("/gestao");
+    }
+  }, [authStatus, userRole, router]);
+
+  // Carrega catálogo de filmes do cinema CineDoom
   useEffect(() => {
     async function loadFilms() {
       try {
@@ -92,6 +104,19 @@ export default function CinemarkStyleHomePage() {
       return true;
     });
   }, [films, searchQuery, selectedFormat]);
+
+  // Se o usuário autenticado for ATENDENTE, exibe a interface operacional do Balcão de Vendas
+  if (authStatus === "authenticated" && userRole === "ATENDENTE") {
+    return (
+      <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
+        <CineDoomHeader activePage="filmes" />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col">
+          <AttendantSalesCounter films={films} loading={loading} />
+        </main>
+        <CineDoomFooter />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
