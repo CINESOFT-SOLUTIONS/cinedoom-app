@@ -858,10 +858,10 @@ export function BookingFlow({
             <span className="text-base font-bold leading-none">×</span>
           </button>
         )}
-        <div className="flex items-center justify-between relative max-w-2xl mx-auto">
-          <div className="absolute top-1/2 left-5 right-5 -translate-y-1/2 h-0.5 bg-white/10 -z-0" />
+        <div className="flex items-start justify-between relative max-w-2xl mx-auto">
+          <div className="absolute top-3.5 sm:top-4 left-5 right-5 -translate-y-1/2 h-0.5 bg-white/10 -z-0" />
           <div
-            className="absolute top-1/2 left-5 -translate-y-1/2 h-0.5 bg-cta transition-all duration-300 -z-0"
+            className="absolute top-3.5 sm:top-4 left-5 -translate-y-1/2 h-0.5 bg-cta transition-all duration-300 -z-0"
             style={{ width: `${((currentStep - 1) / (maxSteps - 1)) * 100}%` }}
           />
 
@@ -883,7 +883,7 @@ export function BookingFlow({
                     setCurrentStep(step as BookingStep);
                   }
                 }}
-                className={`relative z-10 flex items-center gap-1.5 sm:gap-2 group outline-none ${
+                className={`relative z-10 flex flex-col items-center gap-1 group outline-none ${
                   canClick ? "cursor-pointer" : "cursor-default"
                 }`}
               >
@@ -899,7 +899,7 @@ export function BookingFlow({
                   {isCompleted ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : step}
                 </div>
                 <span
-                  className={`text-[10px] sm:text-xs font-semibold tracking-wide uppercase inline-block ${
+                  className={`text-[10px] sm:text-xs font-semibold tracking-wide uppercase inline-block text-center ${
                     isCurrent
                       ? "text-white font-bold"
                       : isCompleted
