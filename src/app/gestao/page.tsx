@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Film, DoorOpen, Calendar, Users, ShieldCheck, ArrowRight } from "lucide-react";
+import { AuthProfileMenu } from "@/components/auth-profile-menu";
 
 export default function GestãoDashboardPage() {
   const modules = [
@@ -73,6 +74,7 @@ export default function GestãoDashboardPage() {
             >
               Ir para Bilheteria
             </Link>
+            <AuthProfileMenu />
           </div>
         </div>
       </header>

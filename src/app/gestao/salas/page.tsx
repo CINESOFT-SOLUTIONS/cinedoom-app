@@ -13,6 +13,7 @@ import {
   Users,
   Eye,
 } from "lucide-react";
+import { AuthProfileMenu } from "@/components/auth-profile-menu";
 
 interface SeatItem {
   id: string;
@@ -222,13 +223,16 @@ export default function SalasGestãoPage() {
             </div>
           </div>
 
-          <button
-            onClick={openCreateModal}
-            className="flex items-center gap-2 bg-cta hover:bg-cta-hover text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-cta/25 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Nova Sala</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={openCreateModal}
+              className="flex items-center gap-2 bg-cta hover:bg-cta-hover text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-cta/25 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Nova Sala</span>
+            </button>
+            <AuthProfileMenu />
+          </div>
         </div>
       </header>
 

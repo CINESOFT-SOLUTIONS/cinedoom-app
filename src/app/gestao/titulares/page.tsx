@@ -15,6 +15,7 @@ import {
   Ticket,
   AlertTriangle,
 } from "lucide-react";
+import { AuthProfileMenu } from "@/components/auth-profile-menu";
 
 interface TitularData {
   id: string;
@@ -150,6 +151,8 @@ export default function ComplianceTitularesPage() {
               </p>
             </div>
           </div>
+
+          <AuthProfileMenu />
         </div>
       </header>
 

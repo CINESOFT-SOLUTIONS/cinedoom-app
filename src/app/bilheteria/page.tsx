@@ -22,6 +22,7 @@ import {
 import { SeatingGrid, type GridSeatItem } from "@/modules/bilheteria/components/seating-grid";
 import { useSessionSeats } from "@/modules/bilheteria/hooks/use-session-seats";
 import { getRoomWithExperience } from "@/shared/experiences";
+import { AuthProfileMenu } from "@/components/auth-profile-menu";
 
 interface SessionOption {
   id: string;
@@ -330,6 +331,8 @@ export default function BilheteriaMapaAssentosPage() {
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Início</span>
             </Link>
+
+            <AuthProfileMenu />
           </div>
         </div>
 

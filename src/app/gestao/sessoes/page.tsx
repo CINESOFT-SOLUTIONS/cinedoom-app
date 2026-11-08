@@ -15,6 +15,7 @@ import {
   DollarSign,
   Ticket,
 } from "lucide-react";
+import { AuthProfileMenu } from "@/components/auth-profile-menu";
 
 interface FilmItem {
   id: string;
@@ -289,14 +290,17 @@ export default function SessoesGestãoPage() {
             </div>
           </div>
 
-          <button
-            onClick={handleOpenCreateModal}
-            disabled={films.length === 0 || rooms.length === 0}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cta hover:bg-cta-hover text-white text-sm font-semibold shadow-lg shadow-cta/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Nova Sessão</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleOpenCreateModal}
+              disabled={films.length === 0 || rooms.length === 0}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cta hover:bg-cta-hover text-white text-sm font-semibold shadow-lg shadow-cta/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Nova Sessão</span>
+            </button>
+            <AuthProfileMenu />
+          </div>
         </div>
       </header>
 

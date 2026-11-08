@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Ticket, Search, CheckCircle, ShieldAlert } from "lucide-react";
+import { AuthProfileMenu } from "@/components/auth-profile-menu";
 
 export default function BaixaReservaPage() {
   const [code, setCode] = useState("");
@@ -87,6 +88,7 @@ export default function BaixaReservaPage() {
             >
               Início
             </Link>
+            <AuthProfileMenu />
           </div>
         </div>
       </header>
