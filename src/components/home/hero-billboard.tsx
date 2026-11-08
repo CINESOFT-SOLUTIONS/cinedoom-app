@@ -109,7 +109,7 @@ export function HeroBillboard({
                 className="px-6 py-3 sm:py-3.5 rounded-xl bg-cta hover:bg-cta-hover text-white font-semibold text-xs sm:text-sm shadow-xl shadow-cta/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Ticket className="w-4 h-4" />
-                <span>Ver Sessões & Reservar</span>
+                <span>Ver Sessões</span>
               </button>
 
               {activeHeroFilm && (
@@ -132,11 +132,10 @@ export function HeroBillboard({
                   key={f.id}
                   type="button"
                   onClick={() => onSelectHeroIndex(idx)}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    heroIndex === idx
+                  className={`h-1.5 rounded-full transition-all duration-300 ${heroIndex === idx
                       ? "w-8 bg-cta shadow-md shadow-cta/50"
                       : "w-2.5 bg-slate-600 hover:bg-slate-400"
-                  }`}
+                    }`}
                   aria-label={`Ver destaque ${f.title}`}
                 />
               ))}

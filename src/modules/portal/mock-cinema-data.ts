@@ -57,57 +57,58 @@ interface SessionTemplate {
 }
 
 // Modelos de horários diversificados por filme para toda a semana (matinê, tarde, noite e sessão da madrugada)
+// Preço padronizado do filme: R$ 30,00 inteira / R$ 15,00 meia
 const DUNA_TEMPLATES: SessionTemplate[] = [
-  { roomIndex: 2, hour: 11, minute: 0, price: 42.0, idCode: "0314" },
-  { roomIndex: 2, hour: 14, minute: 0, price: 42.0, idCode: "0310" },
-  { roomIndex: 3, hour: 14, minute: 30, price: 54.0, idCode: "0350" }, // Sessão extra VIP vespertina
-  { roomIndex: 0, hour: 16, minute: 0, price: 36.0, idCode: "0351" },  // Sessão extra Clássica
-  { roomIndex: 3, hour: 16, minute: 30, price: 54.0, idCode: "0311" },
-  { roomIndex: 2, hour: 19, minute: 0, price: 42.0, idCode: "0301" }, // ID histórico original
-  { roomIndex: 0, hour: 20, minute: 15, price: 36.0, idCode: "0312" },
-  { roomIndex: 2, hour: 21, minute: 45, price: 42.0, idCode: "0302" }, // ID histórico original
-  { roomIndex: 3, hour: 22, minute: 30, price: 54.0, idCode: "0313" },
-  { roomIndex: 1, hour: 23, minute: 0, price: 36.0, idCode: "0352" },  // Sessão extra Clássica noturna
+  { roomIndex: 2, hour: 11, minute: 0, price: 30.0, idCode: "0314" },
+  { roomIndex: 2, hour: 14, minute: 0, price: 30.0, idCode: "0310" },
+  { roomIndex: 3, hour: 14, minute: 30, price: 30.0, idCode: "0350" }, // Sessão extra VIP vespertina
+  { roomIndex: 0, hour: 16, minute: 0, price: 30.0, idCode: "0351" },  // Sessão extra Clássica
+  { roomIndex: 3, hour: 16, minute: 30, price: 30.0, idCode: "0311" },
+  { roomIndex: 2, hour: 19, minute: 0, price: 30.0, idCode: "0301" }, // ID histórico original
+  { roomIndex: 0, hour: 20, minute: 15, price: 30.0, idCode: "0312" },
+  { roomIndex: 2, hour: 21, minute: 45, price: 30.0, idCode: "0302" }, // ID histórico original
+  { roomIndex: 3, hour: 22, minute: 30, price: 30.0, idCode: "0313" },
+  { roomIndex: 1, hour: 23, minute: 0, price: 30.0, idCode: "0352" },  // Sessão extra Clássica noturna
 ];
 
 const OPPENHEIMER_TEMPLATES: SessionTemplate[] = [
-  { roomIndex: 2, hour: 10, minute: 30, price: 46.0, idCode: "0353" }, // Sessão extra IMAX matutina
-  { roomIndex: 1, hour: 13, minute: 30, price: 34.0, idCode: "0325" },
-  { roomIndex: 3, hour: 14, minute: 15, price: 54.0, idCode: "0320" },
-  { roomIndex: 1, hour: 16, minute: 45, price: 34.0, idCode: "0321" },
-  { roomIndex: 2, hour: 17, minute: 15, price: 46.0, idCode: "0322" },
-  { roomIndex: 0, hour: 17, minute: 30, price: 34.0, idCode: "0354" }, // Sessão extra Clássica entardecer
-  { roomIndex: 3, hour: 20, minute: 0, price: 54.0, idCode: "0303" }, // ID histórico original
-  { roomIndex: 1, hour: 21, minute: 15, price: 34.0, idCode: "0323" },
-  { roomIndex: 2, hour: 22, minute: 0, price: 46.0, idCode: "0355" },  // Sessão extra IMAX noite
-  { roomIndex: 3, hour: 23, minute: 15, price: 54.0, idCode: "0324" },
+  { roomIndex: 2, hour: 10, minute: 30, price: 30.0, idCode: "0353" }, // Sessão extra IMAX matutina
+  { roomIndex: 1, hour: 13, minute: 30, price: 30.0, idCode: "0325" },
+  { roomIndex: 3, hour: 14, minute: 15, price: 30.0, idCode: "0320" },
+  { roomIndex: 1, hour: 16, minute: 45, price: 30.0, idCode: "0321" },
+  { roomIndex: 2, hour: 17, minute: 15, price: 30.0, idCode: "0322" },
+  { roomIndex: 0, hour: 17, minute: 30, price: 30.0, idCode: "0354" }, // Sessão extra Clássica entardecer
+  { roomIndex: 3, hour: 20, minute: 0, price: 30.0, idCode: "0303" }, // ID histórico original
+  { roomIndex: 1, hour: 21, minute: 15, price: 30.0, idCode: "0323" },
+  { roomIndex: 2, hour: 22, minute: 0, price: 30.0, idCode: "0355" },  // Sessão extra IMAX noite
+  { roomIndex: 3, hour: 23, minute: 15, price: 30.0, idCode: "0324" },
 ];
 
 const POBRES_CRIATURAS_TEMPLATES: SessionTemplate[] = [
-  { roomIndex: 0, hour: 11, minute: 15, price: 32.0, idCode: "0356" }, // Sessão extra Clássica manhã
-  { roomIndex: 0, hour: 13, minute: 45, price: 32.0, idCode: "0334" },
-  { roomIndex: 0, hour: 14, minute: 30, price: 32.0, idCode: "0330" },
-  { roomIndex: 1, hour: 15, minute: 0, price: 32.0, idCode: "0357" },  // Sessão extra Clássica tarde
-  { roomIndex: 3, hour: 16, minute: 15, price: 50.0, idCode: "0331" },
-  { roomIndex: 0, hour: 18, minute: 30, price: 32.0, idCode: "0304" }, // ID histórico original
-  { roomIndex: 1, hour: 19, minute: 30, price: 32.0, idCode: "0332" },
-  { roomIndex: 3, hour: 20, minute: 30, price: 50.0, idCode: "0358" }, // Sessão extra VIP noite
-  { roomIndex: 0, hour: 21, minute: 0, price: 32.0, idCode: "0305" }, // ID histórico original
-  { roomIndex: 3, hour: 22, minute: 15, price: 50.0, idCode: "0333" },
+  { roomIndex: 0, hour: 11, minute: 15, price: 30.0, idCode: "0356" }, // Sessão extra Clássica manhã
+  { roomIndex: 0, hour: 13, minute: 45, price: 30.0, idCode: "0334" },
+  { roomIndex: 0, hour: 14, minute: 30, price: 30.0, idCode: "0330" },
+  { roomIndex: 1, hour: 15, minute: 0, price: 30.0, idCode: "0357" },  // Sessão extra Clássica tarde
+  { roomIndex: 3, hour: 16, minute: 15, price: 30.0, idCode: "0331" },
+  { roomIndex: 0, hour: 18, minute: 30, price: 30.0, idCode: "0304" }, // ID histórico original
+  { roomIndex: 1, hour: 19, minute: 30, price: 30.0, idCode: "0332" },
+  { roomIndex: 3, hour: 20, minute: 30, price: 30.0, idCode: "0358" }, // Sessão extra VIP noite
+  { roomIndex: 0, hour: 21, minute: 0, price: 30.0, idCode: "0305" }, // ID histórico original
+  { roomIndex: 3, hour: 22, minute: 15, price: 30.0, idCode: "0333" },
 ];
 
 const DIVERTIDA_MENTE_TEMPLATES: SessionTemplate[] = [
-  { roomIndex: 0, hour: 9, minute: 30, price: 28.0, idCode: "0359" },  // Sessão matinê infantil
-  { roomIndex: 1, hour: 10, minute: 15, price: 28.0, idCode: "0346" },
-  { roomIndex: 1, hour: 11, minute: 30, price: 28.0, idCode: "0340" },
-  { roomIndex: 3, hour: 12, minute: 30, price: 45.0, idCode: "0360" }, // Sessão VIP família
+  { roomIndex: 0, hour: 9, minute: 30, price: 30.0, idCode: "0359" },  // Sessão matinê infantil
+  { roomIndex: 1, hour: 10, minute: 15, price: 30.0, idCode: "0346" },
+  { roomIndex: 1, hour: 11, minute: 30, price: 30.0, idCode: "0340" },
+  { roomIndex: 3, hour: 12, minute: 30, price: 30.0, idCode: "0360" }, // Sessão VIP família
   { roomIndex: 1, hour: 13, minute: 30, price: 30.0, idCode: "0341" },
   { roomIndex: 0, hour: 14, minute: 15, price: 30.0, idCode: "0342" },
-  { roomIndex: 1, hour: 15, minute: 30, price: 32.0, idCode: "0306" }, // ID histórico original
-  { roomIndex: 2, hour: 16, minute: 0, price: 40.0, idCode: "0361" },  // Sessão extra IMAX tarde
+  { roomIndex: 1, hour: 15, minute: 30, price: 30.0, idCode: "0306" }, // ID histórico original
+  { roomIndex: 2, hour: 16, minute: 0, price: 30.0, idCode: "0361" },  // Sessão extra IMAX tarde
   { roomIndex: 0, hour: 17, minute: 0, price: 30.0, idCode: "0343" },
-  { roomIndex: 1, hour: 17, minute: 45, price: 32.0, idCode: "0307" }, // ID histórico original
-  { roomIndex: 2, hour: 18, minute: 30, price: 40.0, idCode: "0344" },
+  { roomIndex: 1, hour: 17, minute: 45, price: 30.0, idCode: "0307" }, // ID histórico original
+  { roomIndex: 2, hour: 18, minute: 30, price: 30.0, idCode: "0344" },
   { roomIndex: 0, hour: 20, minute: 0, price: 30.0, idCode: "0345" },
   { roomIndex: 1, hour: 20, minute: 45, price: 30.0, idCode: "0362" }, // Sessão noturna adicional
 ];

@@ -508,10 +508,10 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
     ]
   );
 
-  // Valores monetários
-  const unitPrice = sessionDetail?.price || 35.0;
-  const inteiraPrice = unitPrice;
-  const meiaPrice = unitPrice * 0.5;
+  // Valores monetários padronizados: R$ 30,00 a inteira e R$ 15,00 a meia
+  const unitPrice = 30.0;
+  const inteiraPrice = 30.0;
+  const meiaPrice = 15.0;
   const totalAmount =
     ticketQuantities.inteira * inteiraPrice + ticketQuantities.meia * meiaPrice;
 

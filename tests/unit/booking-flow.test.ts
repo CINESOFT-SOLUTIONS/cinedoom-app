@@ -65,6 +65,13 @@ describe("Reformulação do Fluxo de Reservas do CineDoom (4 Etapas Sequenciais)
       expect(html).toContain("Hoje");
       expect(html).toContain("Amanhã");
     });
+
+    it("padroniza os valores de ingressos para R$ 30,00 inteira e R$ 15,00 meia", () => {
+      const sourceCode = BookingFlow.toString();
+      expect(sourceCode).toContain("unitPrice = 30");
+      expect(sourceCode).toContain("inteiraPrice = 30");
+      expect(sourceCode).toContain("meiaPrice = 15");
+    });
   });
 
   describe("Serviço de Bloqueio Temporário (10 Minutos & Concorrência)", () => {
