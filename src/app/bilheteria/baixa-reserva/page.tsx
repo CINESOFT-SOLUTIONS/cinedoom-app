@@ -206,65 +206,85 @@ export default function BaixaReservaPage() {
 
         {/* Card Detalhado da Reserva Buscada Individualmente */}
         {reservation && (
-          <div className="rounded-3xl liquid-glass-card p-6 sm:p-8 space-y-6 shadow-2xl border border-white/10 animate-in fade-in duration-150">
-            <div className="flex items-center justify-between border-b border-borderDark/60 pb-4">
-              <div className="flex items-center gap-2.5">
-                <Ticket className="w-5 h-5 text-cta" />
-                <h2 className="text-lg font-bold text-white">Reserva {reservation.code}</h2>
+          <div className="rounded-2xl liquid-glass-card p-5 sm:p-6 space-y-5 border border-white/10 animate-in fade-in duration-150">
+            {/* Cabeçalho da Reserva Buscada */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/5 pb-3.5">
+              <div className="flex items-center gap-3">
+                <span className="font-mono font-bold text-base text-white tracking-wide">
+                  {reservation.code}
+                </span>
+                <span className="text-slate-500">•</span>
+                <span className="text-xs text-slate-400">
+                  {new Date(reservation.session?.startsAt || Date.now()).toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
               </div>
               <span
-                className={`text-xs px-3 py-1 rounded-full font-semibold border ${reservation.status === "CONFIRMED"
-                    ? "bg-emerald-950/60 text-emerald-300 border-emerald-500/30"
-                    : "bg-amber-950/60 text-amber-300 border-amber-500/30"
-                  }`}
+                className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
+                  reservation.status === "CONFIRMED"
+                    ? "bg-emerald-500/15 text-emerald-400"
+                    : "bg-amber-500/15 text-amber-300"
+                }`}
               >
-                {reservation.status === "CONFIRMED" ? "PAGA / CONFIRMADA" : "AGUARDANDO RETIRADA"}
+                {reservation.status === "CONFIRMED" ? "Confirmada" : "Aguardando retirada"}
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-              <div className="p-3.5 bg-[#0A0E1A] rounded-xl border border-borderDark/60">
-                <p className="text-xs font-medium text-slate-400 mb-1">Filme</p>
-                <p className="font-bold text-white">{reservation.session?.film?.title}</p>
+            {/* Dados Principais em Linha Limpa */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              <div>
+                <p className="text-[11px] text-slate-400 mb-0.5">Filme & Sala</p>
+                <p className="font-semibold text-white truncate text-sm">
+                  {reservation.session?.film?.title}
+                </p>
+                <p className="text-slate-400 mt-0.5">{reservation.session?.room?.name}</p>
               </div>
-              <div className="p-3.5 bg-[#0A0E1A] rounded-xl border border-borderDark/60">
-                <p className="text-xs font-medium text-slate-400 mb-1">Sala</p>
-                <p className="font-bold text-white">{reservation.session?.room?.name}</p>
+
+              <div>
+                <p className="text-[11px] text-slate-400 mb-0.5">Cliente</p>
+                <p className="font-semibold text-white truncate text-sm">
+                  {reservation.buyerName || "Cliente"}
+                </p>
+                <p className="text-slate-400 mt-0.5 font-mono">{reservation.buyerCpfMasked}</p>
               </div>
-              <div className="p-3.5 bg-[#0A0E1A] rounded-xl border border-borderDark/60">
-                <p className="text-xs font-medium text-slate-400 mb-1">Horário da Sessão</p>
-                <p className="font-bold text-white">
-                  {new Date(reservation.session?.startsAt).toLocaleString("pt-BR")}
+
+              <div>
+                <p className="text-[11px] text-slate-400 mb-0.5">Poltronas</p>
+                <p className="font-bold text-cta text-sm">
+                  {reservation.sessionSeats?.map((s: any) => s.seat?.seatCode).join(", ") || "—"}
                 </p>
               </div>
-              <div className="p-3.5 bg-[#0A0E1A] rounded-xl border border-borderDark/60">
-                <p className="text-xs font-medium text-slate-400 mb-1">Comprador</p>
-                <p className="font-bold text-white">{reservation.buyerName || "Cliente"}</p>
-                <p className="text-xs text-slate-400">{reservation.buyerCpfMasked}</p>
-              </div>
-              <div className="p-3.5 bg-[#0A0E1A] rounded-xl border border-borderDark/60">
-                <p className="text-xs font-medium text-slate-400 mb-1">Poltronas</p>
-                <p className="font-bold text-cta">
-                  {reservation.sessionSeats?.map((s: any) => s.seat?.seatCode).join(", ")}
-                </p>
-              </div>
-              <div className="p-3.5 bg-[#0A0E1A] rounded-xl border border-borderDark/60">
-                <p className="text-xs font-medium text-slate-400 mb-1">Valor Total</p>
-                <p className="text-lg font-black text-emerald-400">
+
+              <div>
+                <p className="text-[11px] text-slate-400 mb-0.5">Valor Total</p>
+                <p className="font-bold text-emerald-400 text-sm">
                   R$ {Number(reservation.totalPrice || reservation.totalAmount || 0).toFixed(2)}
                 </p>
               </div>
             </div>
 
-            {reservation.status === "PENDING" && (
-              <button
-                onClick={() => confirmar()}
-                disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 font-bold text-sm shadow-xl shadow-emerald-600/30 transition-all text-white flex items-center justify-center gap-2 cursor-pointer active:scale-98"
-              >
-                <CheckCircle className="w-5 h-5" />
-                <span>Confirmar Pagamento Presencial (Emitir Ingressos)</span>
-              </button>
+            {/* Ação */}
+            {reservation.status === "PENDING" ? (
+              <div className="pt-2 border-t border-white/5 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => confirmar()}
+                  disabled={loading}
+                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold text-xs transition-colors flex items-center gap-2 cursor-pointer"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Dar Baixa</span>
+                </button>
+              </div>
+            ) : (
+              <div className="pt-2 border-t border-white/5 flex justify-end">
+                <span className="text-xs text-slate-400 flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Ingressos emitidos</span>
+                </span>
+              </div>
             )}
           </div>
         )}
@@ -283,42 +303,45 @@ export default function BaixaReservaPage() {
               </h2>
             </div>
 
-            {/* Filtro de Status */}
-            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0A0E1A] border border-borderDark/60 self-start sm:self-auto">
+            {/* Filtro de Status Discreto */}
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#0A0E1A] border border-borderDark/60 self-start sm:self-auto text-xs">
               <button
                 type="button"
                 onClick={() => setStatusFilter("PENDING")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === "PENDING"
-                    ? "bg-amber-500/20 text-amber-300 font-bold shadow-xs"
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  statusFilter === "PENDING"
+                    ? "bg-amber-500/20 text-amber-300 font-semibold"
                     : "text-slate-400 hover:text-white"
-                  }`}
+                }`}
               >
-                Aguardando Retirada
+                Aguardando retirada
               </button>
               <button
                 type="button"
                 onClick={() => setStatusFilter("CONFIRMED")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === "CONFIRMED"
-                    ? "bg-emerald-500/20 text-emerald-300 font-bold shadow-xs"
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  statusFilter === "CONFIRMED"
+                    ? "bg-emerald-500/20 text-emerald-300 font-semibold"
                     : "text-slate-400 hover:text-white"
-                  }`}
+                }`}
               >
                 Confirmadas
               </button>
               <button
                 type="button"
                 onClick={() => setStatusFilter("ALL")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === "ALL"
-                    ? "bg-white/15 text-white font-bold shadow-xs"
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+                  statusFilter === "ALL"
+                    ? "bg-white/15 text-white font-semibold"
                     : "text-slate-400 hover:text-white"
-                  }`}
+                }`}
               >
                 Todas
               </button>
             </div>
           </div>
 
-          {/* Tabela / Cards da Lista */}
+          {/* Lista de Reservas Organizada Horizontalmente */}
           {loadingList && reservationsList.length === 0 ? (
             <div className="text-center py-12 rounded-2xl liquid-glass-card text-slate-400 text-xs flex items-center justify-center gap-2">
               <RefreshCw className="w-4 h-4 animate-spin text-cta" />
@@ -335,7 +358,7 @@ export default function BaixaReservaPage() {
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {filteredList.map((item) => {
                 const isPending = item.status === "PENDING";
                 const isItemActionLoading = actionLoadingId === item.code;
@@ -343,80 +366,88 @@ export default function BaixaReservaPage() {
                 return (
                   <div
                     key={item.id}
-                    className="p-4 sm:p-5 rounded-2xl liquid-glass-card border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-white/20 transition-all"
+                    className="p-4 rounded-xl liquid-glass-card border border-white/5 hover:border-white/15 transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-3.5"
                   >
-                    {/* Informações da Reserva */}
-                    <div className="space-y-2 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-mono font-bold text-sm text-white px-2 py-0.5 rounded bg-white/10">
-                          {item.code}
-                        </span>
-                        <span
-                          className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border ${isPending
-                              ? "bg-amber-950/60 text-amber-300 border-amber-500/30"
-                              : "bg-emerald-950/60 text-emerald-300 border-emerald-500/30"
-                            }`}
-                        >
-                          {isPending ? "Aguardando Retirada" : "Confirmada"}
-                        </span>
-                        <span className="text-[11px] text-slate-400 flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-500" />
-                          {new Date(item.createdAt).toLocaleTimeString("pt-BR", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                    {/* Bloco 1: Informações Principais (Código, Status, Horário) */}
+                    <div className="flex items-center gap-3 shrink-0 lg:w-64">
+                      <span className="font-mono font-bold text-sm text-white tracking-wide">
+                        {item.code}
+                      </span>
+                      <span
+                        className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                          isPending
+                            ? "bg-amber-500/15 text-amber-300"
+                            : "bg-emerald-500/15 text-emerald-400"
+                        }`}
+                      >
+                        {isPending ? "Aguardando retirada" : "Confirmada"}
+                      </span>
+                      <span className="text-[11px] text-slate-400">
+                        {new Date(item.createdAt).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+
+                    {/* Bloco 2: Informações da Reserva (Filme, Sala, Cliente) */}
+                    <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                      <div className="truncate">
+                        <span className="text-slate-400 text-[11px] block">Filme</span>
+                        <span className="font-semibold text-white truncate block" title={item.filmTitle}>
+                          {item.filmTitle}
                         </span>
                       </div>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                        <div className="flex items-center gap-1.5 text-slate-200">
-                          <Film className="w-3.5 h-3.5 text-cta shrink-0" />
-                          <span className="font-medium truncate">{item.filmTitle}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-slate-300">
-                          <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span>{item.roomName}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-slate-300">
-                          <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span className="truncate">{item.buyerName}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 pt-1">
-                        <span>
-                          Poltronas: <strong className="text-cta font-mono">{item.seats.join(", ") || "—"}</strong>
+                      <div className="truncate">
+                        <span className="text-slate-400 text-[11px] block">Sala</span>
+                        <span className="text-slate-200 truncate block">
+                          {item.roomName}
                         </span>
-                        <span>•</span>
-                        <span>
-                          Total:{" "}
-                          <strong className="text-emerald-400 font-semibold">
-                            R$ {item.totalAmount.toFixed(2)}
-                          </strong>
+                      </div>
+                      <div className="truncate">
+                        <span className="text-slate-400 text-[11px] block">Cliente</span>
+                        <span className="text-slate-200 truncate block" title={item.buyerName}>
+                          {item.buyerName}
                         </span>
                       </div>
                     </div>
 
-                    {/* Botão de Ação Direta */}
-                    <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-white/5">
+                    {/* Bloco 3: Informações Complementares (Poltronas, Valor Total) */}
+                    <div className="flex items-center gap-4 text-xs shrink-0 lg:w-56 justify-start lg:justify-end">
+                      <div>
+                        <span className="text-slate-400 text-[11px] block">Poltronas</span>
+                        <span className="font-bold text-cta">
+                          {item.seats.join(", ") || "—"}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-slate-400 text-[11px] block">Total</span>
+                        <span className="font-bold text-emerald-400 text-sm">
+                          R$ {item.totalAmount.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bloco 4: Ação Administrativa Limpa */}
+                    <div className="shrink-0 flex items-center justify-end lg:w-32 border-t lg:border-t-0 pt-2 lg:pt-0 border-white/5">
                       {isPending ? (
                         <button
                           type="button"
                           onClick={() => confirmar(item.code)}
                           disabled={isItemActionLoading}
-                          className="w-full md:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+                          className="w-full lg:w-auto px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                         >
                           {isItemActionLoading ? (
                             <RefreshCw className="w-3.5 h-3.5 animate-spin" />
                           ) : (
-                            <Check className="w-4 h-4" />
+                            <Check className="w-3.5 h-3.5" />
                           )}
                           <span>Dar Baixa</span>
                         </button>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold px-3 py-1.5 rounded-xl bg-emerald-950/40 border border-emerald-500/20">
-                          <CheckCircle className="w-3.5 h-3.5" />
-                          <span>Ingressos Emitidos</span>
+                        <span className="text-xs text-slate-400 flex items-center gap-1.5 select-none">
+                          <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Ingressos emitidos</span>
                         </span>
                       )}
                     </div>
