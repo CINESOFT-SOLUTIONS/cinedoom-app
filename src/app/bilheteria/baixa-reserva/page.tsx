@@ -333,16 +333,12 @@ export default function BaixaReservaPage() {
                 </button>
               </div>
             ) : (
-              <div className="pt-2 border-t border-white/5 flex items-center justify-between">
-                <span className="text-xs text-slate-400 flex items-center gap-1.5">
-                  <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Ingressos emitidos</span>
-                </span>
+              <div className="pt-2 border-t border-white/5 flex justify-end">
                 <button
                   type="button"
                   onClick={() => abrirIngressos(reservation.code)}
-                  className="px-4 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 hover:text-white font-medium text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
-                  title="Ver ingressos emitidos desta reserva"
+                  className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 hover:text-white font-medium text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                  title="Ver ingressos desta reserva"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   <span>Ver Ingressos</span>
@@ -496,14 +492,14 @@ export default function BaixaReservaPage() {
                       <button
                         type="button"
                         onClick={() => abrirIngressos(item.code)}
-                        className="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                         title="Ver ingressos"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Ver Ingressos</span>
+                        <span>Ver Ingressos</span>
                       </button>
 
-                      {isPending ? (
+                      {isPending && (
                         <button
                           type="button"
                           onClick={() => confirmar(item.code)}
@@ -517,11 +513,6 @@ export default function BaixaReservaPage() {
                           )}
                           <span>Dar Baixa</span>
                         </button>
-                      ) : (
-                        <span className="text-xs text-slate-400 flex items-center gap-1.5 select-none px-2 py-1">
-                          <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>Emitidos</span>
-                        </span>
                       )}
                     </div>
                   </div>
