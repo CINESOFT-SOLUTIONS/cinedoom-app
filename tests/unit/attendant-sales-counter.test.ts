@@ -124,7 +124,7 @@ describe("Balcão de Vendas do Atendente de Bilheteria", () => {
     expect(html).toContain("Nenhuma sessão para hoje");
   });
 
-  it("abre o menu de login/perfil exclusivamente ao clicar e não ao passar o mouse (sem onMouseEnter/onMouseLeave)", () => {
+  it("apresenta crachá de identificação e botão direto de logout sem hover drawer espúrio", () => {
     const authProfileMenuPath = path.resolve(
       process.cwd(),
       "src/components/auth-profile-menu.tsx"
@@ -133,6 +133,6 @@ describe("Balcão de Vendas do Atendente de Bilheteria", () => {
 
     expect(content).not.toContain("onMouseEnter");
     expect(content).not.toContain("onMouseLeave");
-    expect(content).toContain("onClick={() => setIsOpen");
+    expect(content).toContain("signOut");
   });
 });
