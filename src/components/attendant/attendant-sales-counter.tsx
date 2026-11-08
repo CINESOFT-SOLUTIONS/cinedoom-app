@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useMemo } from "react";
 import Image from "next/image";
 import { Film, Search, Ticket, AlertCircle } from "lucide-react";
 import { AgeRatingBadge } from "@/components/home/age-rating-badge";
 import { getCanonicalRoomName, getRoomExperienceCategory } from "@/shared/experiences";
-import { BookingFlow } from "@/components/booking/booking-flow";
 import { abandonPreviousReservationIfDifferent } from "@/components/booking/reservation-lifecycle";
+import { useRouter } from "next/navigation";
 import type { FilmItem, SessionItem } from "@/components/home/types";
 
 interface AttendantSalesCounterProps {
@@ -45,17 +44,7 @@ function getSessionFormatAndLanguage(session: SessionItem, film: FilmItem) {
  * Bilheteria - Homepage Operacional do Atendente CineDoom
  */
 export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterProps) {
-  const [mounted, setMounted] = useState(false);
-  const [activeSessionBooking, setActiveSessionBooking] = useState<{
-    filmId: string;
-    sessionId: string;
-  } | null>(null);
-
-  const [moreDatesFilm, setMoreDatesFilm] = useState<FilmItem | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const router = useRouter();
 
   // Filtra as sessões de hoje para cada filme
   const today = useMemo(() => new Date(), []);
@@ -94,16 +83,12 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
 
   const handleSelectSession = (filmId: string, sessionId: string) => {
     abandonPreviousReservationIfDifferent(filmId, sessionId);
-    setActiveSessionBooking({ filmId, sessionId });
-  };
-
-  const handleCloseModal = () => {
-    setActiveSessionBooking(null);
+    router.push(`/portal/reservas?filmeId=${filmId}&sessionId=${sessionId}`);
   };
 
   const handleOpenMoreDates = (film: FilmItem) => {
     abandonPreviousReservationIfDifferent(film.id);
-    setMoreDatesFilm(film);
+    router.push(`/portal/reservas?filmeId=${film.id}`);
   };
 
   return (
@@ -259,61 +244,6 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
             );
           })}
         </div>
-      )}
-
-      {/* Modal do Fluxo de Reserva Integrado com Contexto da Sessão (Portal para cobrir 100% da viewport) */}
-      {mounted && activeSessionBooking && createPortal(
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="attendant-booking-title"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) handleCloseModal();
-          }}
-          className="liquid-glass-scrim z-[100] p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150 cursor-pointer"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-3 sm:p-6 flex flex-col justify-between my-auto cursor-default"
-          >
-            <h2 id="attendant-booking-title" className="sr-only">
-              Fluxo de Venda de Ingressos
-            </h2>
-            <BookingFlow
-              initialFilmId={activeSessionBooking.filmId}
-              initialSessionId={activeSessionBooking.sessionId}
-              initialStep={2}
-              isModal={true}
-              onClose={handleCloseModal}
-            />
-          </div>
-        </div>,
-        document.body
-      )}
-
-      {/* Modal de Outras Datas para o Filme Selecionado (Portal para cobrir 100% da viewport sem cortes) */}
-      {mounted && moreDatesFilm && createPortal(
-        <div
-          role="dialog"
-          aria-modal="true"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setMoreDatesFilm(null);
-          }}
-          className="liquid-glass-scrim z-[100] p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150 cursor-pointer"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-3 sm:p-6 flex flex-col justify-between my-auto cursor-default"
-          >
-            <BookingFlow
-              initialFilmId={moreDatesFilm.id}
-              initialStep={1}
-              isModal={true}
-              onClose={() => setMoreDatesFilm(null)}
-            />
-          </div>
-        </div>,
-        document.body
       )}
     </div>
   );
