@@ -57,13 +57,6 @@ export default async function MinhasReservasPage() {
             </p>
           </div>
 
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/15 backdrop-blur-md transition-all self-start sm:self-auto"
-          >
-            <span>Ver Programação</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
         </div>
 
         {reservations.length === 0 ? (

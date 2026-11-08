@@ -53,9 +53,6 @@ export default function GestãoDashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-borderDark/60 pb-5">
           <div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Módulos de Gerenciamento</h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Selecione o módulo para configurar as operações e a conformidade do seu cinema.
-            </p>
           </div>
         </div>
 
