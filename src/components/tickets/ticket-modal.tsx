@@ -240,7 +240,7 @@ export function TicketModal({
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
                 Total
               </span>
-              <p className="font-semibold text-white text-sm">R$ {total.toFixed(2)}</p>
+              <p className="font-semibold text-white">R$ {total.toFixed(2)}</p>
             </div>
           </div>
 
@@ -249,10 +249,10 @@ export function TicketModal({
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
                 {isFinalTicket ? "Titular do Ingresso" : "Titular da Reserva"}
               </span>
-              <p className="text-slate-200 font-medium">
+              <p className="text-slate-300 font-medium">
                 {data.buyer?.name || "Cliente CineDoom"}
                 {data.buyer?.cpfMasked && (
-                  <span className="text-slate-400 font-medium text-[11px] ml-1.5">
+                  <span className="text-slate-400 font-medium text-xs ml-1.5">
                     ({data.buyer.cpfMasked})
                   </span>
                 )}
@@ -266,7 +266,7 @@ export function TicketModal({
                     Código de Validação
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-white tracking-wider">{data.code}</span>
+                    <span className="text-sm font-bold text-white tracking-wider">{data.code}</span>
                     <button
                       type="button"
                       onClick={handleCopyCode}
