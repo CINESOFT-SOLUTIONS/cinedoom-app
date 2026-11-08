@@ -130,7 +130,7 @@ export function TicketModal({
           <div className="flex items-center gap-2">
             <Ticket className="w-5 h-5 text-cta" />
             <span className="font-bold text-white text-sm">
-              {isFinalTicket ? "Ingresso CineDoom" : "Comprovante de Reserva"} • {data.code}
+              {isFinalTicket ? "Ingresso CineDoom" : "Comprovante de Reserva"}
             </span>
           </div>
 
