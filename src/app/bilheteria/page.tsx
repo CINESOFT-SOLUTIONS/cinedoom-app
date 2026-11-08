@@ -410,8 +410,16 @@ export default function BilheteriaMapaAssentosPage() {
 
       {/* Modal de Finalizacao de Venda (FRAME-3 / AC-1 / AC-6) */}
       {isCheckoutModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="liquid-glass-card rounded-3xl w-full max-w-lg p-6 sm:p-8 shadow-2xl space-y-5 relative">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) handleCloseCheckout();
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="liquid-glass-card rounded-3xl w-full max-w-lg p-6 sm:p-8 shadow-2xl space-y-5 relative cursor-default"
+          >
             <button
               onClick={handleCloseCheckout}
               className="absolute top-5 right-5 text-gray-400 hover:text-white p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"

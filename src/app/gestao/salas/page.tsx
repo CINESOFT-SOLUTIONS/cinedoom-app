@@ -349,8 +349,16 @@ export default function SalasGestãoPage() {
 
       {/* Modal: Nova Sala com Visual Seating Matrix Preview */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeCreateModal();
+          }}
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150 cursor-default"
+          >
             <div className="px-6 py-4.5 flex items-center justify-between border-b border-borderDark/60">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-cta/15 text-cta flex items-center justify-center">
@@ -501,8 +509,16 @@ export default function SalasGestãoPage() {
 
       {/* Modal: Visualizar Layout Completo */}
       {selectedRoomPreview && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedRoomPreview(null);
+          }}
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150 cursor-default"
+          >
             <div className="px-6 py-4.5 flex items-center justify-between border-b border-borderDark/60">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-cta/15 text-cta flex items-center justify-center">

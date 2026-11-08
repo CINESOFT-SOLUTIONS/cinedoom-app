@@ -281,9 +281,15 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
           role="dialog"
           aria-modal="true"
           aria-labelledby="attendant-booking-title"
-          className="liquid-glass-scrim z-[100] p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) handleCloseModal();
+          }}
+          className="liquid-glass-scrim z-[100] p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150 cursor-pointer"
         >
-          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-3 sm:p-6 flex flex-col justify-between my-auto">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-3 sm:p-6 flex flex-col justify-between my-auto cursor-default"
+          >
             <h2 id="attendant-booking-title" className="sr-only">
               Fluxo de Venda de Ingressos
             </h2>
@@ -304,9 +310,15 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
         <div
           role="dialog"
           aria-modal="true"
-          className="liquid-glass-scrim z-[100] p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setMoreDatesFilm(null);
+          }}
+          className="liquid-glass-scrim z-[100] p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-150 cursor-pointer"
         >
-          <div className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-3 sm:p-6 flex flex-col justify-between my-auto">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-6xl max-h-[96vh] overflow-y-auto liquid-glass liquid-glass--modal rounded-3xl p-3 sm:p-6 flex flex-col justify-between my-auto cursor-default"
+          >
             <BookingFlow
               initialFilmId={moreDatesFilm.id}
               initialStep={1}

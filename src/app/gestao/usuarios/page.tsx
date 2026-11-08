@@ -456,8 +456,16 @@ export default function GestaoUsuariosPage() {
 
       {/* Modal Cadastro de Atendente (FRAME-7) */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeCreateModal();
+          }}
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150 cursor-default"
+          >
             {/* Modal Header */}
             <div className="px-6 py-4.5 flex items-center justify-between border-b border-borderDark/60">
               <div className="flex items-center gap-2.5">
@@ -581,8 +589,16 @@ export default function GestaoUsuariosPage() {
 
       {/* Modal Redefinir Senha */}
       {isPasswordModalOpen && targetUser && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closePasswordModal();
+          }}
+          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="liquid-glass-card bg-[#161F36] rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-borderDark animate-in fade-in zoom-in-95 duration-150 cursor-default"
+          >
             <div className="px-6 py-4.5 flex items-center justify-between border-b border-borderDark/60">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-cta/15 text-cta flex items-center justify-center">
