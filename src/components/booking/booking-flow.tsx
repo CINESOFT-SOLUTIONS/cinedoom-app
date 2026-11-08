@@ -524,10 +524,55 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
 
   // Handlers de Navegação
   const handleSelectSession = (sessId: string) => {
+    // Ao selecionar ou trocar de sessão, encerra qualquer seleção anterior e começa do zero
+    if (activeHoldRef.current?.holdToken && activeHoldRef.current?.sessionId) {
+      releaseReservationHold(activeHoldRef.current.sessionId, activeHoldRef.current.holdToken);
+      activeHoldRef.current = null;
+    }
+    clearReservationContext();
+
+    const newCtx = generateReservationContextId();
+    setContextId(newCtx);
+    contextIdRef.current = newCtx;
+
     setSelectedSessionId(sessId);
+    setSeats([]);
+    setSelectedSeatIds([]);
+    setSeatsLoading(false);
+    setTicketQuantities({ inteira: 0, meia: 0 });
+    setHoldToken("");
+    setHoldExpiresAt(null);
+    setRemainingSeconds(600);
+    setIsHoldExpired(false);
     setErrorNotice(null);
     setCurrentStep(2);
     saveStateToStorage(2);
+  };
+
+  const handleBackToSessions = () => {
+    // Ao sair de uma sessão e voltar para escolher outra sessão, descarta a sessão atual e todo o progresso
+    if (activeHoldRef.current?.holdToken && activeHoldRef.current?.sessionId) {
+      releaseReservationHold(activeHoldRef.current.sessionId, activeHoldRef.current.holdToken);
+      activeHoldRef.current = null;
+    }
+    clearReservationContext();
+
+    const newCtx = generateReservationContextId();
+    setContextId(newCtx);
+    contextIdRef.current = newCtx;
+
+    setSelectedSessionId("");
+    setSessionDetail(null);
+    setSeats([]);
+    setSelectedSeatIds([]);
+    setSeatsLoading(false);
+    setTicketQuantities({ inteira: 0, meia: 0 });
+    setHoldToken("");
+    setHoldExpiresAt(null);
+    setRemainingSeconds(600);
+    setIsHoldExpired(false);
+    setErrorNotice(null);
+    setCurrentStep(1);
   };
 
   const handleSeatToggle = (seat: GridSeatItem) => {
@@ -798,7 +843,14 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
                 key={step}
                 type="button"
                 disabled={!canClick}
-                onClick={() => canClick && setCurrentStep(step as BookingStep)}
+                onClick={() => {
+                  if (!canClick) return;
+                  if (step === 1) {
+                    handleBackToSessions();
+                  } else {
+                    setCurrentStep(step as BookingStep);
+                  }
+                }}
                 className={`relative z-10 flex items-center gap-1.5 sm:gap-2 group outline-none ${
                   canClick ? "cursor-pointer" : "cursor-default"
                 }`}
@@ -1059,7 +1111,7 @@ export function BookingFlow({ initialFilmId, initialSessionId }: BookingFlowProp
               <div className="p-3 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2">
                 <button
                   type="button"
-                  onClick={() => setCurrentStep(1)}
+                  onClick={handleBackToSessions}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-colors cursor-pointer"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />

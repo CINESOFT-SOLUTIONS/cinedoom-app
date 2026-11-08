@@ -119,7 +119,7 @@ export function HeroBillboard({
                   className="px-5 py-3 sm:py-3.5 rounded-xl bg-surface/80 hover:bg-surface border border-borderDark text-white font-medium text-xs sm:text-sm transition-all hover:border-slate-400 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Play className="w-4 h-4 text-cta fill-cta" />
-                  <span>Ver Detalhes</span>
+                  <span>Detalhes</span>
                 </button>
               )}
             </div>
@@ -133,8 +133,8 @@ export function HeroBillboard({
                   type="button"
                   onClick={() => onSelectHeroIndex(idx)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${heroIndex === idx
-                      ? "w-8 bg-cta shadow-md shadow-cta/50"
-                      : "w-2.5 bg-slate-600 hover:bg-slate-400"
+                    ? "w-8 bg-cta shadow-md shadow-cta/50"
+                    : "w-2.5 bg-slate-600 hover:bg-slate-400"
                     }`}
                   aria-label={`Ver destaque ${f.title}`}
                 />

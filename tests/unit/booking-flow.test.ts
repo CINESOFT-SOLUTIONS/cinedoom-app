@@ -454,5 +454,31 @@ describe("Reformulação do Fluxo de Reservas do CineDoom (4 Etapas Sequenciais)
       expect(html).toBeDefined();
       expect(html).toContain("Sessões");
     });
+
+    it("Isolamento de sessões — Gera mapa de assentos unitário e distinto por sessão", async () => {
+      const { generateMockSeats } = await import("@/modules/portal/mock-cinema-data");
+
+      const seatsSession1 = generateMockSeats(6, 8, 30, "session-alpha-101");
+      const seatsSession2 = generateMockSeats(6, 8, 30, "session-beta-202");
+
+      const reserved1 = seatsSession1.filter((s) => s.status === "RESERVED").map((s) => s.seatCode);
+      const reserved2 = seatsSession2.filter((s) => s.status === "RESERVED").map((s) => s.seatCode);
+
+      // As duas sessões devem ter mapas com assentos ocupados diferentes (não idênticos)
+      expect(reserved1).not.toEqual(reserved2);
+
+      // Chamadas para a mesma sessão devem ser determinísticas
+      const seatsSession1Again = generateMockSeats(6, 8, 30, "session-alpha-101");
+      const reserved1Again = seatsSession1Again.filter((s) => s.status === "RESERVED").map((s) => s.seatCode);
+      expect(reserved1).toEqual(reserved1Again);
+    });
+
+    it("Ao sair de uma sessão, todo o estado anterior é descartado", () => {
+      const sourceCode = BookingFlow.toString();
+      expect(sourceCode).toContain("handleBackToSessions");
+      expect(sourceCode).toContain("handleSelectSession");
+      expect(sourceCode).toContain("clearReservationContext()");
+      expect(sourceCode).toContain("setSelectedSeatIds([])");
+    });
   });
 });

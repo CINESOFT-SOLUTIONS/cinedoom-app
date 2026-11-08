@@ -56,7 +56,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       const mockSeats = generateMockSeats(
         mockSession.room.rows,
         mockSession.room.columns,
-        mockSession.price
+        mockSession.price,
+        sessionId
       );
 
       return NextResponse.json(mockSeats, {
@@ -81,7 +82,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       const mockSeats = generateMockSeats(
         mockSession.room.rows,
         mockSession.room.columns,
-        mockSession.price
+        mockSession.price,
+        sessionId
       );
       return NextResponse.json(mockSeats, { status: 200 });
     }
