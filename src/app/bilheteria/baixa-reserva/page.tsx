@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Ticket, Search, CheckCircle, ShieldAlert } from "lucide-react";
-import { AuthProfileMenu } from "@/components/auth-profile-menu";
+import { CineDoomHeader } from "@/components/cinedoom-header";
 
 export default function BaixaReservaPage() {
   const [code, setCode] = useState("");
@@ -60,40 +60,24 @@ export default function BaixaReservaPage() {
 
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
-      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-2xl">
-        <div className="max-w-4xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/bilheteria"
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
-              title="Voltar à Bilheteria"
-            >
-              <Ticket className="w-5 h-5 text-cta" />
-            </Link>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">Baixa Presencial de Reserva</h1>
-              <p className="text-xs text-slate-400">Bilheteria · Confirmação presencial e emissão de ingressos</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5">
-            <Link
-              href="/bilheteria"
-              className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-slate-200 hover:text-white transition-colors"
-            >
-              Bilheteria
-            </Link>
-            <Link
-              href="/"
-              className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-slate-200 hover:text-white transition-colors"
-            >
-              Início
-            </Link>
-            <AuthProfileMenu />
-          </div>
-        </div>
-      </header>
+      {/* Header Oficial CineDoom */}
+      <CineDoomHeader activePage="baixa-reserva" />
 
       <main className="max-w-4xl mx-auto px-4 md:px-8 py-8 space-y-6 flex-1 w-full">
+        {/* Barra de Título */}
+        <div className="flex items-center gap-3 pb-2">
+          <Link
+            href="/bilheteria"
+            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
+            title="Voltar à Bilheteria"
+          >
+            <Ticket className="w-5 h-5 text-cta" />
+          </Link>
+          <div>
+            <h1 className="text-xl font-bold tracking-tight text-white">Baixa Presencial de Reserva</h1>
+            <p className="text-xs text-slate-400">Bilheteria · Confirmação presencial e emissão de ingressos</p>
+          </div>
+        </div>
         <div className="flex gap-2.5">
           <input
             type="text"

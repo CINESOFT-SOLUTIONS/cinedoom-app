@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Film, DoorOpen, Calendar, Users, ShieldCheck, ArrowRight } from "lucide-react";
-import { AuthProfileMenu } from "@/components/auth-profile-menu";
+import { CineDoomHeader } from "@/components/cinedoom-header";
 
 export default function GestãoDashboardPage() {
   const modules = [
@@ -45,39 +45,8 @@ export default function GestãoDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
-      {/* Top Header */}
-      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-2xl">
-        <div className="max-w-6xl mx-auto px-4 py-4 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="w-10 h-10 rounded-xl bg-cta flex items-center justify-center font-bold text-white shadow-lg shadow-cta/25 shrink-0 hover:scale-105 transition-transform" title="Ir para a Página Inicial">
-              CD
-            </Link>
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                Painel Administrativo do Gerente
-              </h1>
-              <p className="text-xs text-slate-400">
-                Gestão central e governança do cinema — CineDoom
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
-            <Link
-              href="/"
-              className="text-xs font-semibold px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 transition-all text-slate-200 hover:text-white shadow-sm"
-            >
-              Início
-            </Link>
-            <Link
-              href="/bilheteria"
-              className="text-xs font-semibold px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover transition-all text-white shadow-lg shadow-cta/25"
-            >
-              Ir para Bilheteria
-            </Link>
-            <AuthProfileMenu />
-          </div>
-        </div>
-      </header>
+      {/* Header Oficial CineDoom */}
+      <CineDoomHeader activePage="gestao" />
 
       {/* Main Container */}
       <main className="max-w-6xl mx-auto px-4 py-6 sm:py-10 space-y-6 sm:space-y-8 flex-1 w-full">
@@ -87,10 +56,6 @@ export default function GestãoDashboardPage() {
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
               Selecione o módulo para configurar as operações e a conformidade do seu cinema.
             </p>
-          </div>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-semibold rounded-full self-start sm:self-auto shadow-sm">
-            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span>Perfil Autenticado: GERENTE</span>
           </div>
         </div>
 

@@ -8,20 +8,18 @@ import { AuthProfileMenu } from "@/components/auth-profile-menu";
 import {
   Menu,
   X,
-  Film,
-  Info,
   Sparkles,
-  Ticket,
-  LayoutGrid,
-  CheckCircle2,
-  Briefcase,
-  ShieldCheck,
-  Calendar,
-  Users,
 } from "lucide-react";
 
 interface CineDoomHeaderProps {
-  activePage?: "filmes" | "sobre" | "minhas-reservas" | "nenhum";
+  activePage?:
+    | "filmes"
+    | "sobre"
+    | "minhas-reservas"
+    | "gestao"
+    | "bilheteria"
+    | "baixa-reserva"
+    | "nenhum";
 }
 
 export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
@@ -65,81 +63,149 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
           {/* Links de Navegação Desktop & Componente de Usuário */}
           <div className="flex items-center">
             {/* Navegação Desktop Integrada conforme o Perfil */}
-            <nav className="hidden md:flex items-center gap-4 lg:gap-6">
+            <nav className="hidden md:flex items-center gap-7 lg:gap-9">
               {role === "ATENDENTE" ? (
                 <>
                   <Link
                     href="/"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-cta hover:bg-slate-100/80 transition-colors"
+                    className="group relative py-1 text-sm md:text-[15px] font-semibold tracking-tight transition-colors flex flex-col items-center"
                   >
-                    <Ticket className="w-3.5 h-3.5 text-cta" />
-                    <span>Balcão de Vendas</span>
+                    <span
+                      className={
+                        activePage === "filmes"
+                          ? "text-slate-950 font-bold group-hover:text-cta transition-colors"
+                          : "text-slate-600 hover:text-slate-950 font-medium transition-colors"
+                      }
+                    >
+                      Balcão de Vendas
+                    </span>
+                    {activePage === "filmes" ? (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cta to-rose-500 rounded-full shadow-[0_2px_6px_rgba(233,69,96,0.45)]" />
+                    ) : (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
+                    )}
                   </Link>
+
                   <Link
                     href="/bilheteria"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-cta hover:bg-slate-100/80 transition-colors"
+                    className="group relative py-1 text-sm md:text-[15px] font-semibold tracking-tight transition-colors flex flex-col items-center"
                   >
-                    <LayoutGrid className="w-3.5 h-3.5 text-slate-600" />
-                    <span>Mapa de Sala</span>
+                    <span
+                      className={
+                        activePage === "bilheteria"
+                          ? "text-slate-950 font-bold group-hover:text-cta transition-colors"
+                          : "text-slate-600 hover:text-slate-950 font-medium transition-colors"
+                      }
+                    >
+                      Mapa de Sala
+                    </span>
+                    {activePage === "bilheteria" ? (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cta to-rose-500 rounded-full shadow-[0_2px_6px_rgba(233,69,96,0.45)]" />
+                    ) : (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
+                    )}
                   </Link>
+
                   <Link
                     href="/bilheteria/baixa-reserva"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-cta hover:bg-slate-100/80 transition-colors"
+                    className="group relative py-1 text-sm md:text-[15px] font-semibold tracking-tight transition-colors flex flex-col items-center"
                   >
-                    <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Baixa Reserva</span>
+                    <span
+                      className={
+                        activePage === "baixa-reserva"
+                          ? "text-slate-950 font-bold group-hover:text-cta transition-colors"
+                          : "text-slate-600 hover:text-slate-950 font-medium transition-colors"
+                      }
+                    >
+                      Baixa Reserva
+                    </span>
+                    {activePage === "baixa-reserva" ? (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cta to-rose-500 rounded-full shadow-[0_2px_6px_rgba(233,69,96,0.45)]" />
+                    ) : (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
+                    )}
                   </Link>
                 </>
               ) : role === "GERENTE" ? (
                 <>
                   <Link
+                    href="/"
+                    className="group relative py-1 text-sm md:text-[15px] font-semibold tracking-tight transition-colors flex flex-col items-center"
+                  >
+                    <span
+                      className={
+                        activePage === "filmes"
+                          ? "text-slate-950 font-bold group-hover:text-cta transition-colors"
+                          : "text-slate-600 hover:text-slate-950 font-medium transition-colors"
+                      }
+                    >
+                      Filmes
+                    </span>
+                    {activePage === "filmes" ? (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cta to-rose-500 rounded-full shadow-[0_2px_6px_rgba(233,69,96,0.45)]" />
+                    ) : (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
+                    )}
+                  </Link>
+
+                  <Link
                     href="/gestao"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-cta hover:bg-slate-100/80 transition-colors"
+                    className="group relative py-1 text-sm md:text-[15px] font-semibold tracking-tight transition-colors flex flex-col items-center"
                   >
-                    <Briefcase className="w-3.5 h-3.5 text-cta" />
-                    <span>Gestão</span>
+                    <span
+                      className={
+                        activePage === "gestao"
+                          ? "text-slate-950 font-bold group-hover:text-cta transition-colors"
+                          : "text-slate-600 hover:text-slate-950 font-medium transition-colors"
+                      }
+                    >
+                      Painel de Gestão
+                    </span>
+                    {activePage === "gestao" ? (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cta to-rose-500 rounded-full shadow-[0_2px_6px_rgba(233,69,96,0.45)]" />
+                    ) : (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
+                    )}
                   </Link>
-                  <Link
-                    href="/gestao/filmes"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-cta hover:bg-slate-100/80 transition-colors"
-                  >
-                    <Film className="w-3.5 h-3.5 text-slate-600" />
-                    <span>Filmes</span>
-                  </Link>
-                  <Link
-                    href="/gestao/salas"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-cta hover:bg-slate-100/80 transition-colors"
-                  >
-                    <LayoutGrid className="w-3.5 h-3.5 text-slate-600" />
-                    <span>Salas</span>
-                  </Link>
-                  <Link
-                    href="/gestao/sessoes"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-cta hover:bg-slate-100/80 transition-colors"
-                  >
-                    <Calendar className="w-3.5 h-3.5 text-slate-600" />
-                    <span>Sessões</span>
-                  </Link>
-                  <Link
-                    href="/gestao/usuarios"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-cta hover:bg-slate-100/80 transition-colors"
-                  >
-                    <Users className="w-3.5 h-3.5 text-slate-600" />
-                    <span>Equipe</span>
-                  </Link>
-                  <Link
-                    href="/gestao/titulares"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-800 hover:text-cta hover:bg-slate-100/80 transition-colors"
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>LGPD</span>
-                  </Link>
+
                   <Link
                     href="/bilheteria"
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-white bg-cta hover:bg-cta-hover transition-colors shadow-sm"
+                    className="group relative py-1 text-sm md:text-[15px] font-semibold tracking-tight transition-colors flex flex-col items-center"
                   >
-                    <Ticket className="w-3.5 h-3.5" />
-                    <span>Bilheteria</span>
+                    <span
+                      className={
+                        activePage === "bilheteria"
+                          ? "text-slate-950 font-bold group-hover:text-cta transition-colors"
+                          : "text-slate-600 hover:text-slate-950 font-medium transition-colors"
+                      }
+                    >
+                      Bilheteria
+                    </span>
+                    {activePage === "bilheteria" ? (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cta to-rose-500 rounded-full shadow-[0_2px_6px_rgba(233,69,96,0.45)]" />
+                    ) : (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
+                    )}
+                  </Link>
+
+                  <Link
+                    href="/sobre"
+                    className="group relative py-1 text-sm md:text-[15px] font-semibold tracking-tight transition-colors flex flex-col items-center whitespace-nowrap"
+                  >
+                    <span
+                      className={
+                        activePage === "sobre"
+                          ? "text-slate-950 font-bold group-hover:text-cta transition-colors"
+                          : "text-slate-600 hover:text-slate-950 font-medium transition-colors"
+                      }
+                    >
+                      Sobre o CineDoom
+                    </span>
+                    {activePage === "sobre" ? (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cta to-rose-500 rounded-full shadow-[0_2px_6px_rgba(233,69,96,0.45)]" />
+                    ) : (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
+                    )}
                   </Link>
                 </>
               ) : (
@@ -239,85 +305,82 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                 <Link
                   href="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 hover:bg-slate-100/70"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                    activePage === "filmes"
+                      ? "bg-cta/10 text-cta font-bold"
+                      : "text-slate-800 hover:bg-slate-100/70"
+                  }`}
                 >
-                  <Ticket className="w-4 h-4 text-cta" />
-                  <span>Balcão de Vendas</span>
+                  Balcão de Vendas
                 </Link>
                 <Link
                   href="/bilheteria"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 hover:bg-slate-100/70"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                    activePage === "bilheteria"
+                      ? "bg-cta/10 text-cta font-bold"
+                      : "text-slate-800 hover:bg-slate-100/70"
+                  }`}
                 >
-                  <LayoutGrid className="w-4 h-4 text-slate-600" />
-                  <span>Mapa de Sala (PDV)</span>
+                  Mapa de Sala
                 </Link>
                 <Link
                   href="/bilheteria/baixa-reserva"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 hover:bg-slate-100/70"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                    activePage === "baixa-reserva"
+                      ? "bg-cta/10 text-cta font-bold"
+                      : "text-slate-800 hover:bg-slate-100/70"
+                  }`}
                 >
-                  <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                  <span>Baixa de Reserva</span>
+                  Baixa Reserva
                 </Link>
               </>
             ) : role === "GERENTE" ? (
               <>
                 <Link
+                  href="/"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                    activePage === "filmes"
+                      ? "bg-cta/10 text-cta font-bold"
+                      : "text-slate-800 hover:bg-slate-100/70"
+                  }`}
+                >
+                  Filmes
+                </Link>
+                <Link
                   href="/gestao"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 hover:bg-slate-100/70"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                    activePage === "gestao"
+                      ? "bg-cta/10 text-cta font-bold"
+                      : "text-slate-800 hover:bg-slate-100/70"
+                  }`}
                 >
-                  <Briefcase className="w-4 h-4 text-cta" />
-                  <span>Visão Geral da Gestão</span>
-                </Link>
-                <Link
-                  href="/gestao/filmes"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 hover:bg-slate-100/70"
-                >
-                  <Film className="w-4 h-4 text-slate-600" />
-                  <span>Catálogo de Filmes</span>
-                </Link>
-                <Link
-                  href="/gestao/salas"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 hover:bg-slate-100/70"
-                >
-                  <LayoutGrid className="w-4 h-4 text-slate-600" />
-                  <span>Salas e Assentos</span>
-                </Link>
-                <Link
-                  href="/gestao/sessoes"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 hover:bg-slate-100/70"
-                >
-                  <Calendar className="w-4 h-4 text-slate-600" />
-                  <span>Agendamento de Sessões</span>
-                </Link>
-                <Link
-                  href="/gestao/usuarios"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 hover:bg-slate-100/70"
-                >
-                  <Users className="w-4 h-4 text-slate-600" />
-                  <span>Gestão de Atendentes</span>
-                </Link>
-                <Link
-                  href="/gestao/titulares"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 hover:bg-slate-100/70"
-                >
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>Compliance LGPD</span>
+                  Painel de Gestão
                 </Link>
                 <Link
                   href="/bilheteria"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold text-cta font-bold hover:bg-slate-100/70"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                    activePage === "bilheteria"
+                      ? "bg-cta/10 text-cta font-bold"
+                      : "text-slate-800 hover:bg-slate-100/70"
+                  }`}
                 >
-                  <Ticket className="w-4 h-4 text-cta" />
-                  <span>Abrir Bilheteria</span>
+                  Bilheteria
+                </Link>
+                <Link
+                  href="/sobre"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                    activePage === "sobre"
+                      ? "bg-cta/10 text-cta font-bold"
+                      : "text-slate-800 hover:bg-slate-100/70"
+                  }`}
+                >
+                  Sobre o CineDoom
                 </Link>
               </>
             ) : (
@@ -325,42 +388,39 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                 <Link
                   href="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
                     activePage === "filmes"
                       ? "bg-cta/10 text-cta font-bold"
                       : "text-slate-800 hover:bg-slate-100/70"
                   }`}
                 >
-                  <Film className="w-4 h-4 text-cta" />
-                  <span>Programação de Filmes</span>
+                  Filmes
                 </Link>
 
                 {role === "CLIENTE" && (
                   <Link
                     href="/portal/minhas-reservas"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                    className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
                       activePage === "minhas-reservas"
                         ? "bg-cta/10 text-cta font-bold"
                         : "text-slate-800 hover:bg-slate-100/70"
                     }`}
                   >
-                    <Ticket className="w-4 h-4 text-cta" />
-                    <span>Minhas Reservas</span>
+                    Minhas Reservas
                   </Link>
                 )}
 
                 <Link
                   href="/sobre"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
                     activePage === "sobre"
                       ? "bg-cta/10 text-cta font-bold"
                       : "text-slate-800 hover:bg-slate-100/70"
                   }`}
                 >
-                  <Info className="w-4 h-4 text-cta" />
-                  <span>Sobre o CineDoom</span>
+                  Sobre o CineDoom
                 </Link>
               </>
             )}

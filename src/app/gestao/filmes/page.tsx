@@ -14,7 +14,7 @@ import {
   X,
   ArrowLeft,
 } from "lucide-react";
-import { AuthProfileMenu } from "@/components/auth-profile-menu";
+import { CineDoomHeader } from "@/components/cinedoom-header";
 
 interface FilmItem {
   id: string;
@@ -220,9 +220,13 @@ export default function CatalogoFilmesPage() {
 
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
-      {/* Top Header */}
-      <header className="sticky top-0 z-40 liquid-glass-card border-x-0 border-t-0 rounded-none text-white shadow-2xl">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+      {/* Header Oficial CineDoom */}
+      <CineDoomHeader activePage="gestao" />
+
+      {/* Main Container */}
+      <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 flex-1 w-full">
+        {/* Barra de Ações & Título */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-2">
           <div className="flex items-center gap-3">
             <Link
               href="/gestao"
@@ -242,21 +246,14 @@ export default function CatalogoFilmesPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={openCreateModal}
-              className="flex items-center gap-2 bg-cta hover:bg-cta-hover text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-cta/25 transition-all"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Novo Filme</span>
-            </button>
-            <AuthProfileMenu />
-          </div>
+          <button
+            onClick={openCreateModal}
+            className="flex items-center gap-2 bg-cta hover:bg-cta-hover text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-lg shadow-cta/25 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Novo Filme</span>
+          </button>
         </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 flex-1 w-full">
         {/* Toast Status */}
         {statusMessage && (
           <div
