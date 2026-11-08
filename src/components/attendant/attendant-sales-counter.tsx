@@ -149,7 +149,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5 sm:gap-6 items-start">
           {filmsWithTodaySessions.map((film) => {
             const hasSessions = film.todaySessions.length > 0;
 
@@ -157,26 +157,26 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
               <div
                 key={film.id}
                 data-testid={`attendant-card-${film.id}`}
-                className="liquid-glass liquid-glass--hover rounded-2xl p-3 flex gap-3 items-start h-auto transition-all"
+                className="liquid-glass-card rounded-2xl p-4 flex gap-4 items-start h-auto transition-all shadow-md hover:border-white/20"
               >
-                {/* Coluna Esquerda Compacta: Pôster (64-72px) + Botão "Mais datas" Imediatamente Abaixo */}
-                <div className="flex flex-col items-center gap-1.5 shrink-0 w-[68px] sm:w-[72px]">
-                  <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-sm shrink-0">
+                {/* Coluna Esquerda: Pôster com proporção adequada e presença visual + Botão "Mais datas" */}
+                <div className="flex flex-col items-center gap-2 shrink-0 w-[100px] sm:w-[110px]">
+                  <div className="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-md shrink-0">
                     {film.posterUrl ? (
                       <Image
                         src={film.posterUrl}
                         alt={film.title}
                         fill
-                        sizes="72px"
+                        sizes="110px"
                         className="object-cover"
                         unoptimized
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-600">
-                        <Film className="w-6 h-6 opacity-40" />
+                        <Film className="w-8 h-8 opacity-40" />
                       </div>
                     )}
-                    <div className="absolute top-1 left-1 z-10 scale-75 origin-top-left shadow-xs">
+                    <div className="absolute top-1.5 left-1.5 z-10 scale-90 origin-top-left shadow-sm">
                       <AgeRatingBadge rating={film.classification} />
                     </div>
                   </div>
@@ -185,48 +185,48 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                   <button
                     type="button"
                     onClick={() => handleOpenMoreDates(film)}
-                    className="w-full py-1 px-1 rounded-md bg-white/[0.04] hover:bg-white/10 border border-white/10 text-[10px] font-semibold text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1 cursor-pointer active:scale-95 leading-none"
+                    className="w-full py-1.5 px-2 rounded-lg bg-white/[0.04] hover:bg-white/10 border border-white/10 text-[11px] font-semibold text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 leading-none"
                     title="Ver sessões em outros dias"
                   >
-                    <Search className="w-3 h-3 text-cta shrink-0" />
+                    <Search className="w-3.5 h-3.5 text-cta shrink-0" />
                     <span className="whitespace-nowrap">Mais datas</span>
                   </button>
                 </div>
 
-                {/* Coluna Direita: Informações e Grade de Horários Compacta */}
+                {/* Coluna Direita: Informações e Grade de Horários em 2 Colunas */}
                 <div className="flex-1 min-w-0 flex flex-col justify-start">
-                  {/* Cabeçalho do Card: Título + "Sessões de hoje" */}
-                  <div className="leading-tight mb-1">
-                    <h2
-                      title={film.title}
-                      className="text-xs sm:text-[13px] font-bold text-white truncate"
-                    >
-                      {film.title}
-                    </h2>
-                    <div className="flex items-center justify-between gap-1 mt-0.5">
-                      <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">
-                        Sessões de hoje
+                  {/* 1. Nome do filme */}
+                  <h2
+                    title={film.title}
+                    className="text-sm sm:text-base font-bold text-white tracking-tight leading-snug line-clamp-2"
+                  >
+                    {film.title}
+                  </h2>
+
+                  {/* 2. Identificação "Sessões de hoje" e contagem discreta */}
+                  <div className="flex items-center justify-between gap-1.5 mt-1">
+                    <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                      Sessões de hoje
+                    </span>
+                    {hasSessions && (
+                      <span className="text-[10px] text-slate-500 font-mono">
+                        {film.todaySessions.length} {film.todaySessions.length === 1 ? "sessão" : "sessões"}
                       </span>
-                      {hasSessions && (
-                        <span className="text-[9px] text-slate-500 font-mono">
-                          {film.todaySessions.length} {film.todaySessions.length === 1 ? "sessão" : "sessões"}
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </div>
 
-                  {/* Identificação da Sala */}
+                  {/* 3. Sala correspondente */}
                   {hasSessions && film.roomName && (
-                    <div className="mb-1.5">
-                      <span className="inline-block text-[10px] font-semibold text-slate-300 bg-white/[0.06] border border-white/10 px-1.5 py-0.5 rounded leading-none">
+                    <div className="mt-1 mb-2.5">
+                      <span className="inline-block text-[11px] font-semibold text-slate-300 bg-white/[0.06] border border-white/10 px-2 py-0.5 rounded-md leading-none">
                         {film.roomName}
                       </span>
                     </div>
                   )}
 
-                  {/* Horários das Sessões Disponíveis */}
+                  {/* 4. Grade de Horários em 2 Colunas bem espaçadas e clicáveis */}
                   {hasSessions ? (
-                    <div className="grid grid-cols-3 sm:grid-cols-3 gap-1.5 pt-0.5">
+                    <div className="grid grid-cols-2 gap-2 pt-0.5">
                       {film.todaySessions.map((session) => {
                         const timeStr = new Date(session.startsAt).toLocaleTimeString("pt-BR", {
                           hour: "2-digit",
@@ -238,24 +238,24 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                         return (
                           <div
                             key={session.id}
-                            className="flex flex-col items-center gap-0.5"
+                            className="flex flex-col items-center gap-1"
                           >
-                            {/* Botão de Horário */}
+                            {/* Botão de Horário com largura confortável */}
                             <button
                               type="button"
                               onClick={() => handleSelectSession(film.id, session.id)}
-                              className="w-full py-1 px-1 rounded-md bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-white font-mono font-bold text-[11px] tracking-wider transition-all duration-150 cursor-pointer shadow-2xs active:scale-95 flex items-center justify-center leading-none"
+                              className="w-full py-1.5 px-2 rounded-lg bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-white font-mono font-bold text-xs tracking-wider transition-all duration-150 cursor-pointer shadow-sm active:scale-95 flex items-center justify-center leading-none"
                               title={`Iniciar venda da sessão de ${timeStr} - ${format} ${language}`}
                             >
                               {timeStr}
                             </button>
 
-                            {/* Indicadores Compactos de Formato e Idioma */}
-                            <div className="flex items-center gap-0.5">
-                              <span className="text-[8px] font-bold px-1 py-0.1 rounded bg-white/10 text-slate-300 font-mono leading-tight">
+                            {/* Indicadores de Formato e Idioma alinhados ao respectivo botão */}
+                            <div className="flex items-center gap-1">
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono leading-tight">
                                 {format}
                               </span>
-                              <span className="text-[8px] font-bold px-1 py-0.1 rounded bg-cta/20 text-cta font-mono leading-tight">
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-cta/20 text-cta font-mono leading-tight">
                                 {language}
                               </span>
                             </div>
@@ -265,8 +265,8 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                     </div>
                   ) : (
                     /* Mensagem de Ausência de Sessões */
-                    <div className="py-2 px-2 rounded-lg bg-white/[0.02] border border-white/5 text-slate-400 text-[11px] flex items-center gap-1.5 mt-1">
-                      <AlertCircle className="w-3 h-3 text-slate-500 shrink-0" />
+                    <div className="py-2.5 px-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-slate-400 text-xs flex items-center gap-2 mt-1">
+                      <AlertCircle className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span className="italic">Nenhuma sessão para hoje</span>
                     </div>
                   )}
