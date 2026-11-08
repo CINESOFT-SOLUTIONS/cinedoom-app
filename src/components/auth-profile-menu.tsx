@@ -89,7 +89,7 @@ export function AuthProfileMenu() {
     <>
       <div
         ref={containerRef}
-        className="relative ml-2 sm:ml-4 md:ml-6 lg:ml-8 shrink-0 flex items-center h-full"
+        className="relative ml-2 sm:ml-4 md:ml-6 lg:ml-8 shrink-0 flex items-center gap-2 h-full"
       >
         {/* Botao de Perfil: Navy Liquid Glass */}
         <button
@@ -127,6 +127,18 @@ export function AuthProfileMenu() {
               </span>
             )}
           </div>
+        </button>
+
+        {/* Botao Direto de Logout no Header */}
+        <button
+          type="button"
+          onClick={() => signOut({ callbackUrl: "/" })}
+          title={`Sair da conta (${displayName})`}
+          className="h-9 sm:h-10 md:h-11 px-2.5 sm:px-3 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 hover:text-rose-700 border border-rose-500/30 transition-all flex items-center justify-center gap-1.5 text-xs font-bold cursor-pointer active:scale-95"
+          aria-label="Sair da conta"
+        >
+          <LogOut className="w-4 h-4 shrink-0 text-rose-600" />
+          <span className="hidden xl:inline">Sair</span>
         </button>
       </div>
 
