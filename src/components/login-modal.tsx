@@ -38,7 +38,7 @@ export function LoginModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="auth-card-title"
-      className="liquid-glass-scrim top-16 md:top-20 z-40 p-4 animate-in fade-in duration-200 overflow-y-auto"
+      className="liquid-glass-scrim z-[100] p-4 animate-in fade-in duration-200 overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) close();
       }}
