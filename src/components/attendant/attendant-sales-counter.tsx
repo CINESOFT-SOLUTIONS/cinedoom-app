@@ -35,8 +35,8 @@ function getSessionFormatAndLanguage(session: SessionItem, film: FilmItem) {
       ? "LEG"
       : "DUB"
     : lastChar % 2 === 0
-    ? "LEG"
-    : "DUB";
+      ? "LEG"
+      : "DUB";
 
   return { format, language };
 }
@@ -88,8 +88,8 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
         ? roomCategory === "VIP"
           ? `${roomClean} Vip`
           : roomCategory === "IMAX"
-          ? `${roomClean} IMAX`
-          : roomClean
+            ? `${roomClean} IMAX`
+            : roomClean
         : null;
 
       return {
@@ -226,7 +226,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
 
                   {/* 4. Grade de Horários em 2 Colunas bem espaçadas e clicáveis */}
                   {hasSessions ? (
-                    <div className="grid grid-cols-2 gap-2 pt-0.5">
+                    <div className="grid grid-cols-2 gap-2.5 pt-0.5">
                       {film.todaySessions.map((session) => {
                         const timeStr = new Date(session.startsAt).toLocaleTimeString("pt-BR", {
                           hour: "2-digit",
@@ -238,13 +238,13 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                         return (
                           <div
                             key={session.id}
-                            className="flex flex-col items-center gap-1"
+                            className="flex flex-col items-center gap-1.5"
                           >
-                            {/* Botão de Horário com largura confortável */}
+                            {/* Botão de Horário amplo com a tipografia oficial Poppins do CineDoom */}
                             <button
                               type="button"
                               onClick={() => handleSelectSession(film.id, session.id)}
-                              className="w-full py-1.5 px-2 rounded-lg bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-white font-mono font-bold text-xs tracking-wider transition-all duration-150 cursor-pointer shadow-sm active:scale-95 flex items-center justify-center leading-none"
+                              className="w-full py-2 px-3 rounded-xl bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-white font-bold text-sm tracking-normal transition-all duration-150 cursor-pointer shadow-sm active:scale-95 flex items-center justify-center leading-none"
                               title={`Iniciar venda da sessão de ${timeStr} - ${format} ${language}`}
                             >
                               {timeStr}
@@ -252,10 +252,10 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
 
                             {/* Indicadores de Formato e Idioma alinhados ao respectivo botão */}
                             <div className="flex items-center gap-1">
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono leading-tight">
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 leading-tight">
                                 {format}
                               </span>
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-cta/20 text-cta font-mono leading-tight">
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-cta/20 text-cta leading-tight">
                                 {language}
                               </span>
                             </div>
