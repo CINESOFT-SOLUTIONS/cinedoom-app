@@ -240,7 +240,7 @@ export function TicketModal({
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
                 Total
               </span>
-              <p className="font-semibold text-white">R$ {total.toFixed(2)}</p>
+              <p className="text-sm font-bold text-white">R$ {total.toFixed(2)}</p>
             </div>
           </div>
 
