@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Printer,
@@ -61,6 +62,26 @@ export function TicketModal({
   isFinalTicket = false,
 }: TicketModalProps) {
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Fechar ao pressionar ESC e travar scroll do body
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen || !data) return null;
 
@@ -91,14 +112,19 @@ export function TicketModal({
   const seatsList = (data.seats || []).map((s) => s.seatCode).join(", ") || "—";
   const isConfirmed = data.status === "CONFIRMED";
 
-  return (
+  const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in"
+      role="dialog"
+      aria-modal="true"
+      className="liquid-glass-scrim z-[100] p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200 cursor-pointer"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-[#121624] text-slate-200 border border-white/15 rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden font-sans animate-in zoom-in-95">
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-[#121624] text-slate-200 border border-white/15 rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden font-sans my-auto cursor-default animate-in zoom-in-95 duration-150"
+      >
         {/* Barra superior de controle */}
         <div className="p-4 sm:p-5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -181,9 +207,9 @@ export function TicketModal({
 
         {/* Divisória com Picote de Ingresso */}
         <div className="relative py-2 bg-[#121624]">
-          <div className="absolute -left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/80 border-r border-white/15" />
+          <div className="absolute -left-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-[#0E1322] border-r border-white/15" />
           <div className="border-b-2 border-dashed border-white/15 mx-5" />
-          <div className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-black/80 border-l border-white/15" />
+          <div className="absolute -right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-[#0E1322] border-l border-white/15" />
         </div>
 
         {/* Corpo do Ingresso: Grid de Dados */}
@@ -214,7 +240,7 @@ export function TicketModal({
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
                 Total
               </span>
-              <p className="font-bold text-emerald-400 text-sm">R$ {total.toFixed(2)}</p>
+              <p className="font-bold text-white text-sm">R$ {total.toFixed(2)}</p>
             </div>
           </div>
 
@@ -297,4 +323,7 @@ export function TicketModal({
       </div>
     </div>
   );
+
+  return mounted ? createPortal(modalContent, document.body) : modalContent;
 }
+

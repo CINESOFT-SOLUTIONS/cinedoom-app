@@ -216,11 +216,7 @@ export function ReservationsTabsPanel({
 
                       <div className="text-slate-400">
                         Total:{" "}
-                        <strong
-                          className={`font-semibold ${
-                            isCurrentExpired ? "text-slate-300" : "text-emerald-400"
-                          }`}
-                        >
+                        <strong className="font-semibold text-white">
                           R$ {Number(res.totalPrice).toFixed(2)}
                         </strong>
                       </div>
