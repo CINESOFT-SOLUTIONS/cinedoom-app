@@ -116,7 +116,7 @@ export function TicketModal({
     <div
       role="dialog"
       aria-modal="true"
-      className="liquid-glass-scrim z-[100] p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200 cursor-pointer"
+      className="liquid-glass-scrim z-[100] p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200 cursor-pointer font-sans"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -164,12 +164,12 @@ export function TicketModal({
               <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                 {data.film?.title || "Filme em Cartaz"}
               </h2>
-              <p className="text-xs text-slate-300 font-medium">
+              <p className="text-xs text-slate-400 font-medium">
                 {getCanonicalRoomName(data.room?.name || "Sala 01")}
               </p>
             </div>
             <div className="shrink-0 text-right">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
                 {isFinalTicket ? "Status" : "Código"}
               </span>
               {isFinalTicket ? (
@@ -184,7 +184,7 @@ export function TicketModal({
                 </span>
               ) : (
                 <div className="flex items-center gap-1.5 pt-0.5">
-                  <span className="text-base sm:text-lg font-mono font-bold text-white tracking-wider">
+                  <span className="text-base sm:text-lg font-bold text-white tracking-wider">
                     {data.code}
                   </span>
                   <button
@@ -233,14 +233,14 @@ export function TicketModal({
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
                 Assentos ({data.seats?.length || 0})
               </span>
-              <p className="font-mono font-bold text-white tracking-wide">{seatsList}</p>
+              <p className="font-semibold text-white tracking-wide">{seatsList}</p>
             </div>
 
             <div className="space-y-1">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
                 Total
               </span>
-              <p className="font-bold text-white text-sm">R$ {total.toFixed(2)}</p>
+              <p className="font-semibold text-white text-sm">R$ {total.toFixed(2)}</p>
             </div>
           </div>
 
@@ -252,7 +252,7 @@ export function TicketModal({
               <p className="text-slate-200 font-medium">
                 {data.buyer?.name || "Cliente CineDoom"}
                 {data.buyer?.cpfMasked && (
-                  <span className="text-slate-400 font-mono text-[11px] ml-1.5">
+                  <span className="text-slate-400 font-medium text-[11px] ml-1.5">
                     ({data.buyer.cpfMasked})
                   </span>
                 )}
@@ -266,7 +266,7 @@ export function TicketModal({
                     Código de Validação
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-mono font-bold text-white">{data.code}</span>
+                    <span className="font-bold text-white tracking-wider">{data.code}</span>
                     <button
                       type="button"
                       onClick={handleCopyCode}
@@ -297,14 +297,14 @@ export function TicketModal({
           </div>
 
           {/* Mensagem / Instruções */}
-          <div className="p-3.5 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] text-slate-400 leading-relaxed">
+          <div className="p-3.5 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] text-slate-400 leading-relaxed font-normal">
             {isFinalTicket ? (
               <span>
                 Ingresso final emitido na bilheteria CineDoom. Apresente este bilhete impresso ou no celular na entrada da sala para validação do leitor.
               </span>
             ) : (
               <span>
-                Apresente o código <strong className="font-mono text-white">{data.code}</strong> na bilheteria física para pagamento presencial e emissão dos ingressos antes do prazo limite.
+                Apresente o código <strong className="font-bold text-white">{data.code}</strong> na bilheteria física para pagamento presencial e emissão dos ingressos antes do prazo limite.
               </span>
             )}
           </div>
