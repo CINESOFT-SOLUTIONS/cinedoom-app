@@ -47,9 +47,6 @@ describe("Venda Atomica ACID com SELECT FOR UPDATE (TASK-10 / AC-1 / AC-6 / ADR-
   const sessionSeatId1 = "44444444-4444-4444-a444-444444444441";
   const sessionSeatId2 = "44444444-4444-4444-a444-444444444442";
 
-  // CPF valido pelo algoritmo de digitos verificadores
-  const validCpf = "52998224725";
-
   const validPayload = {
     sessionId,
     sessionSeatIds: [sessionSeatId2, sessionSeatId1], // IDs desordenados para testar ordenacao anti-deadlock

@@ -2,12 +2,10 @@
 
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
   Calendar,
-  Clock,
   MapPin,
   Ticket,
   CheckCircle,
@@ -15,7 +13,6 @@ import {
   ArrowLeft,
   ArrowRight,
   User,
-  Mail,
   Film,
   Info,
   Check,
@@ -32,7 +29,6 @@ import { useAuthModal } from "@/contexts/auth-modal-context";
 import { formatDuration, getPrimaryGenre } from "@/components/home/film-utils";
 import type { FilmItem, SessionItem } from "@/components/home/types";
 import {
-  BOOKING_STORAGE_KEY,
   generateReservationContextId,
   releaseReservationHold,
   getSavedReservationContext,
@@ -138,7 +134,6 @@ export function BookingFlow({
   // Feedback e submissao
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
-  const [generalLoading, setGeneralLoading] = useState<boolean>(true);
 
   // 0. Função central de reinicialização para novas reservas isoladas
   const resetForNewReservation = useCallback(
@@ -256,7 +251,6 @@ export function BookingFlow({
 
     async function loadCatalog() {
       try {
-        setGeneralLoading(true);
         const res = await fetch("/api/portal/filmes", {
           cache: "no-store",
           signal: abortControllerRef.current?.signal,
@@ -276,10 +270,6 @@ export function BookingFlow({
       } catch (err: any) {
         if (err.name === "AbortError") return;
         console.error("Erro ao carregar catálogo de filmes:", err);
-      } finally {
-        if (contextIdRef.current === activeCtx) {
-          setGeneralLoading(false);
-        }
       }
     }
     loadCatalog();
@@ -761,10 +751,6 @@ export function BookingFlow({
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleRestart = () => {
-    resetForNewReservation(selectedFilm?.id);
   };
 
   const handleExpiredOk = () => {

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import crypto from "node:crypto";
 import {
-  CryptoService,
   sanitizeCPF,
   validateCPF,
   formatCPF,
@@ -9,13 +8,11 @@ import {
   encryptCPF,
   decryptCPF,
   hashCPF,
-  getEncryptionKey,
 } from "@/modules/crypto";
 import {
   validateBuyerInput,
   registerBuyer,
   findBuyerByCPF,
-  ValidationError,
 } from "@/modules/compradores";
 import { rawPrisma } from "@/shared/db/prisma";
 

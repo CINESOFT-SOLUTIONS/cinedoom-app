@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { getTenantId, TenantContextError } from "./tenancy-context";
 
 export const TENANT_SCOPED_MODELS: string[] = [

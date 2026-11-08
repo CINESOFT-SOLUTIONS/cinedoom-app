@@ -27,7 +27,6 @@ vi.mock("next-auth", () => ({
 
 describe("Polling do Mapa de Assentos (TASK-9 / TASK-10 / AC-2 / ADR-006 / TC-2 / TC-10 / TC-17)", () => {
   const tenantId = "11111111-1111-4111-a111-111111111111";
-  const otherTenantId = "99999999-9999-4999-a999-999999999999";
   const sessionId = "22222222-2222-4222-a222-222222222222";
 
   beforeEach(() => {

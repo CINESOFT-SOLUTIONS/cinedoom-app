@@ -1,5 +1,5 @@
 import { rawPrisma } from "@/shared/db/prisma";
-import { CryptoService, sanitizeCPF, maskCPF } from "@/modules/crypto";
+import { maskCPF } from "@/modules/crypto";
 import { TemporaryHoldService } from "../application/temporary-hold.service";
 import type {
   IPublicReservationRepository,

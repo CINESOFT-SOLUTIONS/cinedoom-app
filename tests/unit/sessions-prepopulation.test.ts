@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   createSessionSchema,
-  updateSessionSchema,
   formatZodErrors,
   SessionService,
-  SessionNotFoundError,
   SessionFilmNotFoundError,
   SessionRoomNotFoundError,
   SessionScheduleConflictError,

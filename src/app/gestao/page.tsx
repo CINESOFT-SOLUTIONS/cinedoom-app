@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Film, DoorOpen, Calendar, Users, ShieldCheck, ArrowRight, UserCheck } from "lucide-react";
+import { Film, DoorOpen, Calendar, Users, ShieldCheck, ArrowRight } from "lucide-react";
 
 export default function GestãoDashboardPage() {
   const modules = [

@@ -10,12 +10,10 @@ import {
   UserNotFoundError,
   EmailAlreadyInUseError,
   SelfInactivationError,
-  InvalidRoleAssignmentError,
 } from "@/modules/auth";
 import { verifyPassword } from "@/modules/auth/auth-service";
 import { GET as getUsuarios, POST as postUsuarios } from "@/app/api/backoffice/usuarios/route";
 import {
-  GET as getUsuarioById,
   PATCH as patchUsuario,
   DELETE as deleteUsuario,
 } from "@/app/api/backoffice/usuarios/[id]/route";

@@ -184,7 +184,6 @@ export default function CinemarkStyleHomePage() {
               <FilmCard
                 key={film.id}
                 film={film}
-                selectedDate={dateTabs[selectedDay]?.date}
                 onOpenSessions={(f) => {
                   abandonPreviousReservationIfDifferent(f.id);
                   router.push(`/portal/reservas?filmeId=${f.id}`);

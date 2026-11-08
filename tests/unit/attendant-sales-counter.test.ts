@@ -1,4 +1,6 @@
 import React from "react";
+import fs from "node:fs";
+import path from "node:path";
 import { describe, it, expect, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { AttendantSalesCounter } from "@/components/attendant/attendant-sales-counter";
@@ -7,7 +9,10 @@ import type { FilmItem } from "@/components/home/types";
 // Mock next/image para ambiente SSR de teste
 vi.mock("next/image", () => ({
   __esModule: true,
-  default: (props: any) => React.createElement("img", { ...props, fill: undefined }),
+  default: (props: any) => {
+    const { fill: _fill, unoptimized: _unoptimized, priority: _priority, ...rest } = props;
+    return React.createElement("img", rest);
+  },
 }));
 
 // Mock next/navigation
@@ -117,5 +122,17 @@ describe("Balcão de Vendas do Atendente de Bilheteria", () => {
 
     expect(html).toContain("Filme Futuro Sem Sessao Hoje");
     expect(html).toContain("Nenhuma sessão para hoje");
+  });
+
+  it("abre o menu de login/perfil exclusivamente ao clicar e não ao passar o mouse (sem onMouseEnter/onMouseLeave)", () => {
+    const authProfileMenuPath = path.resolve(
+      process.cwd(),
+      "src/components/auth-profile-menu.tsx"
+    );
+    const content = fs.readFileSync(authProfileMenuPath, "utf-8");
+
+    expect(content).not.toContain("onMouseEnter");
+    expect(content).not.toContain("onMouseLeave");
+    expect(content).toContain("onClick={() => setIsOpen");
   });
 });

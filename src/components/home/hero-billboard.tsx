@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
-import { Sparkles, Clock, Ticket, Play, X } from "lucide-react";
+import { Sparkles, Clock, Ticket, Play } from "lucide-react";
 import type { FilmItem } from "./types";
 import { getPrimaryGenre, formatDuration } from "./film-utils";
 import { AgeRatingBadge } from "./age-rating-badge";
@@ -22,7 +22,6 @@ export function HeroBillboard({
   onOpenSessions,
   onOpenDetails,
 }: HeroBillboardProps) {
-  const [detailModalFilm, setDetailModalFilm] = useState<FilmItem | null>(null);
   const activeHeroFilm = films[heroIndex] || films[0];
 
   const handleOpenSessions = () => {
@@ -32,18 +31,13 @@ export function HeroBillboard({
   };
 
   const handleOpenDetails = () => {
-    if (activeHeroFilm) {
-      if (onOpenDetails) {
-        onOpenDetails(activeHeroFilm);
-      } else {
-        setDetailModalFilm(activeHeroFilm);
-      }
+    if (activeHeroFilm && onOpenDetails) {
+      onOpenDetails(activeHeroFilm);
     }
   };
 
   return (
-    <>
-      <section className="relative w-full bg-[#0B0F1C] overflow-hidden min-h-[400px] sm:min-h-[460px] md:min-h-[540px] flex items-center">
+    <section className="relative w-full bg-[#0B0F1C] overflow-hidden min-h-[400px] sm:min-h-[460px] md:min-h-[540px] flex items-center">
         {activeHeroFilm?.posterUrl ? (
           <div className="absolute inset-0">
             <Image
@@ -143,59 +137,5 @@ export function HeroBillboard({
           )}
         </div>
       </section>
-
-      {/* Modal de Detalhes do Filme */}
-      {detailModalFilm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in">
-          <div className="liquid-glass-card rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-4 shadow-2xl relative">
-            <button
-              type="button"
-              onClick={() => setDetailModalFilm(null)}
-              className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
-              aria-label="Fechar"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="flex items-center gap-3">
-              <AgeRatingBadge rating={detailModalFilm.classification} />
-              <h4 className="text-lg font-semibold text-white">{detailModalFilm.title}</h4>
-            </div>
-
-            <div className="text-xs text-slate-400 space-y-1">
-              {detailModalFilm.duration && (
-                <div>
-                  <strong>Duração:</strong> {formatDuration(detailModalFilm.duration)}
-                </div>
-              )}
-              {detailModalFilm.genre && (
-                <div>
-                  <strong>Gênero:</strong> {detailModalFilm.genre}
-                </div>
-              )}
-              {detailModalFilm.director && (
-                <div>
-                  <strong>Direção:</strong> {detailModalFilm.director}
-                </div>
-              )}
-            </div>
-
-            <p className="text-xs text-slate-300 leading-relaxed">
-              {detailModalFilm.synopsis || "Sem sinopse disponível no momento."}
-            </p>
-
-            <div className="pt-3 border-t border-borderDark flex justify-end">
-              <a
-                href="#programacao"
-                onClick={() => setDetailModalFilm(null)}
-                className="px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-semibold transition-all"
-              >
-                Ver Horários Disponíveis
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
   );
 }

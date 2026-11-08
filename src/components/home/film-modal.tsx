@@ -11,8 +11,6 @@ import { abandonPreviousReservationIfDifferent } from "@/components/booking/rese
 
 interface FilmModalProps {
   film: FilmItem | null;
-  initialTab?: "sessions" | "details";
-  selectedDate?: Date;
   onClose: () => void;
 }
 

@@ -32,25 +32,7 @@ export function AuthProfileMenu() {
   const { data: session } = useSession();
   const { openLogin } = useAuthModal();
   const [isOpen, setIsOpen] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Manipuladores de Hover apenas para usuario autenticado
-  const handleMouseEnter = () => {
-    if (!session) return;
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    setIsOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    if (!session) return;
-    timeoutRef.current = setTimeout(() => {
-      setIsOpen(false);
-    }, 180);
-  };
 
   // Fecha o menu ao clicar fora ou ao pressionar Escape
   useEffect(() => {
@@ -72,7 +54,6 @@ export function AuthProfileMenu() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
 
@@ -106,17 +87,15 @@ export function AuthProfileMenu() {
   return (
     <div
       ref={containerRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       className="relative ml-2 sm:ml-4 md:ml-8 lg:ml-10 shrink-0 flex items-center h-full"
     >
-      {/* Botao de Perfil: Navy Liquid Glass */}
+      {/* Botao de Perfil: Navy Liquid Glass (Abertura exclusivamente por clique) */}
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-haspopup="true"
-        className={`h-9 sm:h-10 md:h-11 flex items-center justify-between gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] hover:from-[#133c6d] hover:to-[#1a2544] text-white border transition-all group ${
+        className={`h-9 sm:h-10 md:h-11 flex items-center justify-between gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] hover:from-[#133c6d] hover:to-[#1a2544] text-white border transition-all cursor-pointer group ${
           isOpen
             ? "border-white/40 shadow-[0_6px_22px_rgba(15,52,96,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.5)] from-[#0F3460] to-[#16213E]"
             : "border-white/25 shadow-[0_4px_16px_rgba(15,52,96,0.25),inset_0_1px_1px_rgba(255,255,255,0.35)] hover:shadow-[0_6px_22px_rgba(15,52,96,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.5)]"
@@ -157,12 +136,10 @@ export function AuthProfileMenu() {
         </div>
       </button>
 
-      {/* Modulo Flutuante Aberto no Hover/Click do Usuario Autenticado */}
+      {/* Modulo Flutuante Aberto exclusivamente no Clique do Usuario Autenticado */}
       {isOpen && (
         <div
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          className="absolute top-full mt-1.5 right-0 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] z-50 animate-in fade-in slide-in-from-top-1 duration-150 before:content-[''] before:absolute before:-top-3 before:left-0 before:right-0 before:h-3"
+          className="absolute top-full mt-1.5 right-0 w-80 sm:w-96 max-w-[calc(100vw-1.5rem)] z-50 animate-in fade-in slide-in-from-top-1 duration-150"
         >
           <div className="w-full bg-[#12182B] rounded-3xl p-3.5 border border-white/25 shadow-[0_20px_50px_rgba(0,0,0,0.75),inset_0_1px_1px_rgba(255,255,255,0.2)] space-y-3">
             {/* Card de Identificacao */}
@@ -262,12 +239,20 @@ export function AuthProfileMenu() {
                     Operacao da Bilheteria
                   </span>
                   <Link
-                    href="/bilheteria"
+                    href="/"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
                   >
                     <Ticket className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>Balcão de Vendas</span>
+                    <span>Balcão de Vendas (Sessões de Hoje)</span>
+                  </Link>
+                  <Link
+                    href="/bilheteria"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
+                  >
+                    <LayoutGrid className="w-4 h-4 text-cta shrink-0" />
+                    <span>Mapa de Sala (PDV Direto)</span>
                   </Link>
                   <Link
                     href="/bilheteria/baixa-reserva"
@@ -276,14 +261,6 @@ export function AuthProfileMenu() {
                   >
                     <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
                     <span>Baixa Presencial de Reserva</span>
-                  </Link>
-                  <Link
-                    href="/#programacao"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/10 text-slate-200 hover:text-white transition-colors"
-                  >
-                    <Film className="w-4 h-4 text-cta shrink-0" />
-                    <span>Ver Programacao em Cartaz</span>
                   </Link>
                 </>
               )}

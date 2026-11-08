@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { POST as createReservationRoute } from "@/app/api/portal/reservas/route";
 import { GET as getReservationByIdRoute } from "@/app/api/portal/reservas/[id]/route";
 import { GET as getSessionByIdRoute } from "@/app/api/portal/sessoes/[id]/route";
-import { PortalService, ReservationAntecedenceError, SeatNotAvailableError } from "@/modules/portal";
+import { PortalService, ReservationAntecedenceError } from "@/modules/portal";
 
 vi.mock("@/shared/db/prisma", () => {
   const mockTx = {
@@ -48,7 +48,6 @@ vi.mock("next-auth", () => ({
 
 describe("Portal do Cliente - Reserva Atomica e Catalogo (TASK-21 / AC-9 / AC-14 / RF-12 / RF-13 / RF-18 / ADR-012)", () => {
   const tenantId = "11111111-1111-4111-a111-111111111111";
-  const userId = "22222222-2222-4222-a222-222222222222";
   const sessionId = "33333333-3333-4333-a333-333333333333";
   const seatId1 = "44444444-4444-4444-a444-444444444441";
   const seatId2 = "44444444-4444-4444-a444-444444444442";

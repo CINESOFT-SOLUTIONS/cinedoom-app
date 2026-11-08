@@ -1,4 +1,4 @@
-import { rawPrisma, prisma } from "@/shared/db/prisma";
+import { rawPrisma } from "@/shared/db/prisma";
 import {
   CryptoService,
   validateCPF,

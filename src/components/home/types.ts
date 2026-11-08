@@ -24,10 +24,3 @@ export interface FilmItem {
   sessions: SessionItem[];
 }
 
-export const GENRE_MAP: Record<string, string> = {
-  "Duna: Parte Dois": "Ficção Científica • Aventura",
-  "Oppenheimer": "Drama Histórico • Biografia",
-  "Pobres Criaturas": "Fantasia • Romance",
-  "Interestelar": "Ficção Científica • Aventura",
-};
-

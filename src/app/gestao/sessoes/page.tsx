@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   Calendar,
   Clock,
-  Film,
   LayoutGrid,
   Plus,
   Trash2,
@@ -15,7 +14,6 @@ import {
   ArrowLeft,
   DollarSign,
   Ticket,
-  ChevronRight,
 } from "lucide-react";
 
 interface FilmItem {

@@ -5,21 +5,12 @@ import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { getRoomWithExperience } from "@/shared/experiences";
 
 import React, { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
-  Ticket,
-  Calendar,
-  Clock,
-  MapPin,
-  CheckCircle2,
   AlertTriangle,
   ArrowLeft,
   Printer,
-  Film,
-  User,
-  ShieldCheck,
-  CreditCard,
   Copy,
   Check,
 } from "lucide-react";
@@ -59,7 +50,6 @@ interface ReservationVoucher {
 
 export default function ReservationComprovantePage() {
   const params = useParams();
-  const router = useRouter();
   const reservationId = params.id as string;
 
   const [voucher, setVoucher] = useState<ReservationVoucher | null>(null);

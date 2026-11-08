@@ -1,4 +1,3 @@
-import { SessionStatus } from "@prisma/client";
 import { getMockFilmsWithSessions } from "@/modules/portal/mock-cinema-data";
 import type {
   ISessionRepository,

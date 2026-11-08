@@ -15,7 +15,6 @@ import {
   AlertCircle,
   X,
   CheckCircle2,
-  ShieldCheck,
   User,
   Mail,
   CreditCard,
@@ -45,21 +44,15 @@ const generateFallbackSeats = (): GridSeatItem[] => {
   const rows = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
   const seats: GridSeatItem[] = [];
 
-  rows.forEach((row, rIdx) => {
+  rows.forEach((row) => {
     for (let col = 1; col <= 10; col++) {
-      let status: GridSeatItem["status"] = "AVAILABLE";
-      if (rIdx === 0 && (col === 3 || col === 4 || col === 8)) status = "SOLD";
-      if (rIdx === 2 && (col === 5 || col === 6)) status = "SOLD";
-      if (rIdx === 4 && col === 5) status = "RESERVED";
-      if (rIdx === 7 && col === 1) status = "BLOCKED";
-
       seats.push({
         id: `fallback-seat-${row}-${col}`,
         rowLabel: row,
         columnNumber: col,
         seatCode: `${row}${col}`,
-        status,
-        price: 35.0,
+        status: "AVAILABLE",
+        price: 30.0,
       });
     }
   });
@@ -81,7 +74,6 @@ export default function BilheteriaMapaAssentosPage() {
   const [buyerCpf, setBuyerCpf] = useState("");
   const [buyerEmail, setBuyerEmail] = useState("");
   const [buyerLgpdConsent, setBuyerLgpdConsent] = useState(true);
-  const [isSessionsLoading, setIsSessionsLoading] = useState(true);
 
   // Carrega lista de sessoes ativas
   useEffect(() => {
@@ -125,8 +117,6 @@ export default function BilheteriaMapaAssentosPage() {
         }
       } catch {
         // Silencioso; usara fallback
-      } finally {
-        setIsSessionsLoading(false);
       }
     }
 
@@ -163,7 +153,7 @@ export default function BilheteriaMapaAssentosPage() {
 
   const activeSession = sessions.find((s) => s.id === selectedSessionId);
   const displayedSeats = selectedSessionId && liveSeats.length > 0 ? liveSeats : generateFallbackSeats();
-  const unitPrice = activeSession ? Number(activeSession.price) : 35.0;
+  const unitPrice = activeSession ? Number(activeSession.price) : 30.0;
 
   const handleSeatToggle = (seat: GridSeatItem) => {
     setSelectedSeatIds((prev) =>

@@ -8,7 +8,6 @@ import {
   requireTenantId,
   TenantContextError,
   withTenancy,
-  TENANT_SCOPED_MODELS,
 } from "@/modules/tenancy";
 
 // Mock do next-auth
@@ -69,7 +68,7 @@ import { GET as listTickets } from "@/app/api/ingressos/route";
 import { POST as cancelTicket } from "@/app/api/ingressos/[id]/cancelar/route";
 import { GET as getOccupancyPanel } from "@/app/api/ocupacao/painel/route";
 import { GET as getUserById, PATCH as updateUser, DELETE as deleteUser } from "@/app/api/backoffice/usuarios/[id]/route";
-import { GET as listUsers, POST as createUser } from "@/app/api/backoffice/usuarios/route";
+import { POST as createUser } from "@/app/api/backoffice/usuarios/route";
 import { POST as anonymizeTitular } from "@/app/api/titulares/anonimizar/route";
 
 describe("Bateria Exaustiva de Seguranca: 500 Cenarios de Isolamento Cross-Tenant (TASK-18 / AC-4)", () => {

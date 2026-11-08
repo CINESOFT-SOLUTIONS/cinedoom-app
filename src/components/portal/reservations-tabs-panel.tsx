@@ -120,7 +120,6 @@ export function ReservationsTabsPanel({
             const sessionDT = formatSessionDateTime(res.session.startsAt);
             const seatList = res.sessionSeats.map((s) => s.seat.seatCode).join(", ");
             const isConfirmed = res.status === "CONFIRMED";
-            const isCancelled = res.status === "CANCELLED";
 
             return (
               <Link

@@ -252,7 +252,7 @@ describe("Reformulação do Fluxo de Reservas do CineDoom (4 Etapas Sequenciais)
       globalThis.fetch = fetchSpy as any;
 
       // Usuário abandona o Filme A e seleciona o Filme B
-      const { abandonPreviousReservationIfDifferent, getSavedReservationContext } =
+      const { abandonPreviousReservationIfDifferent } =
         await import("@/components/booking/reservation-lifecycle");
 
       const abandoned = await abandonPreviousReservationIfDifferent("film-B");

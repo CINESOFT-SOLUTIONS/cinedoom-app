@@ -11,7 +11,6 @@ import { abandonPreviousReservationIfDifferent } from "@/components/booking/rese
 
 interface FilmCardProps {
   film: FilmItem;
-  selectedDate?: Date;
   onOpenSessions?: (film: FilmItem) => void;
   onOpenDetails?: (film: FilmItem) => void;
 }

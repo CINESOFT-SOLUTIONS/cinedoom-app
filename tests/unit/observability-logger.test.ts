@@ -3,7 +3,6 @@ import {
   logger,
   sanitizeLogDetails,
   generateRequestId,
-  LogEntry,
 } from "@/shared/logger";
 
 describe("Observabilidade — Structured Logging & Axiom Log Drain (TASK-15 / AC-3 / ADR-011)", () => {

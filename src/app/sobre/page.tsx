@@ -8,7 +8,6 @@ import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { InteractiveGlowCard } from "@/components/interactive-glow-card";
 import {
   Sparkles,
-  Film,
   Volume2,
   Tv,
   Armchair,

@@ -44,10 +44,6 @@ export const MOCK_ROOMS: MockRoom[] = [
   },
 ];
 
-export function getMockRooms() {
-  return MOCK_ROOMS;
-}
-
 interface SessionTemplate {
   roomIndex: number;
   hour: number;
@@ -127,7 +123,7 @@ function getCinemaBaseDate(): Date {
   return new Date();
 }
 
-function generateSessions(templates: SessionTemplate[], baseDate: Date, _totalDays = 7) {
+function generateSessions(templates: SessionTemplate[], baseDate: Date) {
   const sessions = [];
 
   // Gera sessões de -1 (cobrindo fuso horário / transição noturna) até +8 dias (total 10 dias)
@@ -178,7 +174,7 @@ export function getMockFilmsWithSessions() {
       classification: "14",
       genre: "Ficção Científica • Aventura",
       posterUrl: "/posters/duna-2.jpg",
-      sessions: generateSessions(DUNA_TEMPLATES, today, 7),
+      sessions: generateSessions(DUNA_TEMPLATES, today),
     },
     {
       id: "00000000-0000-4000-a000-000000000102",
@@ -189,7 +185,7 @@ export function getMockFilmsWithSessions() {
       classification: "16",
       genre: "Drama Histórico • Biografia",
       posterUrl: "/posters/oppenheimer.jpg",
-      sessions: generateSessions(OPPENHEIMER_TEMPLATES, today, 7),
+      sessions: generateSessions(OPPENHEIMER_TEMPLATES, today),
     },
     {
       id: "00000000-0000-4000-a000-000000000103",
@@ -200,7 +196,7 @@ export function getMockFilmsWithSessions() {
       classification: "18",
       genre: "Romance • Fantasia • Comédia",
       posterUrl: "/posters/pobres-criaturas.jpg",
-      sessions: generateSessions(POBRES_CRIATURAS_TEMPLATES, today, 7),
+      sessions: generateSessions(POBRES_CRIATURAS_TEMPLATES, today),
     },
     {
       id: "00000000-0000-4000-a000-000000000104",
@@ -211,7 +207,7 @@ export function getMockFilmsWithSessions() {
       classification: "L",
       genre: "Animação • Família • Aventura",
       posterUrl: "/posters/divertida-mente-2.jpg",
-      sessions: generateSessions(DIVERTIDA_MENTE_TEMPLATES, today, 7),
+      sessions: generateSessions(DIVERTIDA_MENTE_TEMPLATES, today),
     },
   ];
 }

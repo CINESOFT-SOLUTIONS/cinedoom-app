@@ -2,11 +2,10 @@
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
-import { Film, Search, Ticket, Clock, AlertCircle, X } from "lucide-react";
+import { Film, Search, Ticket, AlertCircle } from "lucide-react";
 import { AgeRatingBadge } from "@/components/home/age-rating-badge";
 import { getRoomDisplayName, getRoomExperienceCategory } from "@/shared/experiences";
 import { BookingFlow } from "@/components/booking/booking-flow";
-import { FilmModal } from "@/components/home/film-modal";
 import { abandonPreviousReservationIfDifferent } from "@/components/booking/reservation-lifecycle";
 import type { FilmItem, SessionItem } from "@/components/home/types";
 

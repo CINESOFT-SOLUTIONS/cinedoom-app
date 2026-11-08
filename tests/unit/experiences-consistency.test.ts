@@ -9,8 +9,6 @@ import {
   getRoomDisplayName,
   getRoomWithExperience,
   matchesProgramacaoFilter,
-  type ExperienceCategory,
-  type ProgramacaoFilter,
 } from "@/shared/experiences";
 import { FilmFilters } from "@/components/home/film-filters";
 
