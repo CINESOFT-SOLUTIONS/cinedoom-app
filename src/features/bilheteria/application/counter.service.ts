@@ -27,6 +27,18 @@ export class CounterServiceClass {
       throw new ReservationNotFoundError();
     }
 
+    if (reservation.status === "EXPIRED" || reservation.status === "CANCELLED") {
+      throw new ReservationNotFoundError("Reserva expirada ou cancelada não está disponível na bilheteria.");
+    }
+
+    if (
+      reservation.status === "PENDING" &&
+      reservation.expiresAt &&
+      new Date(reservation.expiresAt) <= new Date()
+    ) {
+      throw new ReservationNotFoundError("Reserva expirada pelo prazo limite de retirada.");
+    }
+
     let buyerCpfMasked = "***.***.***-**";
 
     try {
@@ -55,6 +67,18 @@ export class CounterServiceClass {
 
     if (!reservation) {
       throw new ReservationNotFoundError();
+    }
+
+    if (reservation.status === "EXPIRED" || reservation.status === "CANCELLED") {
+      throw new ReservationNotFoundError("Reserva expirada ou cancelada não está disponível na bilheteria.");
+    }
+
+    if (
+      reservation.status === "PENDING" &&
+      reservation.expiresAt &&
+      new Date(reservation.expiresAt) <= new Date()
+    ) {
+      throw new ReservationNotFoundError("Reserva expirada pelo prazo limite de retirada.");
     }
 
     let buyerCpfMasked = "***.***.***-**";

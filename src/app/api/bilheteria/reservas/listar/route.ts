@@ -30,8 +30,18 @@ export async function GET(request: NextRequest) {
   const limit = limitParam ? parseInt(limitParam, 10) : 30;
 
   try {
+    const now = new Date();
     const where: any = {
       tenantId,
+      // Não exibe reservas canceladas nem expiradas para a bilheteria
+      NOT: [
+        { status: "CANCELLED" },
+        { status: "EXPIRED" },
+        {
+          status: "PENDING",
+          expiresAt: { lte: now },
+        },
+      ],
     };
 
     if (status && status !== "ALL") {
