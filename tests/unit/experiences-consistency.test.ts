@@ -148,7 +148,7 @@ describe("Padronização de Experiências de Salas e Filtros (CineDoom)", () => 
   });
 
   describe("5. Renderização do Componente FilmFilters", () => {
-    it("deve renderizar os botões 'Todos', 'CLÁSSICA', 'IMAX' e 'VIP' na UI", () => {
+    it("deve renderizar o seletor de datas e o campo de busca sem filtros de formato de sala", () => {
       const html = renderToStaticMarkup(
         React.createElement(FilmFilters, {
           dateTabs: [
@@ -156,17 +156,15 @@ describe("Padronização de Experiências de Salas e Filtros (CineDoom)", () => 
           ],
           selectedDay: 0,
           onSelectDay: () => { },
-          selectedFormat: "Todos",
-          onSelectFormat: () => { },
           searchQuery: "",
           onSearchChange: () => { },
         })
       );
 
-      expect(html).toContain("Todos");
-      expect(html).toContain("CLÁSSICA");
-      expect(html).toContain("IMAX");
-      expect(html).toContain("VIP");
+      expect(html).toContain("Hoje");
+      expect(html).toContain("24/10");
+      expect(html).toContain("Buscar filme em cartaz...");
+      expect(html).not.toContain("CLÁSSICA");
       expect(html).not.toContain("TODOS");
       expect(html).not.toContain("CONFORT");
       expect(html).not.toContain("Confort");

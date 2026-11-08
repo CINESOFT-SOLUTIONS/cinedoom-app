@@ -69,6 +69,7 @@ interface SessionPortalDetail {
 interface BookingFlowProps {
   initialFilmId?: string;
   initialSessionId?: string;
+  initialDateIndex?: number;
   initialStep?: BookingStep;
   onClose?: () => void;
   isModal?: boolean;
@@ -77,6 +78,7 @@ interface BookingFlowProps {
 export function BookingFlow({
   initialFilmId,
   initialSessionId,
+  initialDateIndex,
   initialStep,
   onClose,
   isModal,
@@ -106,7 +108,7 @@ export function BookingFlow({
   const [selectedFilm, setSelectedFilm] = useState<FilmItem | null>(null);
   const [sessionDetail, setSessionDetail] = useState<SessionPortalDetail | null>(null);
   const [selectedSessionId, setSelectedSessionId] = useState<string>(initialSessionId || "");
-  const [selectedDateIndex, setSelectedDateIndex] = useState<number>(0);
+  const [selectedDateIndex, setSelectedDateIndex] = useState<number>(initialDateIndex ?? 0);
 
   // Estados do mapa de assentos (Etapa 2)
   const [seats, setSeats] = useState<GridSeatItem[]>([]);

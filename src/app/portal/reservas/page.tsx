@@ -10,8 +10,18 @@ function BookingFlowContainer() {
   const searchParams = useSearchParams();
   const filmeId = searchParams.get("filmeId") || searchParams.get("filmId") || undefined;
   const sessionId = searchParams.get("sessionId") || searchParams.get("sessaoId") || undefined;
+  const diaParam = searchParams.get("dia") || searchParams.get("dataIndex");
+  const initialDateIndex = diaParam !== null && diaParam !== undefined && !isNaN(Number(diaParam))
+    ? Math.max(0, Math.min(6, parseInt(diaParam, 10)))
+    : undefined;
 
-  return <BookingFlow initialFilmId={filmeId} initialSessionId={sessionId} />;
+  return (
+    <BookingFlow
+      initialFilmId={filmeId}
+      initialSessionId={sessionId}
+      initialDateIndex={initialDateIndex}
+    />
+  );
 }
 
 export default function PortalReservasPage() {

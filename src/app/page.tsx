@@ -14,7 +14,6 @@ import { AttendantSalesCounter } from "@/components/attendant/attendant-sales-co
 import { abandonPreviousReservationIfDifferent } from "@/components/booking/reservation-lifecycle";
 import type { FilmItem } from "@/components/home/types";
 import { Film } from "lucide-react";
-import { type ProgramacaoFilter, matchesProgramacaoFilter } from "@/shared/experiences";
 
 export default function CinemarkStyleHomePage() {
   const router = useRouter();
@@ -25,7 +24,6 @@ export default function CinemarkStyleHomePage() {
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFormat, setSelectedFormat] = useState<ProgramacaoFilter>("Todos");
   const [selectedDay, setSelectedDay] = useState<number>(0);
   const [selectedModalFilm, setSelectedModalFilm] = useState<FilmItem | null>(null);
 
@@ -85,8 +83,10 @@ export default function CinemarkStyleHomePage() {
     });
   }, []);
 
-  // Filtro de filmes
+  // Filtro de filmes por busca textual e data selecionada
   const filteredFilms = useMemo(() => {
+    const targetDate = dateTabs[selectedDay]?.date;
+
     return films.filter((f) => {
       const matchesSearch =
         f.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -94,16 +94,22 @@ export default function CinemarkStyleHomePage() {
 
       if (!matchesSearch) return false;
 
-      if (selectedFormat !== "Todos") {
-        const hasMatchingSession = f.sessions.some((s) =>
-          matchesProgramacaoFilter(s.room.name, selectedFormat)
-        );
-        if (!hasMatchingSession) return false;
+      // Se houver data selecionada, valida se o filme possui sessões naquele dia
+      if (targetDate && f.sessions && f.sessions.length > 0) {
+        const hasSessionOnTargetDate = f.sessions.some((s) => {
+          const sDate = new Date(s.startsAt);
+          return (
+            sDate.getFullYear() === targetDate.getFullYear() &&
+            sDate.getMonth() === targetDate.getMonth() &&
+            sDate.getDate() === targetDate.getDate()
+          );
+        });
+        if (!hasSessionOnTargetDate) return false;
       }
 
       return true;
     });
-  }, [films, searchQuery, selectedFormat]);
+  }, [films, searchQuery, selectedDay, dateTabs]);
 
   // Se o usuário autenticado for ATENDENTE, exibe a interface operacional da Bilheteria.
   if (authStatus === "authenticated" && userRole === "ATENDENTE") {
@@ -130,7 +136,7 @@ export default function CinemarkStyleHomePage() {
         onSelectHeroIndex={setHeroIndex}
         onOpenSessions={(f) => {
           abandonPreviousReservationIfDifferent(f.id);
-          router.push(`/portal/reservas?filmeId=${f.id}`);
+          router.push(`/portal/reservas?filmeId=${f.id}&dia=${selectedDay}`);
         }}
         onOpenDetails={(f) => {
           setSelectedModalFilm(f);
@@ -142,8 +148,6 @@ export default function CinemarkStyleHomePage() {
         dateTabs={dateTabs}
         selectedDay={selectedDay}
         onSelectDay={setSelectedDay}
-        selectedFormat={selectedFormat}
-        onSelectFormat={setSelectedFormat}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
@@ -175,7 +179,7 @@ export default function CinemarkStyleHomePage() {
             <Film className="w-12 h-12 text-slate-600 mx-auto" />
             <h3 className="text-lg font-bold text-white">Nenhum filme encontrado</h3>
             <p className="text-xs text-slate-400">
-              Tente selecionar outro formato de sala ou ajustar os termos de busca.
+              Tente selecionar outro dia na programação ou ajustar os termos de busca.
             </p>
           </div>
         ) : (
@@ -186,7 +190,7 @@ export default function CinemarkStyleHomePage() {
                 film={film}
                 onOpenSessions={(f) => {
                   abandonPreviousReservationIfDifferent(f.id);
-                  router.push(`/portal/reservas?filmeId=${f.id}`);
+                  router.push(`/portal/reservas?filmeId=${f.id}&dia=${selectedDay}`);
                 }}
                 onOpenDetails={(f) => {
                   setSelectedModalFilm(f);
