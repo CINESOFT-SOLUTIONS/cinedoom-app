@@ -331,7 +331,7 @@ export function useLiquidGlassRef<T extends HTMLElement = HTMLDivElement>(
   return ref;
 }
 
-const SELECTOR = ".liquid-glass, .liquid-glass-card, [data-liquid-glass]";
+const SELECTOR = ".liquid-glass, .liquid-glass-card, .liquid-glass-menu, [data-liquid-glass]";
 
 /**
  * Global provider that automatically binds the SVG displacement refraction
