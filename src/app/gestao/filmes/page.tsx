@@ -264,7 +264,7 @@ export default function CatalogoFilmesPage() {
               <FilmIcon className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">Catálogo de Filmes</h1>
+              <h1 className="text-xl font-bold tracking-tight text-white">Filmes</h1>
               <p className="text-xs text-slate-400">
                 Gestão e programação do acervo cinematográfico do cinema
               </p>

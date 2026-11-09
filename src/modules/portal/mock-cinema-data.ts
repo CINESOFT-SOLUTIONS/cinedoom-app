@@ -249,13 +249,33 @@ export function getMockFilmsWithSessions() {
   ];
 }
 
+// Conjunto global em memória de assentos bloqueados para manutenção física nas salas
+const BLOCKED_MAINTENANCE_SEAT_CODES = new Set<string>();
+
+export function toggleSeatMaintenance(seatCodeOrId: string): boolean {
+  // Extrai código como "A1", "seat-A1", etc.
+  const code = seatCodeOrId.replace(/^seat-/, "");
+  if (BLOCKED_MAINTENANCE_SEAT_CODES.has(code)) {
+    BLOCKED_MAINTENANCE_SEAT_CODES.delete(code);
+    return false;
+  } else {
+    BLOCKED_MAINTENANCE_SEAT_CODES.add(code);
+    return true;
+  }
+}
+
+export function isSeatBlockedForMaintenance(seatCodeOrId: string): boolean {
+  const code = seatCodeOrId.replace(/^seat-/, "");
+  return BLOCKED_MAINTENANCE_SEAT_CODES.has(code);
+}
+
 export function generateMockSeats(rows: number, cols: number, price: number, sessionId?: string) {
   const seats = [];
   for (let r = 0; r < rows; r++) {
     const rowLabel = String.fromCharCode(65 + r);
     for (let c = 1; c <= cols; c++) {
-      // Nos mocks, todos os assentos iniciam disponíveis (AVAILABLE).
-      // As reservas e bloqueios são feitos exclusivamente pelo usuário em tempo de execução.
+      const code = `${rowLabel}${c}`;
+      const isBlocked = BLOCKED_MAINTENANCE_SEAT_CODES.has(code);
       seats.push({
         id: `seat-${rowLabel}${c}`,
         seat_id: `seat-${rowLabel}${c}`,
@@ -264,8 +284,8 @@ export function generateMockSeats(rows: number, cols: number, price: number, ses
         rowLabel,
         number: c,
         columnNumber: c,
-        seatCode: `${rowLabel}${c}`,
-        status: "AVAILABLE",
+        seatCode: code,
+        status: isBlocked ? "BLOCKED" : "AVAILABLE",
         price,
       });
     }

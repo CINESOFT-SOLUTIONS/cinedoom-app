@@ -438,7 +438,7 @@ export default function SessoesGestãoPage() {
               <Calendar className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">Programação & Sessões</h1>
+              <h1 className="text-xl font-bold tracking-tight text-white">Sessões</h1>
               <p className="text-xs text-slate-400">
                 Agendamento e gerenciamento de sessões e horários das salas
               </p>

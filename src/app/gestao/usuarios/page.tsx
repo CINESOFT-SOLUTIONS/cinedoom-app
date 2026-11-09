@@ -113,7 +113,11 @@ export default function GestaoUsuariosPage() {
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
-          setUsers(data.map(normalizeOperatorName));
+          // Filtra exclusivamente para operadores da equipe (Atendentes e Gerente), excluindo clientes
+          const staffOnly = data
+            .filter((u: UserItem) => u.role === "ATENDENTE" || u.role === "GERENTE")
+            .map(normalizeOperatorName);
+          setUsers(staffOnly.length > 0 ? staffOnly : FALLBACK_OPERATORS);
         } else {
           setUsers(FALLBACK_OPERATORS);
         }
@@ -316,7 +320,7 @@ export default function GestaoUsuariosPage() {
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">Gestão de Atendentes</h1>
+              <h1 className="text-xl font-bold tracking-tight text-white">Atendentes</h1>
               <p className="text-xs text-slate-400">
                 Ativação e credenciais de operadores da bilheteria do cinema
               </p>

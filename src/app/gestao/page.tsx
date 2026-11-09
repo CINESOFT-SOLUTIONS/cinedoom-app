@@ -1,45 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { Film, DoorOpen, Calendar, Users, ShieldCheck, ArrowRight } from "lucide-react";
+import { Film, DoorOpen, Calendar, Users, ArrowRight } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
 
 export default function GestãoDashboardPage() {
   const modules = [
     {
-      title: "Catálogo de Filmes",
+      title: "Sessões",
+      description: "Agendamento, edição e gerenciamento da programação semanal de sessões.",
+      href: "/gestao/sessoes",
+      icon: Calendar,
+      badge: "Programação",
+    },
+    {
+      title: "Filmes",
       description: "Cadastro de obras cinematográficas, classificação indicativa, pôsteres e sinopses.",
       href: "/gestao/filmes",
       icon: Film,
       badge: "Catálogo",
     },
     {
-      title: "Salas & Layouts",
-      description: "Configuração física de salas, capacidade e grade de poltronas.",
+      title: "Salas",
+      description: "Visualização do layout das salas e bloqueio de poltronas em manutenção.",
       href: "/gestao/salas",
       icon: DoorOpen,
       badge: "Infraestrutura",
     },
     {
-      title: "Programação & Sessões",
-      description: "Agendamento e gerenciamento de sessões, salas e horários.",
-      href: "/gestao/sessoes",
-      icon: Calendar,
-      badge: "Programação",
-    },
-    {
-      title: "Gestão de Atendentes",
+      title: "Atendentes",
       description: "Cadastro, ativação e redefinição de senhas para operadores da bilheteria.",
       href: "/gestao/usuarios",
       icon: Users,
       badge: "Equipe",
-    },
-    {
-      title: "Compliance LGPD (Art. 18)",
-      description: "Atendimento aos direitos do titular e anonimização com preservação fiscal.",
-      href: "/gestao/titulares",
-      icon: ShieldCheck,
-      badge: "Segurança & LGPD",
     },
   ];
 
