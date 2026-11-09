@@ -327,8 +327,6 @@ async function main() {
     },
   };
 
-  let sessaoLotada: any = null;
-
   for (let diaOffset = 0; diaOffset <= 6; diaOffset++) {
     const targetDate = new Date(hoje);
     targetDate.setDate(targetDate.getDate() + diaOffset);
@@ -348,10 +346,7 @@ async function main() {
 
     // Sala 03: Duna: Parte Dois (filmes[0])
     for (const slot of daySlots.sala03) {
-      const sess = await criarSessao(filmes[0].id, sala3.id, slot.hour, 30.0, slot.minute, diaOffset);
-      if (!sessaoLotada && diaOffset === 0) {
-        sessaoLotada = sess; // Guarda a primeira sessão de hoje para pré-lotação demo de ~90%
-      }
+      await criarSessao(filmes[0].id, sala3.id, slot.hour, 30.0, slot.minute, diaOffset);
     }
 
     // Sala 04: Pobres Criaturas (filmes[2])
@@ -360,45 +355,9 @@ async function main() {
     }
   }
 
-  // Pré-lotar ~90% da sessão lotada
-  const ssLotados = await prisma.sessionSeat.findMany({
-    where: { sessionId: sessaoLotada.id, tenantId: tenant.id },
-  });
-  const toSell = Math.floor(ssLotados.length * 0.9);
-  const cpf = "52998224725";
-  const buyer = await prisma.buyer.create({
-    data: {
-      tenantId: tenant.id,
-      name: "Demo Comprador",
-      email: "demo@cinedoom.com",
-      cpfHash: hashCPF(cpf),
-      cpfEncrypted: encryptCPF(cpf),
-      lgpdConsentAt: new Date(),
-    },
-  });
-  const atendente = await prisma.user.findFirst({ where: { email: "atendente@cinedoom.com", tenantId: tenant.id } });
-  for (let i = 0; i < toSell; i++) {
-    await prisma.sessionSeat.update({
-      where: { id: ssLotados[i].id },
-      data: { status: "SOLD" },
-    });
-    await prisma.ticket.create({
-      data: {
-        tenantId: tenant.id,
-        sessionId: sessaoLotada.id,
-        seatId: ssLotados[i].seatId,
-        buyerId: buyer.id,
-        soldByUserId: atendente!.id,
-        status: "SOLD",
-        price: 30.0,
-      },
-    });
-  }
-
   console.log("✅ Seed concluído!");
   console.log(`Tenant: ${tenant1.name}`);
   console.log("Usuários: gerente@cinedoom.com / atendente@cinedoom.com (senha: Cinema123!)");
-  console.log(`Sessão pré-lotada: ${toSell}/${ssLotados.length} assentos vendidos (~90%)`);
 }
 
 main()
