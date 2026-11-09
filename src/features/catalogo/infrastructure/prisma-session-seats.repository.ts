@@ -5,7 +5,7 @@ export class PrismaSessionSeatsRepository implements ISessionSeatsRepository {
   async findSessionPriceAndStatus(sessionId: string, tenantId: string) {
     return rawPrisma.session.findFirst({
       where: { id: sessionId, tenantId },
-      select: { id: true, price: true, status: true },
+      select: { id: true, price: true, status: true, roomId: true },
     });
   }
 
@@ -18,7 +18,7 @@ export class PrismaSessionSeatsRepository implements ISessionSeatsRepository {
         status: true,
         reservationExpiresAt: true,
         seat: {
-          select: { rowLabel: true, columnNumber: true, seatCode: true },
+          select: { rowLabel: true, columnNumber: true, seatCode: true, status: true, roomId: true },
         },
       },
       orderBy: [

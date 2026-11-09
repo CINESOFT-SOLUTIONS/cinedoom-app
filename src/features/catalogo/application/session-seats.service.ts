@@ -19,10 +19,11 @@ export class SessionSeatsServiceClass {
 
     const lightweightPayload = sessionSeats.map((ss: any) => {
       const code = ss.seat?.seatCode || (ss.seat ? `${ss.seat.rowLabel}${ss.seat.columnNumber}` : "");
+      const seatRoomId = ss.seat?.roomId || roomId;
       const isPhysicallyBlocked =
         ss.status === "BLOCKED" ||
         ss.seat?.status === "BLOCKED" ||
-        isSeatBlockedForMaintenance(code, roomId);
+        isSeatBlockedForMaintenance(code, seatRoomId);
 
       let effectiveStatus = ss.status;
       if (isPhysicallyBlocked) {

@@ -49,7 +49,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           mockSession.room.rows,
           mockSession.room.columns,
           mockSession.price,
-          params.id
+          params.id,
+          mockSession.room.id
         );
 
         return NextResponse.json(mockSeats, {
@@ -84,7 +85,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         mockSession.room.rows,
         mockSession.room.columns,
         mockSession.price,
-        params.id
+        params.id,
+        mockSession.room.id
       );
 
       return NextResponse.json(mockSeats, {

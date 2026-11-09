@@ -250,11 +250,27 @@ export function getMockFilmsWithSessions() {
 }
 
 // Conjunto global em memória de assentos bloqueados para manutenção física nas salas (escopo por Sala)
-// Chave: "roomId:seatCode" ou "roomId" -> Set<seatCode>
-const ROOM_MAINTENANCE_BLOCKED_SEATS = new Map<string, Set<string>>();
+// Usamos globalThis para evitar reset do Map durante Fast Refresh do Next.js em desenvolvimento
+const globalForCinema = globalThis as unknown as {
+  roomMaintenanceBlockedSeats?: Map<string, Set<string>>;
+};
+
+const ROOM_MAINTENANCE_BLOCKED_SEATS =
+  globalForCinema.roomMaintenanceBlockedSeats ?? new Map<string, Set<string>>();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForCinema.roomMaintenanceBlockedSeats = ROOM_MAINTENANCE_BLOCKED_SEATS;
+}
 
 export function getMaintenanceKey(roomId?: string): string {
   if (!roomId) return "DEFAULT";
+  // Se for UUID de sala mock canônica ou ID genérico, normaliza para associar por número de sala também
+  for (let i = 0; i < MOCK_ROOMS.length; i++) {
+    const r = MOCK_ROOMS[i];
+    if (r.id === roomId || roomId.includes(`020${i + 1}`) || roomId.includes(`sala-0${i + 1}`) || roomId.toLowerCase().includes(`sala 0${i + 1}`)) {
+      return r.id;
+    }
+  }
   return roomId;
 }
 
@@ -283,8 +299,15 @@ export function isSeatBlockedForMaintenance(seatCodeOrId: string, roomId?: strin
   const code = codeMatch ? codeMatch[1].toUpperCase() : seatCodeOrId.replace(/^seat-/, "").toUpperCase();
 
   if (roomId) {
-    const roomBlockedSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get(roomId);
+    const roomKey = getMaintenanceKey(roomId);
+    const roomBlockedSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get(roomKey);
     if (roomBlockedSet && roomBlockedSet.has(code)) return true;
+
+    // Também checa se o roomId bruto sem normalização possui chave direta
+    if (roomKey !== roomId) {
+      const rawSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get(roomId);
+      if (rawSet && rawSet.has(code)) return true;
+    }
   }
 
   // Verifica também na chave DEFAULT (compatibilidade com chamadas sem roomId)
