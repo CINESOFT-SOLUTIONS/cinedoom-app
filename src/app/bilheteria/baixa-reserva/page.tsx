@@ -430,7 +430,7 @@ export default function BaixaReservaPage() {
                     className="p-4 rounded-xl liquid-glass-card border border-white/5 hover:border-white/20 hover:bg-white/[0.04] transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 cursor-pointer group"
                   >
                     {/* Bloco 1: Informações Principais (Código, Status, Horário) */}
-                    <div className="flex items-center gap-3 shrink-0 lg:w-64">
+                    <div className="flex flex-wrap items-center gap-2.5 shrink-0">
                       <span className="font-mono font-bold text-sm text-white tracking-wide group-hover:text-cta transition-colors">
                         {item.code}
                       </span>
@@ -451,37 +451,37 @@ export default function BaixaReservaPage() {
                       </span>
                     </div>
 
-                    {/* Bloco 2: Informações da Reserva (Filme, Sala, Cliente) */}
-                    <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 text-xs">
-                      <div className="truncate">
+                    {/* Bloco 2: Informações da Reserva (Filme, Sala, Cliente) sem corte/truncate */}
+                    <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                      <div>
                         <span className="text-slate-400 text-[11px] block">Filme</span>
-                        <span className="font-semibold text-white truncate block group-hover:text-cta transition-colors" title={item.filmTitle}>
+                        <span className="font-semibold text-white break-words group-hover:text-cta transition-colors leading-snug" title={item.filmTitle}>
                           {item.filmTitle}
                         </span>
                       </div>
-                      <div className="truncate">
+                      <div>
                         <span className="text-slate-400 text-[11px] block">Sala</span>
-                        <span className="text-slate-200 truncate block">
+                        <span className="text-slate-200 break-words">
                           {getCanonicalRoomName(item.roomName)}
                         </span>
                       </div>
-                      <div className="truncate">
+                      <div>
                         <span className="text-slate-400 text-[11px] block">Cliente</span>
-                        <span className="text-slate-200 truncate block" title={item.buyerName}>
+                        <span className="text-slate-200 break-words" title={item.buyerName}>
                           {item.buyerName}
                         </span>
                       </div>
                     </div>
 
                     {/* Bloco 3: Informações Complementares (Poltronas, Valor Total) */}
-                    <div className="flex items-center gap-4 text-xs shrink-0 lg:w-56 justify-start lg:justify-end">
+                    <div className="flex flex-wrap items-center gap-4 text-xs shrink-0 justify-start lg:justify-end">
                       <div>
                         <span className="text-slate-400 text-[11px] block">Poltronas</span>
-                        <span className="font-bold text-cta">
+                        <span className="font-bold text-cta break-words">
                           {item.seats.join(", ") || "—"}
                         </span>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left lg:text-right">
                         <span className="text-slate-400 text-[11px] block">Total</span>
                         <span className="font-bold text-white text-sm">
                           R$ {item.totalAmount.toFixed(2)}
