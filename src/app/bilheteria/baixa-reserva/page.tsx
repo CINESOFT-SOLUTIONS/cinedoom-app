@@ -19,6 +19,10 @@ import {
   Copy,
   Ban,
   AlertTriangle,
+  Banknote,
+  CreditCard,
+  QrCode,
+  Info,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
 import { CineDoomFooter } from "@/components/cinedoom-footer";
@@ -109,6 +113,70 @@ export default function BaixaReservaPage() {
   const [ticketModalData, setTicketModalData] = useState<any | null>(null);
   const [loadingTicketDetails, setLoadingTicketDetails] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+
+  // Modal da Etapa 4 (Pagamento)
+  const [paymentModalReservation, setPaymentModalReservation] = useState<ReservationItem | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"DINHEIRO" | "DEBITO" | "CREDITO" | "PIX">("DINHEIRO");
+  const [cashTendered, setCashTendered] = useState<string>("");
+  const [isSubmittingPayment, setIsSubmittingPayment] = useState<boolean>(false);
+
+  function iniciarPagamento(r: any) {
+    if (!r) return;
+    const itemTarget: ReservationItem = {
+      id: r.id || "",
+      code: r.code,
+      status: r.status,
+      totalAmount: Number(r.totalAmount || r.totalPrice || 0),
+      createdAt: r.createdAt || new Date().toISOString(),
+      expiresAt: r.expiresAt || null,
+      buyerName: r.buyerName || r.buyer?.name || "Cliente",
+      buyerCpfMasked: r.buyerCpfMasked || r.buyer?.cpfMasked || "***.***.***-**",
+      filmTitle: r.filmTitle || r.film?.title || r.session?.film?.title || "Filme CineDoom",
+      roomName: r.roomName || r.room?.name || r.session?.room?.name || "Sala",
+      sessionStartsAt: r.sessionStartsAt || r.session?.startsAt || new Date().toISOString(),
+      seats: Array.isArray(r.seats)
+        ? r.seats.map((s: any) => typeof s === "string" ? s : (s.seatCode || s.seat?.seatCode || ""))
+        : [],
+    };
+    setPaymentModalReservation(itemTarget);
+    setSelectedPaymentMethod("DINHEIRO");
+    setCashTendered("");
+  }
+
+  async function finalizarPagamento() {
+    if (!paymentModalReservation) return;
+    const targetCode = paymentModalReservation.code;
+    setIsSubmittingPayment(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const res = await fetch("/api/bilheteria/reservas/confirmar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reservationCode: targetCode,
+          paymentMethod: selectedPaymentMethod,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Erro ao confirmar pagamento");
+      } else {
+        setSuccess(data.message || `Reserva ${targetCode} confirmada com sucesso! Pagamento: ${selectedPaymentMethod}`);
+        if (reservation && reservation.code === targetCode) {
+          setReservation((r: any) => ({ ...r, status: "CONFIRMED" }));
+        }
+        setPaymentModalReservation(null);
+        await abrirIngressos(targetCode);
+        await carregarListaReservas();
+      }
+    } catch {
+      setError("Falha ao confirmar pagamento da reserva");
+    } finally {
+      setIsSubmittingPayment(false);
+    }
+  }
 
   async function abrirIngressoDoTicket(t: SoldTicketItem) {
     if (t.code) {
@@ -531,7 +599,7 @@ export default function BaixaReservaPage() {
                   {reservation.status === "PENDING" && (
                     <button
                       type="button"
-                      onClick={() => confirmar(reservation.code)}
+                      onClick={() => iniciarPagamento(reservation)}
                       disabled={loading}
                       className="w-full sm:w-auto px-5 py-2.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center sm:justify-start gap-1.5 cursor-pointer"
                     >
@@ -661,7 +729,7 @@ export default function BaixaReservaPage() {
                             {isPending && (
                               <button
                                 type="button"
-                                onClick={() => confirmar(item.code)}
+                                onClick={() => iniciarPagamento(item)}
                                 disabled={isItemActionLoading}
                                 className="flex-1 lg:flex-initial px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                               >
@@ -934,6 +1002,290 @@ export default function BaixaReservaPage() {
               >
                 {cancelSubmitting ? "Cancelando..." : "Confirmar Cancelamento"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Oficial da Etapa 4 (Pagamento) para Baixa de Reservas */}
+      {paymentModalReservation && (
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isSubmittingPayment) {
+              setPaymentModalReservation(null);
+            }
+          }}
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto cursor-pointer animate-in fade-in duration-200"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-4xl bg-[#0E1322] border border-white/15 rounded-3xl p-4 sm:p-6 shadow-2xl text-left space-y-4 cursor-default font-sans my-auto max-h-[92vh] overflow-y-auto"
+          >
+            {/* Cabeçalho do Modal no padrão do Flow */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-cta/20 text-cta flex items-center justify-center border border-cta/30">
+                  <Banknote className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-cta text-white">
+                      Etapa 4 • Pagamento
+                    </span>
+                    <span className="font-mono text-xs text-slate-400 font-bold">
+                      {paymentModalReservation.code}
+                    </span>
+                  </div>
+                  <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                    Baixa de Reserva & Pagamento na Bilheteria
+                  </h2>
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled={isSubmittingPayment}
+                onClick={() => setPaymentModalReservation(null)}
+                className="text-slate-400 hover:text-white p-1.5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Conteúdo Idêntico à Etapa 4 do BookingFlow */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start w-full">
+              {/* Coluna Esquerda: Métodos de Pagamento */}
+              <div className="lg:col-span-7 flex flex-col gap-3">
+                <div className="p-4 rounded-2xl liquid-glass-card border border-white/10 space-y-3.5">
+                  <div>
+                    <h3 className="text-sm font-bold text-white">Forma de Pagamento</h3>
+                    <p className="text-xs text-slate-400">
+                      Selecione a forma de pagamento presencial no balcão
+                    </p>
+                  </div>
+
+                  {/* Grid de Formas de Pagamento */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPaymentMethod("DINHEIRO")}
+                      className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
+                        selectedPaymentMethod === "DINHEIRO"
+                          ? "bg-emerald-500/20 border-emerald-500/50 text-white shadow-md shadow-emerald-500/10 scale-[1.01]"
+                          : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20"
+                      }`}
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                          selectedPaymentMethod === "DINHEIRO"
+                            ? "bg-emerald-500 text-white"
+                            : "bg-white/10 text-slate-400"
+                        }`}
+                      >
+                        <Banknote className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-xs text-white">Dinheiro</div>
+                        <div className="text-[11px] text-slate-400">Espécie recebida no caixa</div>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPaymentMethod("DEBITO")}
+                      className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
+                        selectedPaymentMethod === "DEBITO"
+                          ? "bg-emerald-500/20 border-emerald-500/50 text-white shadow-md shadow-emerald-500/10 scale-[1.01]"
+                          : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20"
+                      }`}
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                          selectedPaymentMethod === "DEBITO"
+                            ? "bg-emerald-500 text-white"
+                            : "bg-white/10 text-slate-400"
+                        }`}
+                      >
+                        <CreditCard className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-xs text-white">Cartão de Débito</div>
+                        <div className="text-[11px] text-slate-400">Maquininha de cartão</div>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPaymentMethod("CREDITO")}
+                      className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
+                        selectedPaymentMethod === "CREDITO"
+                          ? "bg-emerald-500/20 border-emerald-500/50 text-white shadow-md shadow-emerald-500/10 scale-[1.01]"
+                          : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20"
+                      }`}
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                          selectedPaymentMethod === "CREDITO"
+                            ? "bg-emerald-500 text-white"
+                            : "bg-white/10 text-slate-400"
+                        }`}
+                      >
+                        <CreditCard className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-xs text-white">Cartão de Crédito</div>
+                        <div className="text-[11px] text-slate-400">Maquininha de cartão</div>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPaymentMethod("PIX")}
+                      className={`p-3 rounded-xl border text-left transition-all flex items-center gap-3 cursor-pointer ${
+                        selectedPaymentMethod === "PIX"
+                          ? "bg-emerald-500/20 border-emerald-500/50 text-white shadow-md shadow-emerald-500/10 scale-[1.01]"
+                          : "bg-white/[0.03] border-white/10 text-slate-300 hover:bg-white/[0.06] hover:border-white/20"
+                      }`}
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                          selectedPaymentMethod === "PIX"
+                            ? "bg-emerald-500 text-white"
+                            : "bg-white/10 text-slate-400"
+                        }`}
+                      >
+                        <QrCode className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-xs text-white">PIX</div>
+                        <div className="text-[11px] text-slate-400">QR Code presencial</div>
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Se Dinheiro selecionado: Campo de Valor Recebido e Troco */}
+                  {selectedPaymentMethod === "DINHEIRO" && (
+                    <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/10 space-y-2.5 animate-in fade-in duration-150">
+                      <label className="block text-xs font-semibold text-slate-300">
+                        Valor Recebido em Dinheiro (R$)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ex: 50,00"
+                        value={cashTendered}
+                        onChange={(e) => setCashTendered(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-[#0A0E1A] border border-white/10 text-white text-sm outline-none focus:border-cta font-mono"
+                      />
+                      {(() => {
+                        const tendered = parseFloat(cashTendered.replace(",", ".")) || 0;
+                        const total = paymentModalReservation.totalAmount;
+                        if (tendered >= total && tendered > 0) {
+                          const troco = tendered - total;
+                          return (
+                            <div className="p-2.5 rounded-lg bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-xs flex items-center justify-between font-semibold">
+                              <span>Troco a devolver:</span>
+                              <span className="text-sm font-bold text-emerald-400">
+                                R$ {troco.toFixed(2)}
+                              </span>
+                            </div>
+                          );
+                        }
+                        if (tendered > 0 && tendered < total) {
+                          const falta = total - tendered;
+                          return (
+                            <div className="p-2.5 rounded-lg bg-amber-950/60 border border-amber-500/30 text-amber-300 text-xs flex items-center justify-between font-semibold">
+                              <span>Valor insuficiente:</span>
+                              <span className="text-sm font-bold text-amber-400">
+                                Faltam R$ {falta.toFixed(2)}
+                              </span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
+                  )}
+
+                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-2 text-xs text-slate-400">
+                    <Info className="w-4 h-4 text-cta shrink-0" />
+                    <span>
+                      Ao confirmar, o status da reserva muda para <strong>CONFIRMADA</strong> e os ingressos emitidos ficam disponíveis imediatamente para impressão.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Coluna Direita: Resumo da Reserva e Ação */}
+              <div className="lg:col-span-5 flex flex-col gap-3">
+                <div className="p-4 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-3">
+                  <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block border-b border-white/10 pb-2">
+                    Resumo da Reserva
+                  </span>
+
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-slate-400">Filme:</span>
+                      <span className="font-bold text-white text-right leading-tight max-w-[200px]">
+                        {paymentModalReservation.filmTitle}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-400">Sala:</span>
+                      <span className="font-semibold text-slate-200">
+                        {getCanonicalRoomName(paymentModalReservation.roomName)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-400">Sessão:</span>
+                      <span className="font-semibold text-slate-200">
+                        {new Date(paymentModalReservation.sessionStartsAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-400">Poltronas:</span>
+                      <span className="font-bold text-cta">
+                        {paymentModalReservation.seats.join(", ") || "—"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-slate-400">Cliente:</span>
+                      <span className="text-slate-200 font-medium truncate max-w-[180px]">
+                        {paymentModalReservation.buyerName}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                    <div>
+                      <span className="text-[11px] text-slate-400 block uppercase font-semibold">Total a Cobrar:</span>
+                      <span className="text-xs font-bold text-emerald-400 uppercase">
+                        {selectedPaymentMethod}
+                      </span>
+                    </div>
+                    <span className="text-xl font-black text-emerald-400 font-mono">
+                      R$ {paymentModalReservation.totalAmount.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={isSubmittingPayment}
+                    onClick={finalizarPagamento}
+                    className="w-full py-3 rounded-xl font-bold text-xs tracking-wide shadow-lg shadow-emerald-600/30 bg-emerald-600 hover:bg-emerald-500 text-white transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-95"
+                  >
+                    {isSubmittingPayment ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
+                        <span>Emitindo Ingressos...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-4 h-4 shrink-0" />
+                        <span>Confirmar Pagamento e Emitir Ingressos</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -12,12 +12,17 @@ vi.mock("@/shared/db/prisma", () => {
       findFirst: vi.fn(),
       findMany: vi.fn(),
       update: vi.fn(),
+      count: vi.fn().mockResolvedValue(0),
     },
     cancellationAudit: {
       create: vi.fn(),
     },
     sessionSeat: {
       updateMany: vi.fn(),
+    },
+    reservation: {
+      findFirst: vi.fn().mockResolvedValue(null),
+      update: vi.fn().mockResolvedValue({ id: "mock-res" }),
     },
   };
 

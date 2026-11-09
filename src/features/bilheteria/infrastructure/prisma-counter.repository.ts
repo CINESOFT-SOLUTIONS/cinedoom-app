@@ -120,7 +120,6 @@ export class PrismaCounterRepository implements ICounterRepository {
           },
           data: {
             status: "SOLD",
-            reservationId: null,
             reservationExpiresAt: null,
           },
         });

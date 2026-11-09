@@ -111,6 +111,39 @@ export class PrismaCancellationRepository implements ICancellationRepository {
         },
       });
 
+      // 7. Sincroniza cancelamento com a Reserva correspondente (se existir)
+      const matchingReservation = await tx.reservation.findFirst({
+        where: {
+          tenantId,
+          sessionId: ticket.sessionId,
+          buyerId: ticket.buyerId,
+          status: { in: ["PENDING", "CONFIRMED"] },
+        },
+      });
+
+      if (matchingReservation) {
+        // Verifica se ainda resta algum outro ingresso vendido (SOLD) para este comprador nesta sessão
+        const remainingActiveTickets = await tx.ticket.count({
+          where: {
+            tenantId,
+            sessionId: ticket.sessionId,
+            buyerId: ticket.buyerId,
+            status: "SOLD",
+            id: { not: ticket.id },
+          },
+        });
+
+        if (remainingActiveTickets === 0) {
+          await tx.reservation.update({
+            where: { id: matchingReservation.id },
+            data: {
+              status: "CANCELLED",
+              cancelledAt: now,
+            },
+          });
+        }
+      }
+
       return {
         success: true,
         message: "Ingresso cancelado com sucesso e auditoria imutavel registrada.",
