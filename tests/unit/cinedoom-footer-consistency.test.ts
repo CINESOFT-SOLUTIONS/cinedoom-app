@@ -15,7 +15,7 @@ describe("Padronização e Refinamento do Rodapé Global do CineDoom", () => {
     expect(html).toContain("grid-cols-1 sm:grid-cols-2 lg:grid-cols-4");
 
     // 1. Apresentação do Cinema
-    expect(html).toContain("Cinema boutique com quatro salas, som imersivo, conforto em cada detalhe e reservas online sem taxa de conveniência.");
+    expect(html).toContain("Cinema com quatro salas, som imersivo, conforto em cada detalhe e reservas online sem taxa de conveniência.");
     expect(html).not.toContain("Experiências &amp; Salas");
     expect(html).not.toContain("Clássica (Salas 1 e 2)");
     expect(html).not.toContain("IMAX (Sala 3)");

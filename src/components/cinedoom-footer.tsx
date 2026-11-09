@@ -54,7 +54,7 @@ export function CineDoomFooter({ className = "", simple = false }: CineDoomFoote
               />
             </div>
             <p className="text-xs text-slate-400 leading-relaxed text-justify [text-justify:inter-word] hyphens-auto">
-              Cinema boutique com quatro salas, som imersivo, conforto em cada detalhe e reservas online sem taxa de conveniência.
+              Cinema com quatro salas, som imersivo, conforto em cada detalhe e reservas online sem taxa de conveniência.
             </p>
           </div>
 
