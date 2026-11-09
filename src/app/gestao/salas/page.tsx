@@ -199,11 +199,10 @@ export default function SalasGestaoPage() {
                 <button
                   key={room.id}
                   onClick={() => loadRoomDetails(room)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
-                    isSelected
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${isSelected
                       ? "bg-cta text-white shadow-md shadow-cta/25"
                       : "bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10"
-                  }`}
+                    }`}
                 >
                   <span>{room.name}</span>
                   <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30 font-medium">
@@ -218,11 +217,10 @@ export default function SalasGestaoPage() {
         {/* Status Toast Flutuante Compacto */}
         {statusMessage && (
           <div
-            className={`px-3 py-1.5 rounded-xl border text-xs shadow-md flex items-center justify-between shrink-0 ${
-              statusMessage.type === "success"
+            className={`px-3 py-1.5 rounded-xl border text-xs shadow-md flex items-center justify-between shrink-0 ${statusMessage.type === "success"
                 ? "bg-emerald-950/70 border-emerald-500/40 text-emerald-300"
                 : "bg-rose-950/70 border-rose-500/40 text-rose-300"
-            }`}
+              }`}
           >
             <div className="flex items-center gap-2">
               {statusMessage.type === "success" ? (
@@ -261,7 +259,7 @@ export default function SalasGestaoPage() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-3 h-3 rounded-xs bg-[#9CA3AF]/40 border border-[#9CA3AF]/60" />
-                  <span className="text-slate-300 text-[11px]">Manutenção (Bloqueada)</span>
+                  <span className="text-slate-300 text-[11px]">Bloqueada</span>
                 </div>
               </div>
             </div>
