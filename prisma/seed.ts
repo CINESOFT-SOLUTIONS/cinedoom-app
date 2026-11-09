@@ -9,21 +9,13 @@ async function main() {
 
   // 1) Tenants
   const tenant1 = await prisma.tenant.upsert({
-    where: { slug: "cinemax-goiania" },
-    update: {},
-    create: {
-      name: "CineMax Goiânia",
-      slug: "cinemax-goiania",
-      active: true,
+    where: { slug: "cinedoom-matriz" },
+    update: {
+      name: "CineDoom Matriz",
     },
-  });
-
-  const tenant2 = await prisma.tenant.upsert({
-    where: { slug: "cineart-brasilia" },
-    update: {},
     create: {
-      name: "CineArt Brasília",
-      slug: "cineart-brasilia",
+      name: "CineDoom Matriz",
+      slug: "cinedoom-matriz",
       active: true,
     },
   });
@@ -404,7 +396,7 @@ async function main() {
   }
 
   console.log("✅ Seed concluído!");
-  console.log(`Tenants: ${tenant1.name}, ${tenant2.name}`);
+  console.log(`Tenant: ${tenant1.name}`);
   console.log("Usuários: gerente@cinedoom.com / atendente@cinedoom.com (senha: Cinema123!)");
   console.log(`Sessão pré-lotada: ${toSell}/${ssLotados.length} assentos vendidos (~90%)`);
 }
