@@ -126,12 +126,12 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
               <div
                 key={film.id}
                 data-testid={`attendant-card-${film.id}`}
-                className="liquid-glass-card rounded-2xl p-5 sm:p-6 flex flex-col gap-4 transition-all shadow-lg hover:border-white/20 w-full"
+                className="liquid-glass-card rounded-2xl p-5 sm:p-6 flex flex-col gap-2 transition-all shadow-lg hover:border-white/20 w-full"
               >
                 {/* Cabeçalho do Card: Nome do filme em cima do pôster */}
                 <h2
                   title={film.title}
-                  className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug line-clamp-2"
+                  className="text-base sm:text-lg font-bold text-white tracking-tight leading-tight line-clamp-2"
                 >
                   {film.title}
                 </h2>
