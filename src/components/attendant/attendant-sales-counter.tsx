@@ -92,9 +92,9 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
   };
 
   return (
-    <div className="w-full flex-1 flex flex-col space-y-6">
+    <div className="w-full flex-1 flex flex-col space-y-4">
       {/* Título Oficial da Bilheteria */}
-      <div className="border-b border-borderDark/60 pb-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="border-b border-borderDark/60 pb-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
             <Ticket className="w-6 h-6 text-cta" />
@@ -118,7 +118,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-7 items-start w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5 items-start w-full">
           {filmsWithTodaySessions.map((film) => {
             const hasSessions = film.todaySessions.length > 0;
 
@@ -126,26 +126,26 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
               <div
                 key={film.id}
                 data-testid={`attendant-card-${film.id}`}
-                className="liquid-glass-card rounded-2xl p-5 sm:p-6 flex flex-col gap-2 transition-all shadow-lg hover:border-white/20 w-full"
+                className="liquid-glass-card rounded-2xl p-4 sm:p-4.5 flex flex-col gap-1.5 transition-all shadow-lg hover:border-white/20 w-full"
               >
                 {/* Cabeçalho do Card: Nome do filme em cima do pôster */}
                 <h2
                   title={film.title}
-                  className="text-base sm:text-lg font-bold text-white tracking-tight leading-tight line-clamp-2"
+                  className="text-sm sm:text-base font-bold text-white tracking-tight leading-tight line-clamp-1"
                 >
                   {film.title}
                 </h2>
 
-                <div className="flex gap-5 items-start h-auto">
-                  {/* Coluna Esquerda: Pôster ampliado com proporção adequada e presença visual + Botão "Mais datas" */}
-                  <div className="flex flex-col items-center gap-2.5 shrink-0 w-[120px] sm:w-[130px]">
+                <div className="flex gap-3.5 sm:gap-4 items-start h-auto">
+                  {/* Coluna Esquerda: Pôster com proporção adequada + Botão "Mais datas" */}
+                  <div className="flex flex-col items-center gap-2 shrink-0 w-[110px] sm:w-[115px]">
                     <div className="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-md shrink-0">
                       {film.posterUrl ? (
                         <Image
                           src={film.posterUrl}
                           alt={film.title}
                           fill
-                          sizes="130px"
+                          sizes="115px"
                           className="object-cover"
                           unoptimized
                         />
@@ -154,7 +154,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                           <Film className="w-9 h-9 opacity-40" />
                         </div>
                       )}
-                      <div className="absolute top-1.5 left-1.5 z-10 scale-95 origin-top-left shadow-sm">
+                      <div className="absolute top-1.5 left-1.5 z-10 scale-90 origin-top-left shadow-sm">
                         <AgeRatingBadge rating={film.classification} />
                       </div>
                     </div>
@@ -163,10 +163,10 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                     <button
                       type="button"
                       onClick={() => handleOpenMoreDates(film)}
-                      className="w-full py-2 px-2.5 rounded-lg bg-white/[0.04] hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 leading-none"
+                      className="w-full py-1.5 px-2 rounded-lg bg-white/[0.04] hover:bg-white/10 border border-white/10 text-[11px] font-semibold text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1 cursor-pointer active:scale-95 leading-none"
                       title="Ver sessões em outros dias"
                     >
-                      <Search className="w-3.5 h-3.5 text-cta shrink-0" />
+                      <Search className="w-3 h-3 text-cta shrink-0" />
                       <span className="whitespace-nowrap">Mais datas</span>
                     </button>
                   </div>
@@ -175,11 +175,11 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                   <div className="flex-1 min-w-0 flex flex-col justify-start">
                     {/* 1. Identificação "Sessões de hoje" e contagem discreta */}
                     <div className="flex items-center justify-between gap-1.5">
-                      <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                      <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
                         Sessões de hoje
                       </span>
                       {hasSessions && (
-                        <span className="text-[11px] text-slate-500 font-mono">
+                        <span className="text-[10px] text-slate-400 font-medium">
                           {film.todaySessions.length} {film.todaySessions.length === 1 ? "sessão" : "sessões"}
                         </span>
                       )}
@@ -187,14 +187,14 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
 
                     {/* 2. Sala correspondente como texto normal */}
                     {hasSessions && film.roomName && (
-                      <div className="mt-1.5 mb-3 flex items-center gap-1.5 text-xs sm:text-sm text-slate-300">
+                      <div className="mt-1 mb-2 flex items-center gap-1.5 text-xs text-slate-300">
                         <span className="font-semibold text-white">{film.roomName}</span>
                       </div>
                     )}
 
-                    {/* 3. Grade de Horários em 2 Colunas ampliadas e com toque confortável */}
+                    {/* 3. Grade de Horários em 2 Colunas com espaçamento confortável */}
                     {hasSessions ? (
-                      <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 pt-1">
+                      <div className="grid grid-cols-2 gap-x-3.5 gap-y-3.5 pt-0.5">
                         {film.todaySessions.map((session) => {
                           const timeStr = new Date(session.startsAt).toLocaleTimeString("pt-BR", {
                             hour: "2-digit",
@@ -206,24 +206,26 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                           return (
                             <div
                               key={session.id}
-                              className="flex flex-col items-stretch gap-1.5 w-full"
+                              className="flex flex-col items-stretch gap-1 w-full"
                             >
-                              {/* Botão de Horário amplo com formato retangular firme e altura reforçada */}
+                              {/* Botão de Horário em estilo Branco Limpo idêntico ao fluxo de compra */}
                               <button
                                 type="button"
                                 onClick={() => handleSelectSession(film.id, session.id)}
-                                className="w-full py-3.5 px-3 min-h-[44px] rounded-md bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-white font-bold text-base tracking-normal transition-all duration-150 cursor-pointer shadow-sm active:scale-95 flex items-center justify-center leading-none"
+                                className="w-full py-2.5 px-2 min-h-[38px] rounded-lg bg-white hover:bg-slate-100 text-slate-900 border border-white/20 font-bold text-xs sm:text-sm tracking-normal transition-all duration-150 cursor-pointer shadow-md active:scale-95 flex items-center justify-center leading-none"
                                 title={`Iniciar venda da sessão de ${timeStr} - ${format} ${language}`}
                               >
                                 {timeStr}
                               </button>
 
-                              {/* Indicadores de Formato e Idioma divididos e ocupando 100% do espaço abaixo do botão */}
-                              <div className="grid grid-cols-2 gap-1 w-full">
-                                <span className="w-full text-center text-[11px] font-semibold py-1 px-1 rounded-sm bg-white/10 text-slate-300 leading-tight">
+                              {/* Badges em tons neutros distintos entre si e sem conflitar com o botão branco de horário */}
+                              <div className="grid grid-cols-2 gap-1 w-full pt-0.5">
+                                {/* Formato: cinza grafite médio translúcido */}
+                                <span className="w-full text-center text-[10px] font-bold py-1 px-1 rounded-md bg-[#252F4A] text-slate-100 border border-white/20 shadow-xs leading-none flex items-center justify-center">
                                   {format}
                                 </span>
-                                <span className="w-full text-center text-[11px] font-semibold py-1 px-1 rounded-sm bg-cta/20 text-cta leading-tight">
+                                {/* Idioma: ardósia escuro com toque sutil de contorno */}
+                                <span className="w-full text-center text-[10px] font-bold py-1 px-1 rounded-md bg-[#13192B] text-slate-300 border border-white/10 shadow-xs leading-none flex items-center justify-center">
                                   {language}
                                 </span>
                               </div>

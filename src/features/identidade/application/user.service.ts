@@ -53,8 +53,8 @@ function normalizeLegacyUser(user: SafeUser): SafeUser {
   }
   const canonicalName =
     user.role === "GERENTE" || user.email?.toLowerCase() === "gerente@cinedoom.com"
-      ? "Eduardo Vasconcelos"
-      : "Camila Ribeiro";
+      ? "Carlos Eduardo"
+      : "Kayque Vicente";
   return {
     ...user,
     name: canonicalName,
@@ -62,7 +62,7 @@ function normalizeLegacyUser(user: SafeUser): SafeUser {
 }
 
 export class UserServiceClass {
-  constructor(private userRepo: IUserRepository = defaultUserRepository) {}
+  constructor(private userRepo: IUserRepository = defaultUserRepository) { }
 
   /**
    * Lista usuarios vinculados compulsoriamente ao tenantId do gerente logado.

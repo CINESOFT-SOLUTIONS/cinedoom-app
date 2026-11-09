@@ -40,7 +40,7 @@ interface FormErrors {
 const FALLBACK_OPERATORS: UserItem[] = [
   {
     id: "00000000-0000-4000-a000-000000000001",
-    name: "Eduardo Vasconcelos",
+    name: "Carlos Eduardo",
     email: "gerente@cinedoom.com",
     role: "GERENTE",
     active: true,
@@ -48,7 +48,7 @@ const FALLBACK_OPERATORS: UserItem[] = [
   },
   {
     id: "00000000-0000-4000-a000-000000000002",
-    name: "Camila Ribeiro",
+    name: "Kayque Vicente",
     email: "atendente@cinedoom.com",
     role: "ATENDENTE",
     active: true,
@@ -61,16 +61,16 @@ function normalizeOperatorName(u: UserItem): UserItem {
   if (
     lower === "gerente geral cinedoom" ||
     lower === "gerente cinedoom" ||
-    ( !lower && u.role === "GERENTE" )
+    (!lower && u.role === "GERENTE")
   ) {
-    return { ...u, name: "Eduardo Vasconcelos" };
+    return { ...u, name: "Carlos Eduardo" };
   }
   if (
     lower === "atendente bilheteria" ||
     lower === "atendente cinedoom" ||
-    ( !lower && u.role === "ATENDENTE" )
+    (!lower && u.role === "ATENDENTE")
   ) {
-    return { ...u, name: "Camila Ribeiro" };
+    return { ...u, name: "Kayque Vicente" };
   }
   return u;
 }
@@ -151,7 +151,7 @@ export default function GestaoUsuariosPage() {
           setCurrentUserId(data.user.id);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const openCreateModal = () => {
@@ -347,11 +347,10 @@ export default function GestaoUsuariosPage() {
         {/* Banner de Feedback */}
         {statusMessage && (
           <div
-            className={`p-4 rounded-xl flex items-center justify-between gap-3 text-sm shadow-md border ${
-              statusMessage.type === "success"
-                ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
-                : "bg-rose-950/60 border-rose-500/40 text-rose-300"
-            }`}
+            className={`p-4 rounded-xl flex items-center justify-between gap-3 text-sm shadow-md border ${statusMessage.type === "success"
+              ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
+              : "bg-rose-950/60 border-rose-500/40 text-rose-300"
+              }`}
           >
             <div className="flex items-center gap-2">
               {statusMessage.type === "success" ? (
@@ -430,29 +429,12 @@ export default function GestaoUsuariosPage() {
                       </td>
                       <td className="px-6 py-4 text-slate-300 font-mono text-xs">{u.email}</td>
                       <td className="px-6 py-4">
-                        <span
-                          className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full border ${
-                            u.role === "GERENTE"
-                              ? "bg-purple-950/60 border-purple-500/30 text-purple-300"
-                              : "bg-blue-950/60 border-blue-500/30 text-blue-300"
-                          }`}
-                        >
+                        <span className="text-xs font-medium text-white">
                           {formatRoleLabel(u.role)}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-0.5 rounded-full border ${
-                            u.active
-                              ? "bg-emerald-950/60 border-emerald-500/30 text-emerald-300"
-                              : "bg-rose-950/60 border-rose-500/30 text-rose-300"
-                          }`}
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              u.active ? "bg-emerald-400 animate-pulse" : "bg-rose-400"
-                            }`}
-                          />
+                        <span className="text-xs font-medium text-white">
                           {u.active ? "Ativo" : "Inativo"}
                         </span>
                       </td>
@@ -556,9 +538,8 @@ export default function GestaoUsuariosPage() {
                   placeholder="Ex: João da Silva"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border ${
-                    errors.name ? "border-rose-500 bg-rose-950/20" : "border-borderDark focus:border-cta"
-                  } focus:outline-none`}
+                  className={`w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border ${errors.name ? "border-rose-500 bg-rose-950/20" : "border-borderDark focus:border-cta"
+                    } focus:outline-none`}
                 />
                 {errors.name && <p className="text-rose-400 text-xs mt-1">{errors.name}</p>}
               </div>
@@ -574,9 +555,8 @@ export default function GestaoUsuariosPage() {
                   placeholder="Ex: joao@cinema.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border ${
-                    errors.email ? "border-rose-500 bg-rose-950/20" : "border-borderDark focus:border-cta"
-                  } focus:outline-none`}
+                  className={`w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border ${errors.email ? "border-rose-500 bg-rose-950/20" : "border-borderDark focus:border-cta"
+                    } focus:outline-none`}
                 />
                 {errors.email && <p className="text-rose-400 text-xs mt-1">{errors.email}</p>}
               </div>
@@ -592,9 +572,8 @@ export default function GestaoUsuariosPage() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border ${
-                    errors.password ? "border-rose-500 bg-rose-950/20" : "border-borderDark focus:border-cta"
-                  } focus:outline-none`}
+                  className={`w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border ${errors.password ? "border-rose-500 bg-rose-950/20" : "border-borderDark focus:border-cta"
+                    } focus:outline-none`}
                 />
                 {errors.password && (
                   <p className="text-rose-400 text-xs mt-1">{errors.password}</p>
@@ -690,9 +669,8 @@ export default function GestaoUsuariosPage() {
                   placeholder="••••••••"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className={`w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border ${
-                    errors.password ? "border-rose-500 bg-rose-950/20" : "border-borderDark focus:border-cta"
-                  } focus:outline-none`}
+                  className={`w-full px-3.5 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 border ${errors.password ? "border-rose-500 bg-rose-950/20" : "border-borderDark focus:border-cta"
+                    } focus:outline-none`}
                 />
                 {errors.password && (
                   <p className="text-rose-400 text-xs mt-1">{errors.password}</p>

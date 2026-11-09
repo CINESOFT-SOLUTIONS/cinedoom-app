@@ -26,10 +26,10 @@ function resolveCanonicalUserName(
   }
   const normalizedEmail = (email || "").toLowerCase().trim();
   if (role === "GERENTE" || normalizedEmail === "gerente@cinedoom.com") {
-    return "Eduardo Vasconcelos";
+    return "Carlos Eduardo";
   }
   if (role === "ATENDENTE" || normalizedEmail === "atendente@cinedoom.com") {
-    return "Camila Ribeiro";
+    return "Kayque Vicente";
   }
   return "Lucas Mendes";
 }
@@ -94,7 +94,7 @@ export const authOptions: NextAuthOptions = {
           if (normalizedEmail === "gerente@cinedoom.com") {
             return {
               id: "00000000-0000-4000-a000-000000000001",
-              name: "Eduardo Vasconcelos",
+              name: "Carlos Eduardo",
               email: "gerente@cinedoom.com",
               role: "GERENTE",
               tenantId: "11111111-1111-4111-a111-111111111111",
@@ -104,7 +104,7 @@ export const authOptions: NextAuthOptions = {
           if (normalizedEmail === "atendente@cinedoom.com") {
             return {
               id: "00000000-0000-4000-a000-000000000002",
-              name: "Camila Ribeiro",
+              name: "Kayque Vicente",
               email: "atendente@cinedoom.com",
               role: "ATENDENTE",
               tenantId: "11111111-1111-4111-a111-111111111111",

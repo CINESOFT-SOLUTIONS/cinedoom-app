@@ -34,9 +34,17 @@ export const createReservationSchema = z.object({
     .string({ message: 'O campo "sessionId" e obrigatorio' })
     .uuid("sessionId deve ser um UUID valido"),
   sessionSeatIds: z
-    .array(z.string().uuid("Cada sessionSeatId deve ser um UUID valido"), {
-      message: 'O campo "sessionSeatIds" e obrigatorio',
-    })
+    .array(
+      z.string().refine(
+        (val) =>
+          /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val) ||
+          /^seat-[A-Za-z0-9_-]+$/.test(val),
+        { message: "Cada sessionSeatId deve ser um UUID ou identificador de assento valido" }
+      ),
+      {
+        message: 'O campo "sessionSeatIds" e obrigatorio',
+      }
+    )
     .min(1, "Selecione ao menos um assento para efetuar a reserva"),
   buyer: z.object({
     name: z

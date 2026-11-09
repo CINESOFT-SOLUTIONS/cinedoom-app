@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Calendar,
   Clock,
-  LayoutGrid,
   Plus,
   Trash2,
   Edit2,
@@ -13,10 +13,11 @@ import {
   CheckCircle,
   X,
   ArrowLeft,
-  DollarSign,
-  Ticket,
+  Film as FilmIcon,
+  Sparkles,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { getCanonicalRoomName } from "@/shared/experiences";
 
 const OFFICIAL_CATALOG_FILM_IDS = new Set([
@@ -52,6 +53,7 @@ interface FilmItem {
   id: string;
   title: string;
   durationMinutes: number;
+  posterUrl?: string | null;
 }
 
 interface RoomItem {
@@ -78,11 +80,6 @@ interface SessionItem {
     name: string;
     capacity: number;
   };
-  _count?: {
-    sessionSeats: number;
-    tickets: number;
-    reservations: number;
-  };
 }
 
 interface FormErrors {
@@ -93,22 +90,37 @@ interface FormErrors {
   general?: string;
 }
 
-export default function SessoesGestãoPage() {
+export default function SessoesGestaoInteligentePage() {
   const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [films, setFilms] = useState<FilmItem[]>([]);
   const [rooms, setRooms] = useState<RoomItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Filtro inteligente de filme selecionado
+  const [selectedFilmId, setSelectedFilmId] = useState<string>("ALL");
+
+  // Filtro de mês / período
+  const [currentYearMonth, setCurrentYearMonth] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  });
+
+  // Modal de edição pontual
   const [editingSession, setEditingSession] = useState<SessionItem | null>(null);
   const [sessionStatus, setSessionStatus] = useState<string>("SCHEDULED");
-  const [dateFilter, setDateFilter] = useState<"TODAY" | "TOMORROW" | "UPCOMING" | "ALL">("TODAY");
-
-  // Form states
-  const [filmId, setFilmId] = useState("");
-  const [roomId, setRoomId] = useState("");
-  const [startsAt, setStartsAt] = useState("");
-  const [price, setPrice] = useState("30.00");
+  const [singleStartsAt, setSingleStartsAt] = useState("");
+  const [singlePrice, setSinglePrice] = useState("30.00");
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+
+  // Modal inteligente de programação de sessões para o filme (Multi-dias & horários)
+  const [isSmartSchedulerOpen, setIsSmartSchedulerOpen] = useState(false);
+  const [targetFilm, setTargetFilm] = useState<FilmItem | null>(null);
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
+  const [selectedRoomId, setSelectedRoomId] = useState<string>("");
+  const [scheduleTimes, setScheduleTimes] = useState<string[]>(["14:00", "17:30", "20:30"]);
+  const [newTimeInput, setNewTimeInput] = useState("");
+  const [smartPrice, setSmartPrice] = useState("30.00");
+
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -127,7 +139,6 @@ export default function SessoesGestãoPage() {
     };
   };
 
-  // Load initial data
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -235,12 +246,13 @@ export default function SessoesGestãoPage() {
                 id: f.id,
                 title: f.title,
                 durationMinutes: f.duration || f.durationMinutes || 120,
+                posterUrl: f.posterUrl,
               }))
         );
         setRooms((prev) => (prev.length > 0 ? prev : FALLBACK_ROOMS_LIST));
       }
     } catch {
-      // Silencioso no fallback
+      // Silencioso
     }
   };
 
@@ -248,136 +260,122 @@ export default function SessoesGestãoPage() {
     fetchData();
   }, []);
 
-  const handleOpenCreateModal = () => {
-    setEditingSession(null);
-    setFilmId(films[0]?.id || "");
-    setRoomId(rooms[0]?.id || "");
-    setSessionStatus("SCHEDULED");
-    
-    // Sugere horario de inicio para a proxima hora cheia
-    const nextHour = new Date();
-    nextHour.setHours(nextHour.getHours() + 2);
-    nextHour.setMinutes(0);
-    const tzOffset = nextHour.getTimezoneOffset() * 60000;
-    const localISOTime = new Date(nextHour.getTime() - tzOffset).toISOString().slice(0, 16);
-    setStartsAt(localISOTime);
-    
-    setPrice("30.00");
+  // Dias do mês atual para o seletor inteligente
+  const [selectedYear, selectedMonth] = currentYearMonth.split("-").map(Number);
+  const daysInCurrentMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+  const daysList = Array.from({ length: daysInCurrentMonth }, (_, i) => i + 1);
+
+  // Abre agendamento inteligente por filme
+  const handleOpenSmartScheduler = (film: FilmItem) => {
+    setTargetFilm(film);
+    setSelectedDays([]);
+    setSelectedRoomId(rooms[0]?.id || "");
+    setScheduleTimes(["14:00", "17:30", "20:30"]);
+    setSmartPrice(OFFICIAL_CATALOG_FILM_IDS.has(film.id) ? "30.00" : "30.00");
     setFormErrors({});
-    setIsCreateModalOpen(true);
+    setIsSmartSchedulerOpen(true);
   };
 
-  const handleOpenEditModal = (session: SessionItem) => {
-    setEditingSession(session);
-    setFilmId(session.film.id || session.filmId || "");
-    setRoomId(session.room.id || session.roomId || "");
-    setSessionStatus(session.status || "OPEN");
-
-    // Formata startsAt local para input datetime-local
-    const d = new Date(session.startsAt);
-    const tzOffset = d.getTimezoneOffset() * 60000;
-    const localISOTime = new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
-    setStartsAt(localISOTime);
-
-    setPrice(Number(session.price).toFixed(2));
-    setFormErrors({});
-    setIsCreateModalOpen(true);
+  const handleToggleDay = (day: number) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort((a, b) => a - b)
+    );
   };
 
-  const handleSaveSession = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormErrors({});
+  const handleSelectAllDays = () => {
+    if (selectedDays.length === daysList.length) {
+      setSelectedDays([]);
+    } else {
+      setSelectedDays(daysList);
+    }
+  };
 
-    if (!filmId) {
-      setFormErrors({ filmId: "Selecione um filme para a sessão." });
-      return;
+  const handleAddTime = () => {
+    if (!newTimeInput) return;
+    if (!scheduleTimes.includes(newTimeInput)) {
+      setScheduleTimes((prev) => [...prev, newTimeInput].sort());
     }
-    if (!roomId) {
-      setFormErrors({ roomId: "Selecione uma sala para a sessão." });
-      return;
-    }
-    if (!startsAt) {
-      setFormErrors({ startsAt: "Informe a data e horário de início." });
-      return;
-    }
-    const numPrice = parseFloat(price);
-    if (isNaN(numPrice) || numPrice <= 0) {
-      setFormErrors({ price: "O valor do ingresso deve ser maior que zero." });
-      return;
-    }
+    setNewTimeInput("");
+  };
 
-    const isEditing = Boolean(editingSession);
+  const handleRemoveTime = (timeToRemove: string) => {
+    setScheduleTimes((prev) => prev.filter((t) => t !== timeToRemove));
+  };
+
+  // Salvar sessões em lote criadas pelo agendador inteligente
+  const handleSaveSmartBatch = async () => {
+    if (!targetFilm) return;
+    if (selectedDays.length === 0) {
+      setFormErrors({ general: "Selecione ao menos um dia do mês para programar as sessões." });
+      return;
+    }
+    if (scheduleTimes.length === 0) {
+      setFormErrors({ general: "Adicione ao menos um horário para as sessões." });
+      return;
+    }
+    if (!selectedRoomId) {
+      setFormErrors({ general: "Selecione uma sala de exibição." });
+      return;
+    }
 
     startTransition(async () => {
-      try {
-        const endpoint = isEditing ? `/api/sessoes/${editingSession?.id}` : "/api/sessoes";
-        const method = isEditing ? "PUT" : "POST";
+      setFormErrors({});
+      let successCount = 0;
+      let conflictCount = 0;
 
-        const payload: any = {
-          startsAt: new Date(startsAt).toISOString(),
-          price: numPrice,
-        };
+      for (const day of selectedDays) {
+        for (const time of scheduleTimes) {
+          const [hours, minutes] = time.split(":").map(Number);
+          const dateObj = new Date(selectedYear, selectedMonth - 1, day, hours, minutes, 0, 0);
 
-        if (!isEditing) {
-          payload.filmId = filmId;
-          payload.roomId = roomId;
-        } else {
-          payload.status = sessionStatus;
-        }
+          const payload = {
+            filmId: targetFilm.id,
+            roomId: selectedRoomId,
+            startsAt: dateObj.toISOString(),
+            price: Number(smartPrice) || 30.0,
+          };
 
-        const res = await fetch(endpoint, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        const data = await res.json();
-
-        if (res.status === 200 || res.status === 201) {
-          setIsCreateModalOpen(false);
-          setEditingSession(null);
-          setActionSuccess(
-            isEditing
-              ? "Sessão atualizada com sucesso!"
-              : `Sessão agendada com sucesso! Mapa com ${data.seatsGeneratedCount ?? 0} poltronas liberado para venda.`
-          );
-          fetchData();
-        } else if (res.status === 409) {
-          setFormErrors({ general: data.error || "Conflito de horario na sala selecionada." });
-        } else if (res.status === 422) {
-          const errorsObj: FormErrors = {};
-          if (data.errors && Array.isArray(data.errors)) {
-            data.errors.forEach((err: { field: string; message: string }) => {
-              if (err.field.includes("startsAt")) errorsObj.startsAt = err.message;
-              else if (err.field.includes("price")) errorsObj.price = err.message;
-              else if (err.field.includes("filmId")) errorsObj.filmId = err.message;
-              else if (err.field.includes("roomId")) errorsObj.roomId = err.message;
+          try {
+            const res = await fetch("/api/sessoes", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
             });
+
+            if (res.status === 200 || res.status === 201) {
+              successCount++;
+            } else if (res.status === 409) {
+              conflictCount++;
+            }
+          } catch {
+            // Continua lote
           }
-          setFormErrors(errorsObj);
-        } else {
-          setFormErrors({ general: data.error || (isEditing ? "Erro ao editar sessão." : "Erro ao agendar sessão.") });
         }
-      } catch {
-        setFormErrors({ general: "Erro inesperado de conexão com o servidor." });
       }
+
+      setIsSmartSchedulerOpen(false);
+      setActionSuccess(
+        `Programação concluída: ${successCount} sessões criadas com sucesso para "${targetFilm.title}".` +
+          (conflictCount > 0 ? ` (${conflictCount} ignoradas por conflito de horário na sala)` : "")
+      );
+      fetchData();
     });
   };
 
+  // Excluir sessão individual
   const handleDeleteSession = async (session: SessionItem) => {
     if (
       !confirm(
-        `Deseja realmente cancelar/excluir a sessão do filme "${session.film.title}" na ${session.room.name}?`
+        `Deseja realmente cancelar/excluir a sessão do filme "${session.film.title}" às ${new Date(
+          session.startsAt
+        ).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}?`
       )
     ) {
       return;
     }
 
     try {
-      const res = await fetch(`/api/sessoes/${session.id}`, {
-        method: "DELETE",
-      });
-
+      const res = await fetch(`/api/sessoes/${session.id}`, { method: "DELETE" });
       if (res.status === 204) {
         setActionSuccess("Sessão excluída com sucesso.");
         fetchData();
@@ -390,42 +388,59 @@ export default function SessoesGestãoPage() {
     }
   };
 
-  const filteredSessions = sessions.filter((sess) => {
-    if (dateFilter === "ALL") return true;
-    const sDate = new Date(sess.startsAt);
-    const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-    const tomorrowStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
-    const dayAfterTomorrowStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 2,
-      0,
-      0,
-      0,
-      0
-    );
+  // Edição pontual
+  const handleOpenEditModal = (sess: SessionItem) => {
+    setEditingSession(sess);
+    setSessionStatus(sess.status);
+    const d = new Date(sess.startsAt);
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+    setSingleStartsAt(localISOTime);
+    setSinglePrice(String(sess.price));
+    setFormErrors({});
+  };
 
-    if (dateFilter === "TODAY") {
-      return sDate >= todayStart && sDate < tomorrowStart;
-    }
-    if (dateFilter === "TOMORROW") {
-      return sDate >= tomorrowStart && sDate < dayAfterTomorrowStart;
-    }
-    return sDate >= dayAfterTomorrowStart;
-  });
+  const handleSaveEditSession = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSession) return;
 
-  const displayedSessions = filteredSessions.length > 0 ? filteredSessions : sessions;
+    startTransition(async () => {
+      try {
+        const res = await fetch(`/api/sessoes/${editingSession.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: sessionStatus,
+            startsAt: new Date(singleStartsAt).toISOString(),
+            price: Number(singlePrice),
+          }),
+        });
+
+        if (res.ok) {
+          setEditingSession(null);
+          setActionSuccess("Sessão atualizada com sucesso!");
+          fetchData();
+        } else {
+          const data = await res.json();
+          setFormErrors({ general: data.error || "Erro ao editar sessão." });
+        }
+      } catch {
+        setFormErrors({ general: "Erro de conexão ao salvar sessão." });
+      }
+    });
+  };
+
+  // Agrupamento inteligente das sessões por filme
+  const filteredFilmsList =
+    selectedFilmId === "ALL" ? films : films.filter((f) => f.id === selectedFilmId);
 
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
-      {/* Header Oficial CineDoom */}
       <CineDoomHeader activePage="gestao" />
 
-      {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-6 flex-1 w-full">
         {/* Barra de Ações & Título */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-2">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-borderDark/60">
           <div className="flex items-center gap-3">
             <Link
               href="/gestao"
@@ -438,184 +453,190 @@ export default function SessoesGestãoPage() {
               <Calendar className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">Sessões</h1>
+              <h1 className="text-xl font-bold tracking-tight text-white">Programação de Sessões</h1>
               <p className="text-xs text-slate-400">
-                Agendamento e gerenciamento de sessões e horários das salas
+                Configure os dias do mês, salas e horários agrupados de forma inteligente por filme
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Seletor de Período */}
-            <div className="flex items-center gap-1 p-1 rounded-xl bg-[#0A0E1A] border border-borderDark/60 text-xs">
-              <button
-                type="button"
-                onClick={() => setDateFilter("TODAY")}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
-                  dateFilter === "TODAY"
-                    ? "bg-cta text-white font-semibold"
-                    : "text-slate-400 hover:text-white"
-                }`}
+          <div className="flex items-center gap-3">
+            {/* Seletor de Filme Filtro */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400 font-semibold uppercase">Filtrar:</span>
+              <select
+                value={selectedFilmId}
+                onChange={(e) => setSelectedFilmId(e.target.value)}
+                className="px-3 py-1.5 rounded-xl bg-[#0A0E1A] border border-borderDark text-xs text-white focus:border-cta outline-none"
               >
-                Hoje
-              </button>
-              <button
-                type="button"
-                onClick={() => setDateFilter("TOMORROW")}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
-                  dateFilter === "TOMORROW"
-                    ? "bg-cta text-white font-semibold"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                Amanhã
-              </button>
-              <button
-                type="button"
-                onClick={() => setDateFilter("UPCOMING")}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
-                  dateFilter === "UPCOMING"
-                    ? "bg-cta text-white font-semibold"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                Próximos dias
-              </button>
-              <button
-                type="button"
-                onClick={() => setDateFilter("ALL")}
-                className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
-                  dateFilter === "ALL"
-                    ? "bg-white/15 text-white font-semibold"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                Todas
-              </button>
+                <option value="ALL">Todos os filmes ({films.length})</option>
+                {films.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.title}
+                  </option>
+                ))}
+              </select>
             </div>
-
-            <button
-              onClick={handleOpenCreateModal}
-              disabled={films.length === 0 || rooms.length === 0}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cta hover:bg-cta-hover text-white text-sm font-semibold shadow-lg shadow-cta/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Nova Sessão</span>
-            </button>
           </div>
         </div>
 
-        {/* Alerta de Sucesso */}
+        {/* Notificação de Sucesso */}
         {actionSuccess && (
           <div className="flex items-center justify-between p-4 bg-emerald-950/50 border border-emerald-500/50 rounded-xl text-emerald-200">
             <div className="flex items-center gap-3">
               <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
               <span className="text-sm font-medium">{actionSuccess}</span>
             </div>
-            <button onClick={() => setActionSuccess(null)} className="text-emerald-400 hover:text-emerald-200">
+            <button onClick={() => setActionSuccess(null)} className="text-emerald-400 hover:text-emerald-200 cursor-pointer">
               <X className="w-4 h-4" />
             </button>
           </div>
         )}
 
-        {/* Aviso se não houver filmes ou salas cadastrados */}
-        {!isLoading && (films.length === 0 || rooms.length === 0) && (
-          <div className="p-4 bg-amber-950/40 border border-amber-500/40 rounded-xl text-amber-200 flex items-center gap-3 text-sm">
-            <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
-            <span>
-              É necessário cadastrar ao menos um <strong>Filme</strong> e uma <strong>Sala</strong> antes de agendar sessões.
-            </span>
-          </div>
-        )}
-
-        {/* Lista de Sessões */}
+        {/* Listagem Inteligente Separada por Filme */}
         {isLoading ? (
           <div className="flex justify-center items-center py-24 text-gray-400">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E94560] mr-3" />
-            Carregando sessões...
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cta mr-3" />
+            Carregando catálogo e programação de sessões...
           </div>
-        ) : displayedSessions.length === 0 ? (
+        ) : filteredFilmsList.length === 0 ? (
           <div className="text-center py-20 liquid-glass-card rounded-3xl p-8 space-y-4">
-            <Calendar className="w-16 h-16 text-gray-600 mx-auto" />
-            <h2 className="text-xl font-bold text-gray-300">Nenhuma sessão agendada</h2>
+            <FilmIcon className="w-16 h-16 text-gray-600 mx-auto" />
+            <h2 className="text-xl font-bold text-gray-300">Nenhum filme cadastrado</h2>
             <p className="text-sm text-gray-500 max-w-md mx-auto">
-              Clique em &quot;Nova Sessão&quot; para programar um filme em uma de suas salas e disponibilizar as poltronas para venda.
+              Cadastre filmes no catálogo para poder configurar as sessões e horários das salas.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedSessions.map((sess) => {
-              const startDate = new Date(sess.startsAt);
-              const formattedDate = startDate.toLocaleDateString("pt-BR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-              });
-              const formattedTime = startDate.toLocaleTimeString("pt-BR", {
-                hour: "2-digit",
-                minute: "2-digit",
-              });
+          <div className="space-y-6">
+            {filteredFilmsList.map((film) => {
+              const filmSessions = sessions.filter((s) => s.filmId === film.id || s.film.id === film.id);
 
               return (
                 <div
-                  key={sess.id}
-                  className="liquid-glass-card hover:border-white/25 rounded-3xl p-6 flex flex-col justify-between space-y-4 shadow-xl transition-all"
+                  key={film.id}
+                  className="liquid-glass-card rounded-2xl p-5 sm:p-6 border border-white/10 shadow-xl space-y-5"
                 >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="space-y-1">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
-                          {formatSessionStatusLabel(sess.status)}
-                        </span>
-                        <h2 className="text-lg font-bold text-white line-clamp-1">
-                          {sess.film.title}
+                  {/* Cabeçalho do Filme + Botão Programar Sessões */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+                    <div className="flex items-center gap-4">
+                      <div className="relative aspect-[2/3] w-12 sm:w-14 rounded-lg overflow-hidden bg-[#0A0E1A] border border-white/10 shrink-0">
+                        {film.posterUrl ? (
+                          <Image
+                            src={film.posterUrl}
+                            alt={film.title}
+                            fill
+                            sizes="56px"
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-600">
+                            <FilmIcon className="w-6 h-6 opacity-40" />
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                          {film.title}
                         </h2>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          onClick={() => handleOpenEditModal(sess)}
-                          title="Editar Sessão"
-                          className="text-gray-500 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteSession(sess)}
-                          title="Cancelar / Excluir Sessão"
-                          className="text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-950/30 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                          <span>{film.durationMinutes} min</span>
+                          <span>•</span>
+                          <span className="text-slate-300 font-medium">
+                            {filmSessions.length} {filmSessions.length === 1 ? "sessão programada" : "sessões programadas"}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-2 text-sm text-gray-300">
-                      <div className="flex items-center gap-2 text-gray-400">
-                        <Clock className="w-4 h-4 text-[#E94560]" />
-                        <span>
-                          {formattedDate} às <strong className="text-white font-semibold">{formattedTime}</strong> ({sess.film.durationMinutes} min)
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-400">
-                        <LayoutGrid className="w-4 h-4 text-[#E94560]" />
-                        <span>{getCanonicalRoomName(sess.room.name)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-400">
-                        <DollarSign className="w-4 h-4 text-emerald-400" />
-                        <span className="font-semibold text-emerald-300">
-                          R$ {Number(sess.price).toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenSmartScheduler(film)}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-bold shadow-md shadow-cta/20 transition-all cursor-pointer active:scale-95 shrink-0"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Programar Sessões (Dias & Horários)</span>
+                    </button>
                   </div>
 
-                  <div className="pt-3 border-t border-gray-800 flex items-center justify-between text-xs text-gray-400">
-                    <span className="flex items-center gap-1.5 font-medium">
-                      <Ticket className="w-4 h-4 text-gray-500" />
-                      {sess._count?.sessionSeats ?? sess.room.capacity} assentos pré-inseridos
-                    </span>
-                    <span className="text-gray-500">ID: {sess.id.slice(0, 8)}</span>
-                  </div>
+                  {/* Sessões Existentes do Filme em Grade Limpa */}
+                  {filmSessions.length === 0 ? (
+                    <div className="py-6 px-4 rounded-xl bg-white/[0.02] border border-white/5 text-center">
+                      <p className="text-xs text-slate-400">
+                        Nenhuma sessão cadastrada para este filme. Clique em{" "}
+                        <strong className="text-white">&quot;Programar Sessões&quot;</strong> para definir os dias e horários no mês.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                      {filmSessions.map((sess) => {
+                        const startDate = new Date(sess.startsAt);
+                        const dateFormatted = startDate.toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "short",
+                        });
+                        const timeFormatted = startDate.toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
+
+                        return (
+                          <div
+                            key={sess.id}
+                            className="p-3.5 rounded-xl bg-[#0A0E1A]/90 border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between gap-3 shadow-sm"
+                          >
+                            <div className="space-y-1.5">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold text-white capitalize flex items-center gap-1.5">
+                                  <Calendar className="w-3.5 h-3.5 text-cta" />
+                                  <span>{dateFormatted}</span>
+                                </span>
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-slate-300">
+                                  {formatSessionStatusLabel(sess.status)}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center justify-between pt-1 border-t border-white/5">
+                                <span className="text-sm font-extrabold text-white flex items-center gap-1">
+                                  <Clock className="w-3.5 h-3.5 text-cta" />
+                                  <span>{timeFormatted}</span>
+                                </span>
+                                <span className="text-xs text-slate-400 font-medium">
+                                  {sess.room.name}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                              <span className="text-xs font-bold text-slate-300">
+                                R$ {Number(sess.price).toFixed(2)}
+                              </span>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenEditModal(sess)}
+                                  className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                                  title="Editar Sessão"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteSession(sess)}
+                                  className="p-1.5 rounded-lg hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                                  title="Excluir Sessão"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -623,157 +644,285 @@ export default function SessoesGestãoPage() {
         )}
       </main>
 
-      {/* Modal de Agendamento de Sessao */}
-      {isCreateModalOpen && (
-        <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsCreateModalOpen(false);
-          }}
-          className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="liquid-glass-card bg-[#161F36] rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative border border-borderDark cursor-default"
-          >
-            <div className="flex items-center justify-between border-b border-gray-800 pb-4">
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#E94560]" />
-                {editingSession ? "Editar Sessão" : "Agendar Nova Sessão"}
-              </h2>
+      <CineDoomFooter simple className="mt-8" />
+
+      {/* Modal Inteligente: Programação de Sessões em Lote para o Filme */}
+      {isSmartSchedulerOpen && targetFilm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-2xl bg-[#12182B] border border-white/15 rounded-3xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-white/10 pb-3">
+              <div>
+                <span className="text-[10px] font-bold text-cta uppercase tracking-wider block">
+                  Agendamento Inteligente
+                </span>
+                <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                  Programar Sessões: {targetFilm.title}
+                </h2>
+              </div>
               <button
-                onClick={() => {
-                  setIsCreateModalOpen(false);
-                  setEditingSession(null);
-                }}
-                className="text-gray-400 hover:text-white transition-colors"
+                type="button"
+                onClick={() => setIsSmartSchedulerOpen(false)}
+                className="p-1.5 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {formErrors.general && (
-              <div className="p-3 bg-red-950/50 border border-red-500/50 rounded-xl text-red-200 text-sm flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
+              <div className="p-3 bg-rose-950/50 border border-rose-500/50 rounded-xl text-rose-200 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
                 <span>{formErrors.general}</span>
               </div>
             )}
 
-            <form onSubmit={handleSaveSession} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
-                  Filme
-                </label>
-                <select
-                  value={filmId}
-                  disabled={Boolean(editingSession)}
-                  onChange={(e) => setFilmId(e.target.value)}
-                  className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {films.map((f) => (
-                    <option key={f.id} value={f.id}>
-                      {f.title} ({f.durationMinutes} min)
-                    </option>
-                  ))}
-                </select>
-                {formErrors.filmId && (
-                  <p className="text-xs text-red-400 mt-1">{formErrors.filmId}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
-                  Sala de Exibição
-                </label>
-                <select
-                  value={roomId}
-                  disabled={Boolean(editingSession)}
-                  onChange={(e) => setRoomId(e.target.value)}
-                  className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {rooms.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name} ({r.capacity} assentos)
-                    </option>
-                  ))}
-                </select>
-                {formErrors.roomId && (
-                  <p className="text-xs text-red-400 mt-1">{formErrors.roomId}</p>
-                )}
-              </div>
-
-              {editingSession && (
+            <div className="space-y-4 text-xs">
+              {/* 1. Mês de Referência */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
-                    Status da Sessão
+                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                    Mês de Programação
+                  </label>
+                  <input
+                    type="month"
+                    value={currentYearMonth}
+                    onChange={(e) => {
+                      setCurrentYearMonth(e.target.value);
+                      setSelectedDays([]);
+                    }}
+                    className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white font-medium outline-none focus:border-cta"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                    Sala de Exibição
                   </label>
                   <select
-                    value={sessionStatus}
-                    onChange={(e) => setSessionStatus(e.target.value)}
-                    className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
+                    value={selectedRoomId}
+                    onChange={(e) => setSelectedRoomId(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white font-medium outline-none focus:border-cta"
                   >
-                    <option value="OPEN">Aberta</option>
-                    <option value="SCHEDULED">Agendada</option>
-                    <option value="CLOSED">Encerrada</option>
-                    <option value="CANCELLED">Cancelada</option>
+                    {rooms.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name} ({r.capacity} assentos)
+                      </option>
+                    ))}
                   </select>
                 </div>
-              )}
+              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
-                    Data e Horário de Início
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={startsAt}
-                    onChange={(e) => setStartsAt(e.target.value)}
-                    className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
-                  />
-                  {formErrors.startsAt && (
-                    <p className="text-xs text-red-400 mt-1">{formErrors.startsAt}</p>
-                  )}
+              {/* 2. Seleção de Dias do Mês */}
+              <div className="space-y-1.5 p-3.5 rounded-2xl bg-[#0A0E1A]/80 border border-white/10">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-white text-xs flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-cta" />
+                    <span>Selecione os dias do mês:</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleSelectAllDays}
+                    className="text-[10px] text-cta hover:text-white font-bold uppercase transition-colors cursor-pointer"
+                  >
+                    {selectedDays.length === daysList.length ? "Desmarcar todos" : "Selecionar todos"}
+                  </button>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
-                    Preço do Ingresso (R$)
-                  </label>
+                <div className="grid grid-cols-7 gap-1.5 pt-2">
+                  {daysList.map((day) => {
+                    const isSelected = selectedDays.includes(day);
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => handleToggleDay(day)}
+                        className={`py-2 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-cta text-white shadow-sm shadow-cta/30"
+                            : "bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/10"
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
+                </div>
+                <span className="text-[10px] text-slate-500 block pt-1">
+                  {selectedDays.length} {selectedDays.length === 1 ? "dia selecionado" : "dias selecionados"}
+                </span>
+              </div>
+
+              {/* 3. Horários das Sessões */}
+              <div className="space-y-2 p-3.5 rounded-2xl bg-[#0A0E1A]/80 border border-white/10">
+                <span className="font-bold text-white text-xs flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-cta" />
+                  <span>Horários das sessões nos dias escolhidos:</span>
+                </span>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  {scheduleTimes.map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 text-white font-bold text-xs border border-white/15"
+                    >
+                      <span>{t}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveTime(t)}
+                        className="text-slate-400 hover:text-rose-400 cursor-pointer"
+                        title="Remover horário"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-2 pt-2">
                   <input
-                    type="number"
-                    step="0.50"
-                    min="1.00"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
+                    type="time"
+                    value={newTimeInput}
+                    onChange={(e) => setNewTimeInput(e.target.value)}
+                    className="px-3 py-1.5 rounded-xl bg-[#12182B] border border-white/10 text-white text-xs outline-none focus:border-cta"
                   />
-                  {formErrors.price && (
-                    <p className="text-xs text-red-400 mt-1">{formErrors.price}</p>
-                  )}
+                  <button
+                    type="button"
+                    onClick={handleAddTime}
+                    disabled={!newTimeInput}
+                    className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors disabled:opacity-40 cursor-pointer"
+                  >
+                    + Adicionar Horário
+                  </button>
                 </div>
               </div>
 
-              <div className="p-3 bg-sky-950/30 border border-sky-500/20 rounded-xl text-xs text-slate-300">
-                <span className="font-semibold text-sky-400">Aviso:</span> Ao confirmar as alterações, o sistema valida a disponibilidade de horários da sala para evitar sobreposição.
+              {/* 4. Preço dos Ingressos */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                  Preço Base do Ingresso (R$)
+                </label>
+                <input
+                  type="number"
+                  step="0.50"
+                  min="1.00"
+                  value={smartPrice}
+                  onChange={(e) => setSmartPrice(e.target.value)}
+                  className="w-full sm:w-48 px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white font-medium outline-none focus:border-cta"
+                />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-gray-800">
+              {/* Resumo da Operação */}
+              <div className="p-3 bg-white/[0.03] border border-white/5 rounded-xl text-slate-300">
+                Total a ser criado:{" "}
+                <strong className="text-white">
+                  {selectedDays.length * scheduleTimes.length} sessões
+                </strong>{" "}
+                ({selectedDays.length} dias × {scheduleTimes.length} horários) com assentos gerados automaticamente.
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-3 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setIsSmartSchedulerOpen(false)}
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={isPending || selectedDays.length === 0 || scheduleTimes.length === 0}
+                onClick={handleSaveSmartBatch}
+                className="px-5 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-bold shadow-md shadow-cta/25 transition-all disabled:opacity-40 cursor-pointer"
+              >
+                {isPending ? "Criando Sessões..." : "Confirmar e Criar Sessões"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Edição Pontual de Sessão */}
+      {editingSession && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-[#12182B] border border-white/15 rounded-3xl p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h2 className="text-base font-bold text-white">Editar Sessão</h2>
+              <button
+                type="button"
+                onClick={() => setEditingSession(null)}
+                className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {formErrors.general && (
+              <div className="p-2.5 bg-rose-950/50 border border-rose-500/50 rounded-xl text-rose-200 text-xs">
+                {formErrors.general}
+              </div>
+            )}
+
+            <form onSubmit={handleSaveEditSession} className="space-y-3 text-xs">
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">Filme</label>
+                <p className="font-bold text-white text-sm">{editingSession.film.title}</p>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">Sala</label>
+                <p className="font-semibold text-slate-300">{editingSession.room.name}</p>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">Data e Horário</label>
+                <input
+                  type="datetime-local"
+                  value={singleStartsAt}
+                  onChange={(e) => setSingleStartsAt(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-cta"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">Status</label>
+                <select
+                  value={sessionStatus}
+                  onChange={(e) => setSessionStatus(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-cta"
+                >
+                  <option value="OPEN">Aberta</option>
+                  <option value="SCHEDULED">Agendada</option>
+                  <option value="CLOSED">Encerrada</option>
+                  <option value="CANCELLED">Cancelada</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1 font-semibold">Preço (R$)</label>
+                <input
+                  type="number"
+                  step="0.50"
+                  min="1.00"
+                  value={singlePrice}
+                  onChange={(e) => setSinglePrice(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-cta"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-white/10">
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsCreateModalOpen(false);
-                    setEditingSession(null);
-                  }}
-                  className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-sm font-medium transition-colors"
+                  onClick={() => setEditingSession(null)}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="px-5 py-2 rounded-xl bg-[#E94560] hover:bg-[#d63d56] text-white text-sm font-bold shadow-lg shadow-[#E94560]/30 transition-all disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white font-bold"
                 >
-                  {isPending ? "Salvando..." : editingSession ? "Salvar Alterações" : "Criar Sessão"}
+                  {isPending ? "Salvando..." : "Salvar Alterações"}
                 </button>
               </div>
             </form>

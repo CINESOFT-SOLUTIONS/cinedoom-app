@@ -55,9 +55,144 @@ export async function middleware(request: NextRequest) {
       return res;
     }
 
-    // Se autenticado mas sem permissao (ex: ATENDENTE em rota gerencial), responde com 403
+    // Se autenticado mas sem permissao (ex: ATENDENTE em rota gerencial), responde com 403 padronizado CineDoom
+    const friendlyReason =
+      userRole === "ATENDENTE"
+        ? "Seu perfil de Atendente tem acesso à bilheteria e vendas, mas não às áreas administrativas."
+        : userRole === "CLIENTE"
+        ? "Esta área é restrita a colaboradores do CineDoom."
+        : "Você não possui permissão para acessar esta página.";
+
     const res = new NextResponse(
-      `<!DOCTYPE html><html><body style="font-family:sans-serif;background:#1A1A2E;color:#F5F5F5;display:flex;align-items:center;justify-content:center;height:100vh;"><div style="text-align:center;"><h1>403 Forbidden</h1><p>${accessResult.reason}</p><a href="/" style="color:#E94560;">Voltar ao Inicio</a></div></body></html>`,
+      `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>403 - Acesso Proibido | CineDoom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #070A12;
+      color: #F8FAFC;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .wrapper {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .logo-container {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+    .logo {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+    }
+    .card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 1.5rem;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .icon-badge {
+      width: 56px;
+      height: 56px;
+      border-radius: 1rem;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      color: #F87171;
+    }
+    .code {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: #FFFFFF;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      margin-bottom: 0.5rem;
+    }
+    .desc {
+      font-size: 0.8125rem;
+      color: #94A3B8;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: 0.75rem;
+      background: #E94560;
+      color: #FFFFFF;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.025em;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 8px 16px rgba(233, 69, 96, 0.25);
+    }
+    .btn:hover {
+      background: #D83A53;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="logo-container">
+      <img src="/logos/cinedoom-logo-horizontal-white.png" alt="CineDoom" class="logo" />
+    </div>
+    <div class="card">
+      <div class="icon-badge">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+        </svg>
+      </div>
+      <div class="code">403</div>
+      <h1 class="title">Acesso Restrito</h1>
+      <p class="desc">${friendlyReason}</p>
+      <a href="/" class="btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        <span>Voltar ao Início</span>
+      </a>
+    </div>
+  </div>
+</body>
+</html>`,
       {
         status: 403,
         headers: { "content-type": "text/html; charset=utf-8" },

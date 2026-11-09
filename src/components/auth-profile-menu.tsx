@@ -50,10 +50,10 @@ export function AuthProfileMenu() {
   // Nome fictício realista se o backend retornar vazio ou valor genérico
   const fallbackName =
     role === "GERENTE"
-      ? "Eduardo Vasconcelos"
+      ? "Carlos Eduardo"
       : role === "ATENDENTE"
-      ? "Camila Ribeiro"
-      : "Lucas Mendes";
+        ? "Kayque Vicente"
+        : "Lucas Mendes";
 
   const resolvedName =
     !rawName || rawName === "Cliente" || rawName.includes("CineDoom") || rawName.includes("Bilheteria")

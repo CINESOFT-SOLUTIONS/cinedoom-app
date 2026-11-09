@@ -42,11 +42,11 @@ async function main() {
       },
     },
     update: {
-      name: "Eduardo Vasconcelos",
+      name: "Carlos Eduardo",
     },
     create: {
       tenantId: tenant.id,
-      name: "Eduardo Vasconcelos",
+      name: "Carlos Eduardo",
       email: "gerente@cinedoom.com",
       passwordHash: gerentePass,
       role: "GERENTE",
@@ -62,11 +62,11 @@ async function main() {
       },
     },
     update: {
-      name: "Camila Ribeiro",
+      name: "Kayque Vicente",
     },
     create: {
       tenantId: tenant.id,
-      name: "Camila Ribeiro",
+      name: "Kayque Vicente",
       email: "atendente@cinedoom.com",
       passwordHash: atendentePass,
       role: "ATENDENTE",
