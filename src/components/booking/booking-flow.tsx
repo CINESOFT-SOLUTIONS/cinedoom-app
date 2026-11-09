@@ -1083,7 +1083,7 @@ export function BookingFlow({
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+                <div className="flex flex-wrap gap-3 items-stretch">
                   {roomNames.map((roomName) => {
                     const roomSessions = sessionsByRoom[roomName];
                     const category = getRoomExperienceCategory(roomName);
@@ -1092,7 +1092,7 @@ export function BookingFlow({
                     return (
                       <div
                         key={roomName}
-                        className="p-3.5 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-sm flex flex-col justify-start gap-2.5 hover:border-white/20 transition-all"
+                        className="flex-1 min-w-[220px] p-3.5 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-sm flex flex-col justify-start gap-2.5 hover:border-white/20 transition-all"
                       >
                         {/* Header da Sala com texto normal */}
                         <div className="flex items-center justify-between border-b border-white/10 pb-2">
@@ -1107,8 +1107,8 @@ export function BookingFlow({
                           </span>
                         </div>
 
-                        {/* Grade de Horários com Formato e Idioma divididos e ocupando 100% do espaço abaixo */}
-                        <div className="grid grid-cols-2 gap-x-2.5 gap-y-3.5 pt-1">
+                        {/* Grade adaptativa de Horários: organiza em linha flexível (se der ocupa uma única linha, senão quebra automaticamente) */}
+                        <div className="flex flex-wrap items-start gap-2.5 pt-1">
                           {roomSessions.map((sess) => {
                             const timeStr = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
                               hour: "2-digit",
@@ -1121,7 +1121,10 @@ export function BookingFlow({
                             );
 
                             return (
-                              <div key={sess.id} className="flex flex-col items-stretch gap-1 w-full">
+                              <div
+                                key={sess.id}
+                                className="flex-1 min-w-[95px] max-w-[140px] flex flex-col items-stretch gap-1"
+                              >
                                 {/* Botão de Horário Amplo */}
                                 <button
                                   type="button"
