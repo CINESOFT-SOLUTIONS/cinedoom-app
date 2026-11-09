@@ -291,11 +291,10 @@ export function AuthCard({
           <button
             type="button"
             onClick={() => handleSwitchView("login")}
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100/80 transition-all duration-200 cursor-pointer ${
-              currentView === "cadastro"
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100/80 transition-all duration-200 cursor-pointer ${currentView === "cadastro"
                 ? "opacity-100 translate-x-0"
                 : "opacity-0 -translate-x-3 pointer-events-none"
-            }`}
+              }`}
             aria-label="Voltar para login"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-slate-600" />
@@ -343,7 +342,7 @@ export function AuthCard({
             </h1>
             <p className="text-xs text-slate-500 transition-all duration-200">
               {currentView === "login"
-                ? "Informe suas credenciais para continuar no CineDoom"
+                ? "Informe suas credenciais para continuar"
                 : "Informe seus dados para acessar o Portal do Cliente"}
             </p>
           </div>
@@ -357,11 +356,10 @@ export function AuthCard({
           {/* ===================== PAINEL 1: LOGIN ===================== */}
           <div
             ref={loginPanelRef}
-            className={`w-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              currentView === "login"
+            className={`w-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${currentView === "login"
                 ? "opacity-100 translate-x-0 relative pointer-events-auto"
                 : "opacity-0 -translate-x-10 absolute inset-x-0 top-0 pointer-events-none"
-            }`}
+              }`}
           >
             {loginError && (
               <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center gap-2 animate-in fade-in duration-150 mb-3">
@@ -449,11 +447,10 @@ export function AuthCard({
           {/* ===================== PAINEL 2: CADASTRO ===================== */}
           <div
             ref={cadastroPanelRef}
-            className={`w-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              currentView === "cadastro"
+            className={`w-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${currentView === "cadastro"
                 ? "opacity-100 translate-x-0 relative pointer-events-auto"
                 : "opacity-0 translate-x-10 absolute inset-x-0 top-0 pointer-events-none"
-            }`}
+              }`}
           >
             {registerError && (
               <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center gap-2 animate-in fade-in duration-150 mb-2.5">
@@ -510,13 +507,12 @@ export function AuthCard({
                       }
                     }}
                     required
-                    className={`w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${
-                      isEmailValid
+                    className={`w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${isEmailValid
                         ? "border-emerald-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                         : isEmailInvalid
-                        ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                        : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
-                    }`}
+                          ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                          : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
+                      }`}
                   />
                   {isEmailValid && (
                     <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none animate-in fade-in" />
@@ -552,13 +548,12 @@ export function AuthCard({
                       }
                     }}
                     required
-                    className={`w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${
-                      isCpfValid
+                    className={`w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${isCpfValid
                         ? "border-emerald-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                         : isCpfInvalid
-                        ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                        : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
-                    }`}
+                          ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                          : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
+                      }`}
                   />
                   {isCpfValid && (
                     <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none animate-in fade-in" />
@@ -594,13 +589,12 @@ export function AuthCard({
                       }
                     }}
                     required
-                    className={`w-full pl-9 pr-16 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${
-                      isPasswordValid
+                    className={`w-full pl-9 pr-16 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${isPasswordValid
                         ? "border-emerald-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                         : isPasswordInvalid
-                        ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                        : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
-                    }`}
+                          ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                          : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
+                      }`}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                     {isPasswordValid && (
@@ -643,13 +637,12 @@ export function AuthCard({
                       }
                     }}
                     required
-                    className={`w-full pl-9 pr-16 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${
-                      isConfirmPasswordValid
+                    className={`w-full pl-9 pr-16 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${isConfirmPasswordValid
                         ? "border-emerald-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                         : isConfirmPasswordInvalid
-                        ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                        : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
-                    }`}
+                          ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                          : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
+                      }`}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
                     {isConfirmPasswordValid && (
