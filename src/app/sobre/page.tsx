@@ -107,12 +107,12 @@ export default function SobreCineDoomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0E1A] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
+    <div className="min-h-screen bg-[#0A0E1A] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white w-full overflow-x-clip">
       {/* 1. Cabecalho Superior CineDoom (White Liquid Glass) */}
       <CineDoomHeader activePage="sobre" />
 
       {/* Conteudo Principal */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-14 space-y-10 sm:space-y-16 md:space-y-20">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-14 space-y-10 sm:space-y-16 md:space-y-20 overflow-x-clip">
         {/* ================= HERO PRINCIPAL ================= */}
         <section className="text-center max-w-3xl mx-auto space-y-4 pt-2">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cta/10 border border-cta/30 text-cta text-xs font-semibold uppercase tracking-wider shadow-sm animate-in fade-in duration-300">
@@ -247,6 +247,7 @@ export default function SobreCineDoomPage() {
               orb1Color="rgba(59, 130, 246, 0.28)"
               orb2Color="rgba(99, 102, 241, 0.20)"
               spotlightColor="rgba(59, 130, 246, 0.12)"
+              orbSize="w-40 h-40 sm:w-72 sm:h-72"
             >
               <div className="p-5 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
@@ -296,6 +297,7 @@ export default function SobreCineDoomPage() {
               orb1Color="rgba(233, 69, 96, 0.32)"
               orb2Color="rgba(168, 85, 247, 0.22)"
               spotlightColor="rgba(233, 69, 96, 0.15)"
+              orbSize="w-40 h-40 sm:w-72 sm:h-72"
             >
               <div className="p-5 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
@@ -346,6 +348,7 @@ export default function SobreCineDoomPage() {
               orb1Color="rgba(245, 158, 11, 0.30)"
               orb2Color="rgba(233, 69, 96, 0.20)"
               spotlightColor="rgba(245, 158, 11, 0.14)"
+              orbSize="w-40 h-40 sm:w-72 sm:h-72"
             >
               <div className="p-5 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
@@ -398,7 +401,7 @@ export default function SobreCineDoomPage() {
           orb1Color="rgba(233, 69, 96, 0.16)"
           orb2Color="rgba(59, 130, 246, 0.12)"
           spotlightColor="rgba(255, 255, 255, 0.05)"
-          orbSize="w-96 h-96"
+          orbSize="w-48 h-48 sm:w-96 sm:h-96"
         >
           <div className="text-center max-w-xl mx-auto space-y-2">
             <span className="text-xs font-bold text-cta uppercase tracking-wider block">
@@ -417,7 +420,7 @@ export default function SobreCineDoomPage() {
               orb1Color="rgba(233, 69, 96, 0.30)"
               orb2Color="rgba(147, 51, 234, 0.20)"
               spotlightColor="rgba(233, 69, 96, 0.12)"
-              orbSize="w-56 h-56"
+              orbSize="w-32 h-32 sm:w-56 sm:h-56"
             >
               <div className="w-10 h-10 rounded-full bg-cta text-white font-bold text-sm flex items-center justify-center shadow-lg shadow-cta/30 group-hover:scale-110 transition-transform">
                 1
@@ -435,7 +438,7 @@ export default function SobreCineDoomPage() {
               orb1Color="rgba(245, 158, 11, 0.30)"
               orb2Color="rgba(234, 88, 12, 0.20)"
               spotlightColor="rgba(245, 158, 11, 0.12)"
-              orbSize="w-56 h-56"
+              orbSize="w-32 h-32 sm:w-56 sm:h-56"
             >
               <div className="w-10 h-10 rounded-full bg-amber-400 text-slate-950 font-bold text-sm flex items-center justify-center shadow-lg shadow-amber-400/30 group-hover:scale-110 transition-transform">
                 2
@@ -453,7 +456,7 @@ export default function SobreCineDoomPage() {
               orb1Color="rgba(16, 185, 129, 0.30)"
               orb2Color="rgba(14, 165, 233, 0.20)"
               spotlightColor="rgba(16, 185, 129, 0.12)"
-              orbSize="w-56 h-56"
+              orbSize="w-32 h-32 sm:w-56 sm:h-56"
             >
               <div className="w-10 h-10 rounded-full bg-emerald-400 text-slate-950 font-bold text-sm flex items-center justify-center shadow-lg shadow-emerald-400/30 group-hover:scale-110 transition-transform">
                 3
@@ -474,7 +477,7 @@ export default function SobreCineDoomPage() {
           orb1Color="rgba(233, 69, 96, 0.35)"
           orb2Color="rgba(245, 158, 11, 0.25)"
           spotlightColor="rgba(255, 255, 255, 0.10)"
-          orbSize="w-80 h-80"
+          orbSize="w-48 h-48 sm:w-80 sm:h-80"
         >
           <div className="max-w-xl mx-auto space-y-3 sm:space-y-4">
             <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight">
@@ -486,7 +489,7 @@ export default function SobreCineDoomPage() {
             <div className="pt-2">
               <Link
                 href="/#programacao"
-                className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full bg-cta hover:bg-cta-hover text-white text-xs sm:text-sm font-bold shadow-lg shadow-cta/30 hover:shadow-cta/40 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto"
+                className="inline-flex items-center justify-center text-center gap-2 px-4 sm:px-6 py-3 sm:py-3.5 rounded-full bg-cta hover:bg-cta-hover text-white text-xs sm:text-sm font-bold shadow-lg shadow-cta/30 hover:shadow-cta/40 hover:scale-105 active:scale-95 transition-all max-w-full w-full sm:w-auto"
               >
                 <span>Ver Filmes e Programação em Cartaz</span>
                 <ArrowRight className="w-4 h-4 shrink-0" />
