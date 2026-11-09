@@ -13,13 +13,13 @@ import {
 
 interface CineDoomHeaderProps {
   activePage?:
-    | "filmes"
-    | "sobre"
-    | "minhas-reservas"
-    | "gestao"
-    | "bilheteria"
-    | "baixa-reserva"
-    | "nenhum";
+  | "filmes"
+  | "sobre"
+  | "minhas-reservas"
+  | "gestao"
+  | "bilheteria"
+  | "baixa-reserva"
+  | "nenhum";
 }
 
 export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
@@ -265,22 +265,20 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                 <Link
                   href="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
-                    activePage === "filmes"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${activePage === "filmes"
                       ? "bg-cta/10 text-cta font-bold"
                       : "text-slate-800 hover:bg-slate-100/70"
-                  }`}
+                    }`}
                 >
                   Bilheteria
                 </Link>
                 <Link
                   href="/bilheteria/baixa-reserva"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
-                    activePage === "baixa-reserva"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${activePage === "baixa-reserva"
                       ? "bg-cta/10 text-cta font-bold"
                       : "text-slate-800 hover:bg-slate-100/70"
-                  }`}
+                    }`}
                 >
                   Reservas
                 </Link>
@@ -290,33 +288,30 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                 <Link
                   href="/gestao"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
-                    activePage === "gestao"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${activePage === "gestao"
                       ? "bg-cta/10 text-cta font-bold"
                       : "text-slate-800 hover:bg-slate-100/70"
-                  }`}
+                    }`}
                 >
                   Painel de Gestão
                 </Link>
                 <Link
                   href="/bilheteria"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
-                    activePage === "bilheteria"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${activePage === "bilheteria"
                       ? "bg-cta/10 text-cta font-bold"
                       : "text-slate-800 hover:bg-slate-100/70"
-                  }`}
+                    }`}
                 >
                   Bilheteria
                 </Link>
                 <Link
                   href="/bilheteria/baixa-reserva"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
-                    activePage === "baixa-reserva"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${activePage === "baixa-reserva"
                       ? "bg-cta/10 text-cta font-bold"
                       : "text-slate-800 hover:bg-slate-100/70"
-                  }`}
+                    }`}
                 >
                   Reservas
                 </Link>
@@ -326,11 +321,10 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                 <Link
                   href="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
-                    activePage === "filmes"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${activePage === "filmes"
                       ? "bg-cta/10 text-cta font-bold"
                       : "text-slate-800 hover:bg-slate-100/70"
-                  }`}
+                    }`}
                 >
                   Filmes
                 </Link>
@@ -339,11 +333,10 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                   <Link
                     href="/portal/minhas-reservas"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
-                      activePage === "minhas-reservas"
+                    className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${activePage === "minhas-reservas"
                         ? "bg-cta/10 text-cta font-bold"
                         : "text-slate-800 hover:bg-slate-100/70"
-                    }`}
+                      }`}
                   >
                     Minhas Reservas
                   </Link>
@@ -352,11 +345,10 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                 <Link
                   href="/sobre"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
-                    activePage === "sobre"
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${activePage === "sobre"
                       ? "bg-cta/10 text-cta font-bold"
                       : "text-slate-800 hover:bg-slate-100/70"
-                  }`}
+                    }`}
                 >
                   Sobre o CineDoom
                 </Link>
@@ -364,10 +356,6 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
             )}
 
             <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between px-2">
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-cta" />
-                4 Salas • 420 Lugares • Sem taxas
-              </span>
               <span className="font-semibold text-slate-700">Bilheteria Física</span>
             </div>
           </div>
