@@ -126,63 +126,64 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
               <div
                 key={film.id}
                 data-testid={`attendant-card-${film.id}`}
-                className="liquid-glass-card rounded-2xl p-4 flex gap-4 items-start h-auto transition-all shadow-md hover:border-white/20"
+                className="liquid-glass-card rounded-2xl p-4 flex flex-col gap-3 transition-all shadow-md hover:border-white/20"
               >
-                {/* Coluna Esquerda: Pôster com proporção adequada e presença visual + Botão "Mais datas" */}
-                <div className="flex flex-col items-center gap-2 shrink-0 w-[100px] sm:w-[110px]">
-                  <div className="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-md shrink-0">
-                    {film.posterUrl ? (
-                      <Image
-                        src={film.posterUrl}
-                        alt={film.title}
-                        fill
-                        sizes="110px"
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-600">
-                        <Film className="w-8 h-8 opacity-40" />
+                {/* Cabeçalho do Card: Nome do filme em cima do pôster */}
+                <h2
+                  title={film.title}
+                  className="text-sm sm:text-base font-bold text-white tracking-tight leading-snug line-clamp-2"
+                >
+                  {film.title}
+                </h2>
+
+                <div className="flex gap-4 items-start h-auto">
+                  {/* Coluna Esquerda: Pôster com proporção adequada e presença visual + Botão "Mais datas" */}
+                  <div className="flex flex-col items-center gap-2 shrink-0 w-[100px] sm:w-[110px]">
+                    <div className="relative aspect-[2/3] w-full rounded-xl overflow-hidden bg-[#0A0E1A] border border-white/10 shadow-md shrink-0">
+                      {film.posterUrl ? (
+                        <Image
+                          src={film.posterUrl}
+                          alt={film.title}
+                          fill
+                          sizes="110px"
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-600">
+                          <Film className="w-8 h-8 opacity-40" />
+                        </div>
+                      )}
+                      <div className="absolute top-1.5 left-1.5 z-10 scale-90 origin-top-left shadow-sm">
+                        <AgeRatingBadge rating={film.classification} />
                       </div>
-                    )}
-                    <div className="absolute top-1.5 left-1.5 z-10 scale-90 origin-top-left shadow-sm">
-                      <AgeRatingBadge rating={film.classification} />
                     </div>
+
+                    {/* Botão "Mais datas" posicionado imediatamente abaixo do pôster */}
+                    <button
+                      type="button"
+                      onClick={() => handleOpenMoreDates(film)}
+                      className="w-full py-1.5 px-2 rounded-lg bg-white/[0.04] hover:bg-white/10 border border-white/10 text-[11px] font-semibold text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 leading-none"
+                      title="Ver sessões em outros dias"
+                    >
+                      <Search className="w-3.5 h-3.5 text-cta shrink-0" />
+                      <span className="whitespace-nowrap">Mais datas</span>
+                    </button>
                   </div>
 
-                  {/* Botão "Mais datas" posicionado imediatamente abaixo do pôster */}
-                  <button
-                    type="button"
-                    onClick={() => handleOpenMoreDates(film)}
-                    className="w-full py-1.5 px-2 rounded-lg bg-white/[0.04] hover:bg-white/10 border border-white/10 text-[11px] font-semibold text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 leading-none"
-                    title="Ver sessões em outros dias"
-                  >
-                    <Search className="w-3.5 h-3.5 text-cta shrink-0" />
-                    <span className="whitespace-nowrap">Mais datas</span>
-                  </button>
-                </div>
-
-                {/* Coluna Direita: Informações e Grade de Horários em 2 Colunas */}
-                <div className="flex-1 min-w-0 flex flex-col justify-start">
-                  {/* 1. Nome do filme */}
-                  <h2
-                    title={film.title}
-                    className="text-sm sm:text-base font-bold text-white tracking-tight leading-snug line-clamp-2"
-                  >
-                    {film.title}
-                  </h2>
-
-                  {/* 2. Identificação "Sessões de hoje" e contagem discreta */}
-                  <div className="flex items-center justify-between gap-1.5 mt-1">
-                    <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
-                      Sessões de hoje
-                    </span>
-                    {hasSessions && (
-                      <span className="text-[10px] text-slate-500 font-mono">
-                        {film.todaySessions.length} {film.todaySessions.length === 1 ? "sessão" : "sessões"}
+                  {/* Coluna Direita: Informações e Grade de Horários em 2 Colunas */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-start">
+                    {/* 1. Identificação "Sessões de hoje" e contagem discreta */}
+                    <div className="flex items-center justify-between gap-1.5">
+                      <span className="text-[11px] font-semibold text-slate-300 uppercase tracking-wider">
+                        Sessões de hoje
                       </span>
-                    )}
-                  </div>
+                      {hasSessions && (
+                        <span className="text-[10px] text-slate-500 font-mono">
+                          {film.todaySessions.length} {film.todaySessions.length === 1 ? "sessão" : "sessões"}
+                        </span>
+                      )}
+                    </div>
 
                   {/* 3. Sala correspondente como texto normal */}
                   {hasSessions && film.roomName && (
@@ -239,9 +240,10 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                   )}
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
+      </div>
       )}
     </div>
   );
