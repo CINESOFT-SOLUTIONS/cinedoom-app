@@ -4,26 +4,16 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   DoorOpen,
-  AlertCircle,
   CheckCircle,
+  AlertCircle,
   X,
   ArrowLeft,
-  Users,
-  Eye,
-  ShieldAlert,
   Wrench,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
 import { getCanonicalRoomName } from "@/shared/experiences";
 import { MOCK_ROOMS } from "@/modules/portal/mock-cinema-data";
-
-interface SeatItem {
-  id: string;
-  rowLabel: string;
-  columnNumber: number;
-  seatCode: string;
-  status?: string;
-}
+import { SeatingGrid, type GridSeatItem } from "@/modules/bilheteria/components/seating-grid";
 
 interface RoomItem {
   id: string;
@@ -34,51 +24,47 @@ interface RoomItem {
     columns: number;
     totalSeats: number;
   } | null;
-  seats?: SeatItem[];
-  _count?: {
-    seats: number;
-    sessions: number;
-  };
+  seats?: GridSeatItem[];
 }
 
-function buildFallbackSeats(roomId: string, rowsCount: number, colsCount: number): SeatItem[] {
-  const seats: SeatItem[] = [];
+function buildCanonicalRoomSeats(roomId: string, rowsCount: number, colsCount: number): GridSeatItem[] {
+  const seats: GridSeatItem[] = [];
   for (let r = 0; r < rowsCount; r++) {
     const rowLabel = String.fromCharCode(65 + r);
     for (let c = 1; c <= colsCount; c++) {
       seats.push({
         id: `${roomId}-seat-${rowLabel}${c}`,
+        seatId: `${roomId}-seat-${rowLabel}${c}`,
         rowLabel,
         columnNumber: c,
         seatCode: `${rowLabel}${c}`,
         status: "AVAILABLE",
+        price: 30.0,
       });
     }
   }
   return seats;
 }
 
-// 4 Salas Oficiais CineDoom
+// 4 Salas Canônicas do CineDoom
 const OFFICIAL_CANONICAL_ROOMS: RoomItem[] = MOCK_ROOMS.map((mr) => ({
   id: mr.id,
   name: mr.name,
   capacity: mr.capacity,
   layoutMetadata: { rows: mr.rows, columns: mr.columns, totalSeats: mr.capacity },
-  seats: buildFallbackSeats(mr.id, mr.rows, mr.columns),
+  seats: buildCanonicalRoomSeats(mr.id, mr.rows, mr.columns),
 }));
 
 export default function SalasGestaoPage() {
   const [rooms, setRooms] = useState<RoomItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState<RoomItem | null>(null);
+  const [roomSeats, setRoomSeats] = useState<GridSeatItem[]>([]);
   const [statusMessage, setStatusMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
-  const [blockedSeats, setBlockedSeats] = useState<Set<string>>(new Set());
 
   const fetchRooms = async () => {
-    setIsLoading(true);
     try {
       const response = await fetch("/api/salas");
       if (response.ok) {
@@ -89,82 +75,62 @@ export default function SalasGestaoPage() {
             name: getCanonicalRoomName(r.name),
           }));
           setRooms(loadedRooms);
-          if (!selectedRoom && loadedRooms.length > 0) {
-            loadRoomDetails(loadedRooms[0]);
-          }
+          loadRoomDetails(loadedRooms[0]);
           return;
         }
       }
       setRooms(OFFICIAL_CANONICAL_ROOMS);
-      if (!selectedRoom) {
-        loadRoomDetails(OFFICIAL_CANONICAL_ROOMS[0]);
-      }
+      loadRoomDetails(OFFICIAL_CANONICAL_ROOMS[0]);
     } catch {
       setRooms(OFFICIAL_CANONICAL_ROOMS);
-      if (!selectedRoom) {
-        loadRoomDetails(OFFICIAL_CANONICAL_ROOMS[0]);
-      }
-    } finally {
-      setIsLoading(false);
+      loadRoomDetails(OFFICIAL_CANONICAL_ROOMS[0]);
     }
   };
 
   const loadRoomDetails = async (room: RoomItem) => {
+    setSelectedRoom(room);
+
     try {
       const res = await fetch(`/api/salas/${room.id}`);
       if (res.ok) {
         const roomData = await res.json();
-        const seats: SeatItem[] = (roomData.seats || []).map((s: any) => ({
-          ...s,
-          seatCode: s.seatCode || `${s.rowLabel}${s.columnNumber}`,
-        }));
-
-        setSelectedRoom({
-          ...roomData,
-          name: getCanonicalRoomName(roomData.name),
-          seats,
-        });
-
-        // Identifica poltronas bloqueadas
-        const blocked = new Set<string>();
-        seats.forEach((s) => {
-          if (s.status === "BLOCKED" || s.status === "MAINTENANCE") {
-            blocked.add(s.seatCode);
-          }
-        });
-        setBlockedSeats(blocked);
-        return;
+        if (roomData.seats && Array.isArray(roomData.seats) && roomData.seats.length > 0) {
+          const mapped: GridSeatItem[] = roomData.seats.map((s: any) => ({
+            id: s.id,
+            seatId: s.id,
+            rowLabel: s.rowLabel,
+            columnNumber: s.columnNumber,
+            seatCode: s.seatCode || `${s.rowLabel}${s.columnNumber}`,
+            status: s.status || "AVAILABLE",
+            price: 30.0,
+          }));
+          setRoomSeats(mapped);
+          return;
+        }
       }
     } catch {
-      // Continua para fallback
+      // Fallback
     }
 
     const rowsCount = room.layoutMetadata?.rows || Math.ceil(room.capacity / 10);
     const colsCount = room.layoutMetadata?.columns || 10;
-    const fallbackSeats = room.seats || buildFallbackSeats(room.id, rowsCount, colsCount);
-
-    setSelectedRoom({
-      ...room,
-      name: getCanonicalRoomName(room.name),
-      seats: fallbackSeats,
-    });
+    setRoomSeats(buildCanonicalRoomSeats(room.id, rowsCount, colsCount));
   };
 
   useEffect(() => {
     fetchRooms();
   }, []);
 
-  const handleToggleSeat = async (seat: SeatItem) => {
+  const handleSeatToggle = async (seat: GridSeatItem) => {
     if (!selectedRoom) return;
 
-    const isCurrentlyBlocked = blockedSeats.has(seat.seatCode);
-    const nextBlocked = new Set(blockedSeats);
-    if (isCurrentlyBlocked) {
-      nextBlocked.delete(seat.seatCode);
-    } else {
-      nextBlocked.add(seat.seatCode);
-    }
-    setBlockedSeats(nextBlocked);
+    const isBlocked = seat.status === "BLOCKED";
+    const nextStatus = isBlocked ? "AVAILABLE" : "BLOCKED";
+
+    // Atualização otimista
+    setRoomSeats((prev) =>
+      prev.map((s) => (s.id === seat.id || s.seatCode === seat.seatCode ? { ...s, status: nextStatus } : s))
+    );
 
     try {
       const res = await fetch(`/api/salas/${selectedRoom.id}/assentos/${seat.id || seat.seatCode}`, {
@@ -175,193 +141,150 @@ export default function SalasGestaoPage() {
       if (res.ok) {
         setStatusMessage({
           type: "success",
-          text: isCurrentlyBlocked
-            ? `Poltrona ${seat.seatCode} desbloqueada e liberada para venda!`
-            : `Poltrona ${seat.seatCode} bloqueada para manutenção (indisponível em todas as sessões).`,
+          text: isBlocked
+            ? `Poltrona ${seat.seatCode} liberada para sessões!`
+            : `Poltrona ${seat.seatCode} bloqueada para manutenção (todas as sessões).`,
         });
       } else {
         setStatusMessage({
           type: "success",
-          text: isCurrentlyBlocked
-            ? `Poltrona ${seat.seatCode} liberada para as sessões!`
-            : `Poltrona ${seat.seatCode} bloqueada para manutenção com sucesso!`,
+          text: isBlocked
+            ? `Poltrona ${seat.seatCode} liberada para sessões!`
+            : `Poltrona ${seat.seatCode} bloqueada para manutenção!`,
         });
       }
     } catch {
       setStatusMessage({
         type: "success",
-        text: isCurrentlyBlocked
-          ? `Poltrona ${seat.seatCode} liberada para as sessões!`
+        text: isBlocked
+          ? `Poltrona ${seat.seatCode} liberada para sessões!`
           : `Poltrona ${seat.seatCode} bloqueada para manutenção!`,
       });
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
+    <div className="h-screen max-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col overflow-hidden selection:bg-cta selection:text-white">
       {/* Header Oficial CineDoom */}
       <CineDoomHeader activePage="gestao" />
 
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-6 flex-1 w-full">
-        {/* Barra de Ações & Título */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-2">
-          <div className="flex items-center gap-3">
+      {/* Main Content - Sem rolagem da página inteira (View única h-full) */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-2.5 flex flex-col min-h-0 overflow-hidden space-y-2">
+        {/* Barra Superior Compacta: Título, Voltar e Seletor de Salas */}
+        <div className="flex flex-wrap items-center justify-between gap-2 shrink-0">
+          <div className="flex items-center gap-2">
             <Link
               href="/gestao"
-              className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
               title="Voltar ao Painel"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
             </Link>
-            <div className="w-10 h-10 rounded-xl bg-cta/15 text-cta border border-cta/30 flex items-center justify-center shadow-lg shadow-cta/10">
-              <DoorOpen className="w-5 h-5" />
+            <div className="w-7 h-7 rounded-lg bg-cta/15 text-cta border border-cta/30 flex items-center justify-center">
+              <DoorOpen className="w-4 h-4" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">Salas & Poltronas</h1>
-              <p className="text-xs text-slate-400">
-                Selecione uma sala e clique na poltrona para bloquear ou liberar assentos em manutenção
+              <h1 className="text-base font-bold text-white leading-tight">Salas & Poltronas</h1>
+              <p className="text-[11px] text-slate-400">
+                Clique na poltrona para alternar entre disponível e manutenção
               </p>
             </div>
           </div>
+
+          {/* Seletor de Salas Compacto */}
+          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
+            {rooms.map((room) => {
+              const isSelected = selectedRoom?.id === room.id;
+              return (
+                <button
+                  key={room.id}
+                  onClick={() => loadRoomDetails(room)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                    isSelected
+                      ? "bg-cta text-white shadow-md shadow-cta/25"
+                      : "bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10"
+                  }`}
+                >
+                  <span>{room.name}</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/30 font-medium">
+                    {room.capacity}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Status Toast */}
+        {/* Status Toast Flutuante Compacto */}
         {statusMessage && (
           <div
-            className={`flex items-center justify-between p-4 rounded-xl border text-sm shadow-md ${
+            className={`px-3 py-1.5 rounded-xl border text-xs shadow-md flex items-center justify-between shrink-0 ${
               statusMessage.type === "success"
-                ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
-                : "bg-rose-950/60 border-rose-500/40 text-rose-300"
+                ? "bg-emerald-950/70 border-emerald-500/40 text-emerald-300"
+                : "bg-rose-950/70 border-rose-500/40 text-rose-300"
             }`}
           >
             <div className="flex items-center gap-2">
               {statusMessage.type === "success" ? (
-                <CheckCircle className="w-5 h-5 text-emerald-400" />
+                <CheckCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               ) : (
-                <AlertCircle className="w-5 h-5 text-rose-400" />
+                <AlertCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
               )}
-              <span>{statusMessage.text}</span>
+              <span className="font-medium">{statusMessage.text}</span>
             </div>
             <button
               onClick={() => setStatusMessage(null)}
-              className="text-slate-400 hover:text-white transition-colors p-1"
+              className="text-slate-400 hover:text-white p-0.5"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
 
-        {/* Seletor de Salas em Abas */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-2">
-          {rooms.map((room) => {
-            const isSelected = selectedRoom?.id === room.id;
-            return (
-              <button
-                key={room.id}
-                onClick={() => loadRoomDetails(room)}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all cursor-pointer whitespace-nowrap ${
-                  isSelected
-                    ? "bg-cta text-white shadow-lg shadow-cta/25 scale-[1.02]"
-                    : "bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10"
-                }`}
-              >
-                <span>{room.name}</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-black/30 font-medium">
-                  {room.capacity} lugares
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Mapa Interativo da Sala Selecionada */}
+        {/* Card do Mapa Interativo Padronizado (Sem Scroll Global) */}
         {selectedRoom && (
-          <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 border border-white/10 shadow-2xl space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-borderDark/60 pb-5">
-              <div>
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                  <span>{selectedRoom.name}</span>
-                </h2>
-                <p className="text-xs text-slate-400 mt-1">
-                  Clique diretamente sobre uma poltrona para alternar entre <strong>Disponível</strong> e <strong>Bloqueada (Manutenção)</strong>.
-                </p>
+          <div className="flex-1 liquid-glass-card rounded-2xl p-3 sm:p-4 border border-white/10 shadow-xl flex flex-col justify-between min-h-0 overflow-hidden">
+            {/* Header da Sala com Legenda */}
+            <div className="flex items-center justify-between border-b border-borderDark/50 pb-2 shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-white">{selectedRoom.name}</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/10">
+                  {selectedRoom.capacity} poltronas
+                </span>
               </div>
 
-              {/* Legenda */}
-              <div className="flex items-center gap-4 text-xs font-medium">
+              {/* Legenda Operacional */}
+              <div className="flex items-center gap-3 text-xs font-medium">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded-md bg-[#22C55E]/90 border border-[#22C55E]" />
-                  <span className="text-slate-300">Disponível</span>
+                  <span className="w-3 h-3 rounded-xs bg-white border border-slate-300" />
+                  <span className="text-slate-300 text-[11px]">Disponível</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded-md bg-rose-500/90 border border-rose-500 flex items-center justify-center text-[9px] text-white font-bold">
-                    ✕
-                  </div>
-                  <span className="text-slate-300">Manutenção (Bloqueada)</span>
+                  <span className="w-3 h-3 rounded-xs bg-[#9CA3AF]/40 border border-[#9CA3AF]/60" />
+                  <span className="text-slate-300 text-[11px]">Manutenção (Bloqueada)</span>
                 </div>
               </div>
             </div>
 
-            {/* Tela de Projeção */}
-            <div className="bg-[#0A0E1A] p-6 sm:p-8 rounded-2xl border border-borderDark/60">
-              <div className="w-3/4 max-w-md mx-auto py-2 mb-10 text-center text-xs font-bold tracking-widest bg-[#12182B] border-b-2 border-cta text-slate-300 rounded-t-lg shadow-md">
-                TELA DE PROJEÇÃO
-              </div>
-
-              {/* Grid de Poltronas */}
-              <div className="overflow-x-auto py-2">
-                <div className="flex flex-col gap-2.5 items-center min-w-max mx-auto">
-                  {Object.entries(
-                    (selectedRoom.seats || []).reduce<Record<string, SeatItem[]>>(
-                      (acc, seat) => {
-                        acc[seat.rowLabel] = acc[seat.rowLabel] || [];
-                        acc[seat.rowLabel].push(seat);
-                        return acc;
-                      },
-                      {}
-                    )
-                  ).map(([row, rowSeats]) => (
-                    <div key={row} className="flex items-center gap-3">
-                      <span className="text-xs font-bold text-slate-500 w-5 text-center">
-                        {row}
-                      </span>
-                      <div className="flex gap-2">
-                        {rowSeats
-                          .sort((a, b) => a.columnNumber - b.columnNumber)
-                          .map((seat) => {
-                            const isBlocked = blockedSeats.has(seat.seatCode);
-                            return (
-                              <button
-                                key={seat.id}
-                                type="button"
-                                onClick={() => handleToggleSeat(seat)}
-                                title={`Poltrona ${seat.seatCode} - Clique para ${isBlocked ? "desbloquear" : "bloquear para manutenção"}`}
-                                className={`w-8 h-8 rounded-lg font-bold text-[11px] flex items-center justify-center transition-all cursor-pointer shadow-xs ${
-                                  isBlocked
-                                    ? "bg-rose-500/80 hover:bg-rose-600 text-white border border-rose-400 scale-95"
-                                    : "bg-[#22C55E]/90 hover:bg-[#22C55E] text-slate-900 border border-[#22C55E] hover:scale-105"
-                                }`}
-                              >
-                                {isBlocked ? "✕" : seat.columnNumber}
-                              </button>
-                            );
-                          })}
-                      </div>
-                      <span className="text-xs font-bold text-slate-500 w-5 text-center">
-                        {row}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            {/* Grid Canônico Centralizado que cabe perfeitamente na viewport */}
+            <div className="flex-1 flex flex-col justify-center items-center min-h-0 py-1 overflow-auto">
+              <SeatingGrid
+                seats={roomSeats}
+                onSeatToggle={handleSeatToggle}
+                allowBlockedToggle={true}
+                showLegend={false}
+                showSummary={false}
+                showScreen={true}
+                readOnly={false}
+                className="scale-90 sm:scale-95 md:scale-100 origin-center"
+              />
             </div>
 
-            {/* Aviso Informativo */}
-            <div className="p-3.5 bg-sky-950/30 border border-sky-500/20 rounded-xl text-xs text-slate-300 flex items-center gap-2.5">
-              <Wrench className="w-4 h-4 text-sky-400 shrink-0" />
+            {/* Aviso Rodapé Compacto */}
+            <div className="px-3 py-1.5 bg-sky-950/20 border border-sky-500/20 rounded-xl text-[11px] text-slate-300 flex items-center gap-2 shrink-0">
+              <Wrench className="w-3.5 h-3.5 text-sky-400 shrink-0" />
               <span>
-                Poltronas marcadas em <strong>vermelho com ✕</strong> são retiradas imediatamente das opções de compra tanto no site do cliente quanto na bilheteria presencial em todas as sessões desta sala.
+                Poltronas marcadas como <strong>Bloqueadas</strong> são retiradas imediatamente das opções de compra tanto no site quanto na bilheteria presencial.
               </span>
             </div>
           </div>

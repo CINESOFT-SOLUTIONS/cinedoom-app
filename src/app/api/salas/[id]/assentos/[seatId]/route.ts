@@ -89,3 +89,4 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     status: toggledInMock ? "BLOCKED" : "AVAILABLE",
   });
 }
+

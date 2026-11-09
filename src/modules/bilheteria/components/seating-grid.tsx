@@ -30,6 +30,7 @@ export interface SeatingGridProps {
   onMaxSelectionReached?: () => void;
   maxSelection?: number;
   readOnly?: boolean;
+  allowBlockedToggle?: boolean;
   unitPrice?: number;
   showLegend?: boolean;
   showScreen?: boolean;
@@ -173,6 +174,7 @@ export function SeatingGrid({
   onMaxSelectionReached,
   maxSelection,
   readOnly = false,
+  allowBlockedToggle = false,
   unitPrice = 35.0,
   showLegend = true,
   showScreen = true,
@@ -205,7 +207,7 @@ export function SeatingGrid({
 
   const handleSeatClick = (seat: GridSeatItem) => {
     if (readOnly || !onSeatToggle) return;
-    if (seat.status !== "AVAILABLE") return;
+    if (!allowBlockedToggle && seat.status !== "AVAILABLE") return;
 
     if (!selectedSet.has(seat.id) && maxSelection && selectedSeatIds.length >= maxSelection) {
       if (onMaxSelectionReached) {
@@ -292,7 +294,7 @@ export function SeatingGrid({
               const effectiveStatus: SeatChromaticStatus = isSelected
                 ? "SELECTED"
                 : (seat.status as SeatChromaticStatus);
-              const isClickable = !readOnly && seat.status === "AVAILABLE";
+              const isClickable = !readOnly && (allowBlockedToggle || seat.status === "AVAILABLE");
 
               return (
                 <SeatButton
