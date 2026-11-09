@@ -166,6 +166,15 @@ export function BookingFlow({
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
 
+  // Auto-dismiss do alerta de erro após 4 segundos
+  useEffect(() => {
+    if (!errorNotice) return;
+    const timer = setTimeout(() => {
+      setErrorNotice(null);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [errorNotice]);
+
   // 0. Função central de reinicialização para novas reservas isoladas
   const resetForNewReservation = useCallback(
     (targetFilmId?: string, targetSessionId?: string) => {
