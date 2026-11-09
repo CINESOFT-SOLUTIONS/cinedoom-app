@@ -1108,7 +1108,7 @@ export function BookingFlow({
                         </div>
 
                         {/* Grade de Horários com Formato e Idioma divididos e ocupando 100% do espaço abaixo */}
-                        <div className="grid grid-cols-2 gap-2 pt-0.5">
+                        <div className="grid grid-cols-2 gap-x-2.5 gap-y-3.5 pt-1">
                           {roomSessions.map((sess) => {
                             const timeStr = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
                               hour: "2-digit",

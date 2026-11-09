@@ -193,7 +193,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
 
                   {/* 4. Grade de Horários em 2 Colunas bem espaçadas e clicáveis */}
                   {hasSessions ? (
-                    <div className="grid grid-cols-2 gap-2.5 pt-0.5">
+                    <div className="grid grid-cols-2 gap-x-2.5 gap-y-3.5 pt-1">
                       {film.todaySessions.map((session) => {
                         const timeStr = new Date(session.startsAt).toLocaleTimeString("pt-BR", {
                           hour: "2-digit",
