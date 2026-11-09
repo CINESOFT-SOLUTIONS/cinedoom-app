@@ -1129,6 +1129,9 @@ export function BookingFlow({
                   seats={seats}
                   selectedSeatIds={selectedSeatIds}
                   onSeatToggle={handleSeatToggle}
+                  onMaxSelectionReached={() => {
+                    setErrorNotice("Limite máximo de 5 assentos por reserva online.");
+                  }}
                   maxSelection={isAttendantOrManager ? undefined : 5}
                   unitPrice={unitPrice}
                   showLegend={false}

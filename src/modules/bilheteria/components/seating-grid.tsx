@@ -27,6 +27,7 @@ export interface SeatingGridProps {
   seats: GridSeatItem[];
   selectedSeatIds?: string[];
   onSeatToggle?: (seat: GridSeatItem) => void;
+  onMaxSelectionReached?: () => void;
   maxSelection?: number;
   readOnly?: boolean;
   unitPrice?: number;
@@ -169,6 +170,7 @@ export function SeatingGrid({
   seats,
   selectedSeatIds = [],
   onSeatToggle,
+  onMaxSelectionReached,
   maxSelection,
   readOnly = false,
   unitPrice = 35.0,
@@ -206,6 +208,9 @@ export function SeatingGrid({
     if (seat.status !== "AVAILABLE") return;
 
     if (!selectedSet.has(seat.id) && maxSelection && selectedSeatIds.length >= maxSelection) {
+      if (onMaxSelectionReached) {
+        onMaxSelectionReached();
+      }
       return;
     }
 
