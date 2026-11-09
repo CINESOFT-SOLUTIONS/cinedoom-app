@@ -52,62 +52,72 @@ interface SessionTemplate {
   idCode: string;
 }
 
-// Modelos de horários diversificados por filme para toda a semana (matinê, tarde, noite e sessão da madrugada)
-// Preço padronizado do filme: R$ 30,00 inteira / R$ 15,00 meia
-const DUNA_TEMPLATES: SessionTemplate[] = [
-  { roomIndex: 2, hour: 11, minute: 0, price: 30.0, idCode: "0314" },
-  { roomIndex: 2, hour: 14, minute: 0, price: 30.0, idCode: "0310" },
-  { roomIndex: 3, hour: 14, minute: 30, price: 30.0, idCode: "0350" }, // Sessão extra VIP vespertina
-  { roomIndex: 0, hour: 16, minute: 0, price: 30.0, idCode: "0351" },  // Sessão extra Clássica
-  { roomIndex: 3, hour: 16, minute: 30, price: 30.0, idCode: "0311" },
-  { roomIndex: 2, hour: 19, minute: 0, price: 30.0, idCode: "0301" }, // ID histórico original
-  { roomIndex: 0, hour: 20, minute: 15, price: 30.0, idCode: "0312" },
-  { roomIndex: 2, hour: 21, minute: 45, price: 30.0, idCode: "0302" }, // ID histórico original
-  { roomIndex: 3, hour: 22, minute: 30, price: 30.0, idCode: "0313" },
-  { roomIndex: 1, hour: 23, minute: 0, price: 30.0, idCode: "0352" },  // Sessão extra Clássica noturna
-];
+// Grade Semanal Canônica CineDoom (Total: 52 sessões semanais)
+// Associação estrita Sala <-> Filme:
+// - Sala 01 (Clássica): Divertida Mente 2 (roomIndex: 0)
+// - Sala 02 (Clássica): Oppenheimer (roomIndex: 1)
+// - Sala 03 (IMAX): Duna: Parte Dois (roomIndex: 2)
+// - Sala 04 (VIP): Pobres Criaturas (roomIndex: 3)
+//
+// Mapeamento por dia da semana (0 = Domingo, 1 = Segunda, 2 = Terça, 3 = Quarta, 4 = Quinta, 5 = Sexta, 6 = Sábado):
+interface DaySchedule {
+  sala01: { hour: number; minute: number }[]; // Divertida Mente 2
+  sala02: { hour: number; minute: number }[]; // Oppenheimer
+  sala03: { hour: number; minute: number }[]; // Duna: Parte Dois
+  sala04: { hour: number; minute: number }[]; // Pobres Criaturas
+}
 
-const OPPENHEIMER_TEMPLATES: SessionTemplate[] = [
-  { roomIndex: 2, hour: 10, minute: 30, price: 30.0, idCode: "0353" }, // Sessão extra IMAX matutina
-  { roomIndex: 1, hour: 13, minute: 30, price: 30.0, idCode: "0325" },
-  { roomIndex: 3, hour: 14, minute: 15, price: 30.0, idCode: "0320" },
-  { roomIndex: 1, hour: 16, minute: 45, price: 30.0, idCode: "0321" },
-  { roomIndex: 2, hour: 17, minute: 15, price: 30.0, idCode: "0322" },
-  { roomIndex: 0, hour: 17, minute: 30, price: 30.0, idCode: "0354" }, // Sessão extra Clássica entardecer
-  { roomIndex: 3, hour: 20, minute: 0, price: 30.0, idCode: "0303" }, // ID histórico original
-  { roomIndex: 1, hour: 21, minute: 15, price: 30.0, idCode: "0323" },
-  { roomIndex: 2, hour: 22, minute: 0, price: 30.0, idCode: "0355" },  // Sessão extra IMAX noite
-  { roomIndex: 3, hour: 23, minute: 15, price: 30.0, idCode: "0324" },
-];
-
-const POBRES_CRIATURAS_TEMPLATES: SessionTemplate[] = [
-  { roomIndex: 0, hour: 11, minute: 15, price: 30.0, idCode: "0356" }, // Sessão extra Clássica manhã
-  { roomIndex: 0, hour: 13, minute: 45, price: 30.0, idCode: "0334" },
-  { roomIndex: 0, hour: 14, minute: 30, price: 30.0, idCode: "0330" },
-  { roomIndex: 1, hour: 15, minute: 0, price: 30.0, idCode: "0357" },  // Sessão extra Clássica tarde
-  { roomIndex: 3, hour: 16, minute: 15, price: 30.0, idCode: "0331" },
-  { roomIndex: 0, hour: 18, minute: 30, price: 30.0, idCode: "0304" }, // ID histórico original
-  { roomIndex: 1, hour: 19, minute: 30, price: 30.0, idCode: "0332" },
-  { roomIndex: 3, hour: 20, minute: 30, price: 30.0, idCode: "0358" }, // Sessão extra VIP noite
-  { roomIndex: 0, hour: 21, minute: 0, price: 30.0, idCode: "0305" }, // ID histórico original
-  { roomIndex: 3, hour: 22, minute: 15, price: 30.0, idCode: "0333" },
-];
-
-const DIVERTIDA_MENTE_TEMPLATES: SessionTemplate[] = [
-  { roomIndex: 0, hour: 9, minute: 30, price: 30.0, idCode: "0359" },  // Sessão matinê infantil
-  { roomIndex: 1, hour: 10, minute: 15, price: 30.0, idCode: "0346" },
-  { roomIndex: 1, hour: 11, minute: 30, price: 30.0, idCode: "0340" },
-  { roomIndex: 3, hour: 12, minute: 30, price: 30.0, idCode: "0360" }, // Sessão VIP família
-  { roomIndex: 1, hour: 13, minute: 30, price: 30.0, idCode: "0341" },
-  { roomIndex: 0, hour: 14, minute: 15, price: 30.0, idCode: "0342" },
-  { roomIndex: 1, hour: 15, minute: 30, price: 30.0, idCode: "0306" }, // ID histórico original
-  { roomIndex: 2, hour: 16, minute: 0, price: 30.0, idCode: "0361" },  // Sessão extra IMAX tarde
-  { roomIndex: 0, hour: 17, minute: 0, price: 30.0, idCode: "0343" },
-  { roomIndex: 1, hour: 17, minute: 45, price: 30.0, idCode: "0307" }, // ID histórico original
-  { roomIndex: 2, hour: 18, minute: 30, price: 30.0, idCode: "0344" },
-  { roomIndex: 0, hour: 20, minute: 0, price: 30.0, idCode: "0345" },
-  { roomIndex: 1, hour: 20, minute: 45, price: 30.0, idCode: "0362" }, // Sessão noturna adicional
-];
+const WEEKLY_CANONICAL_SCHEDULE: Record<number, DaySchedule> = {
+  // Quinta (weekday 4)
+  4: {
+    sala01: [{ hour: 14, minute: 0 }, { hour: 19, minute: 0 }],
+    sala02: [{ hour: 15, minute: 0 }, { hour: 20, minute: 0 }],
+    sala03: [{ hour: 14, minute: 30 }, { hour: 19, minute: 30 }],
+    sala04: [{ hour: 15, minute: 30 }, { hour: 20, minute: 30 }],
+  },
+  // Sexta (weekday 5)
+  5: {
+    sala01: [{ hour: 14, minute: 30 }, { hour: 19, minute: 30 }],
+    sala02: [{ hour: 14, minute: 0 }, { hour: 19, minute: 0 }],
+    sala03: [{ hour: 15, minute: 0 }, { hour: 20, minute: 0 }],
+    sala04: [{ hour: 15, minute: 30 }, { hour: 20, minute: 30 }],
+  },
+  // Sábado (weekday 6)
+  6: {
+    sala01: [{ hour: 12, minute: 0 }, { hour: 16, minute: 0 }, { hour: 20, minute: 0 }],
+    sala02: [{ hour: 13, minute: 0 }, { hour: 17, minute: 0 }, { hour: 21, minute: 0 }],
+    sala03: [{ hour: 12, minute: 30 }, { hour: 16, minute: 30 }, { hour: 20, minute: 30 }],
+    sala04: [{ hour: 13, minute: 30 }, { hour: 17, minute: 30 }, { hour: 21, minute: 30 }],
+  },
+  // Domingo (weekday 0)
+  0: {
+    sala01: [{ hour: 13, minute: 0 }, { hour: 17, minute: 0 }, { hour: 21, minute: 0 }],
+    sala02: [{ hour: 12, minute: 0 }, { hour: 16, minute: 0 }, { hour: 20, minute: 0 }],
+    sala03: [{ hour: 13, minute: 30 }, { hour: 17, minute: 30 }, { hour: 21, minute: 30 }],
+    sala04: [{ hour: 12, minute: 30 }, { hour: 16, minute: 30 }, { hour: 20, minute: 30 }],
+  },
+  // Segunda (weekday 1)
+  1: {
+    sala01: [{ hour: 16, minute: 0 }],
+    sala02: [{ hour: 17, minute: 0 }],
+    sala03: [{ hour: 16, minute: 30 }],
+    sala04: [{ hour: 17, minute: 30 }],
+  },
+  // Terça (weekday 2)
+  2: {
+    sala01: [{ hour: 17, minute: 0 }],
+    sala02: [{ hour: 16, minute: 0 }],
+    sala03: [{ hour: 17, minute: 30 }],
+    sala04: [{ hour: 16, minute: 30 }],
+  },
+  // Quarta (weekday 3)
+  3: {
+    sala01: [{ hour: 16, minute: 30 }],
+    sala02: [{ hour: 17, minute: 30 }],
+    sala03: [{ hour: 16, minute: 0 }],
+    sala04: [{ hour: 17, minute: 0 }],
+  },
+};
 
 function getCinemaBaseDate(): Date {
   const now = new Date();
@@ -123,28 +133,55 @@ function getCinemaBaseDate(): Date {
   return new Date();
 }
 
-function generateSessions(templates: SessionTemplate[], baseDate: Date) {
-  const sessions = [];
+export interface MockSession {
+  id: string;
+  startsAt: string;
+  price: number;
+  status: string;
+  room: {
+    id: string;
+    name: string;
+    capacity: number;
+    rows: number;
+    columns: number;
+    type: string;
+  };
+}
 
-  // Gera sessões de -1 (cobrindo fuso horário / transição noturna) até +8 dias (total 10 dias)
+function generateSessionsForFilm(roomIndex: number, filmPrefix: string, baseDate: Date): MockSession[] {
+  const sessions: MockSession[] = [];
+  const room = MOCK_ROOMS[roomIndex];
+
+  // Gera sessões para a janela do calendário cobrindo -1 até +8 dias
   for (let dayOffset = -1; dayOffset <= 8; dayOffset++) {
-    // dayHex seguro de 0 a f mantendo formato estrito de UUID v4
-    // dayOffset 0 usa '0' para manter retrocompatibilidade com IDs canônicos pré-definidos
+    const d = new Date(baseDate);
+    d.setDate(d.getDate() + dayOffset);
+
+    const weekday = d.getDay();
+    const daySchedule = WEEKLY_CANONICAL_SCHEDULE[weekday];
+    if (!daySchedule) continue;
+
+    let slots: { hour: number; minute: number }[] = [];
+    if (roomIndex === 0) slots = daySchedule.sala01;
+    else if (roomIndex === 1) slots = daySchedule.sala02;
+    else if (roomIndex === 2) slots = daySchedule.sala03;
+    else if (roomIndex === 3) slots = daySchedule.sala04;
+
     const dayHex = dayOffset === 0 ? "0" : dayOffset < 0 ? "f" : (dayOffset % 15).toString(16);
 
-    for (const t of templates) {
-      const room = MOCK_ROOMS[t.roomIndex];
-      const d = new Date(baseDate);
-      d.setDate(d.getDate() + dayOffset);
-      d.setHours(t.hour, t.minute, 0, 0);
+    slots.forEach((slot, slotIdx) => {
+      const sessionDate = new Date(d);
+      sessionDate.setHours(slot.hour, slot.minute, 0, 0);
 
-      // Gera UUID válido v4 e mantém os IDs originais no dia 0
-      const sessionId = `00000000-0000-4000-b00${dayHex}-00000000${t.idCode}`;
+      const hourStr = String(slot.hour).padStart(2, "0");
+      const minStr = String(slot.minute).padStart(2, "0");
+      const idCode = `${filmPrefix}${hourStr}${minStr}`.padEnd(8, "0").slice(0, 8);
+      const sessionId = `00000000-0000-4000-b00${dayHex}-00000000${idCode}`;
 
       sessions.push({
         id: sessionId,
-        startsAt: d.toISOString(),
-        price: t.price,
+        startsAt: sessionDate.toISOString(),
+        price: 30.0,
         status: "OPEN",
         room: {
           id: room.id,
@@ -155,7 +192,7 @@ function generateSessions(templates: SessionTemplate[], baseDate: Date) {
           type: room.type,
         },
       });
-    }
+    });
   }
 
   return sessions;
@@ -174,7 +211,7 @@ export function getMockFilmsWithSessions() {
       classification: "14",
       genre: "Ficção Científica • Aventura",
       posterUrl: "/posters/duna-2.jpg",
-      sessions: generateSessions(DUNA_TEMPLATES, today),
+      sessions: generateSessionsForFilm(2, "03", today), // Sala 03 (IMAX)
     },
     {
       id: "00000000-0000-4000-a000-000000000102",
@@ -185,7 +222,7 @@ export function getMockFilmsWithSessions() {
       classification: "16",
       genre: "Drama Histórico • Biografia",
       posterUrl: "/posters/oppenheimer.jpg",
-      sessions: generateSessions(OPPENHEIMER_TEMPLATES, today),
+      sessions: generateSessionsForFilm(1, "02", today), // Sala 02 (Clássica)
     },
     {
       id: "00000000-0000-4000-a000-000000000103",
@@ -196,7 +233,7 @@ export function getMockFilmsWithSessions() {
       classification: "18",
       genre: "Romance • Fantasia • Comédia",
       posterUrl: "/posters/pobres-criaturas.jpg",
-      sessions: generateSessions(POBRES_CRIATURAS_TEMPLATES, today),
+      sessions: generateSessionsForFilm(3, "04", today), // Sala 04 (VIP)
     },
     {
       id: "00000000-0000-4000-a000-000000000104",
@@ -207,7 +244,7 @@ export function getMockFilmsWithSessions() {
       classification: "L",
       genre: "Animação • Família • Aventura",
       posterUrl: "/posters/divertida-mente-2.jpg",
-      sessions: generateSessions(DIVERTIDA_MENTE_TEMPLATES, today),
+      sessions: generateSessionsForFilm(0, "01", today), // Sala 01 (Clássica)
     },
   ];
 }

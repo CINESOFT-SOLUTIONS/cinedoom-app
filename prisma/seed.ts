@@ -269,63 +269,103 @@ async function main() {
     return session;
   }
 
-  // 5) Sessoes cinematográficas para toda a semana (dias 0 a 6, iniciando hoje)
+  // 5) Sessoes cinematográficas oficiais da semana canônica (Total: 52 sessões semanais)
+  // Ciclo Quinta a Quarta:
+  // - Sala 01 (Clássica): Divertida Mente 2 (filmes[3])
+  // - Sala 02 (Clássica): Oppenheimer (filmes[1])
+  // - Sala 03 (IMAX): Duna: Parte Dois (filmes[0])
+  // - Sala 04 (VIP): Pobres Criaturas (filmes[2])
+
+  interface DayScheduleSlots {
+    sala01: { hour: number; minute: number }[];
+    sala02: { hour: number; minute: number }[];
+    sala03: { hour: number; minute: number }[];
+    sala04: { hour: number; minute: number }[];
+  }
+
+  const WEEKLY_SCHEDULE: Record<number, DayScheduleSlots> = {
+    // Quinta (4)
+    4: {
+      sala01: [{ hour: 14, minute: 0 }, { hour: 19, minute: 0 }],
+      sala02: [{ hour: 15, minute: 0 }, { hour: 20, minute: 0 }],
+      sala03: [{ hour: 14, minute: 30 }, { hour: 19, minute: 30 }],
+      sala04: [{ hour: 15, minute: 30 }, { hour: 20, minute: 30 }],
+    },
+    // Sexta (5)
+    5: {
+      sala01: [{ hour: 14, minute: 30 }, { hour: 19, minute: 30 }],
+      sala02: [{ hour: 14, minute: 0 }, { hour: 19, minute: 0 }],
+      sala03: [{ hour: 15, minute: 0 }, { hour: 20, minute: 0 }],
+      sala04: [{ hour: 15, minute: 30 }, { hour: 20, minute: 30 }],
+    },
+    // Sábado (6)
+    6: {
+      sala01: [{ hour: 12, minute: 0 }, { hour: 16, minute: 0 }, { hour: 20, minute: 0 }],
+      sala02: [{ hour: 13, minute: 0 }, { hour: 17, minute: 0 }, { hour: 21, minute: 0 }],
+      sala03: [{ hour: 12, minute: 30 }, { hour: 16, minute: 30 }, { hour: 20, minute: 30 }],
+      sala04: [{ hour: 13, minute: 30 }, { hour: 17, minute: 30 }, { hour: 21, minute: 30 }],
+    },
+    // Domingo (0)
+    0: {
+      sala01: [{ hour: 13, minute: 0 }, { hour: 17, minute: 0 }, { hour: 21, minute: 0 }],
+      sala02: [{ hour: 12, minute: 0 }, { hour: 16, minute: 0 }, { hour: 20, minute: 0 }],
+      sala03: [{ hour: 13, minute: 30 }, { hour: 17, minute: 30 }, { hour: 21, minute: 30 }],
+      sala04: [{ hour: 12, minute: 30 }, { hour: 16, minute: 30 }, { hour: 20, minute: 30 }],
+    },
+    // Segunda (1)
+    1: {
+      sala01: [{ hour: 16, minute: 0 }],
+      sala02: [{ hour: 17, minute: 0 }],
+      sala03: [{ hour: 16, minute: 30 }],
+      sala04: [{ hour: 17, minute: 30 }],
+    },
+    // Terça (2)
+    2: {
+      sala01: [{ hour: 17, minute: 0 }],
+      sala02: [{ hour: 16, minute: 0 }],
+      sala03: [{ hour: 17, minute: 30 }],
+      sala04: [{ hour: 16, minute: 30 }],
+    },
+    // Quarta (3)
+    3: {
+      sala01: [{ hour: 16, minute: 30 }],
+      sala02: [{ hour: 17, minute: 30 }],
+      sala03: [{ hour: 16, minute: 0 }],
+      sala04: [{ hour: 17, minute: 0 }],
+    },
+  };
+
   let sessaoLotada: any = null;
 
-  for (let dia = 0; dia <= 6; dia++) {
-    // Duna: Parte Dois
-    await criarSessao(filmes[0].id, sala3.id, 11, 30.0, 0, dia);
-    await criarSessao(filmes[0].id, sala3.id, 14, 30.0, 0, dia);
-    await criarSessao(filmes[0].id, sala4.id, 14, 30.0, 30, dia);
-    await criarSessao(filmes[0].id, sala1.id, 16, 30.0, 0, dia);
-    await criarSessao(filmes[0].id, sala4.id, 16, 30.0, 30, dia);
-    const duna19 = await criarSessao(filmes[0].id, sala3.id, 19, 30.0, 0, dia);
-    if (dia === 0) {
-      sessaoLotada = duna19; // Guarda referência da sessão de hoje para pré-lotação demo de ~90%
+  for (let diaOffset = 0; diaOffset <= 6; diaOffset++) {
+    const targetDate = new Date(hoje);
+    targetDate.setDate(targetDate.getDate() + diaOffset);
+    const weekday = targetDate.getDay();
+    const daySlots = WEEKLY_SCHEDULE[weekday];
+    if (!daySlots) continue;
+
+    // Sala 01: Divertida Mente 2 (filmes[3])
+    for (const slot of daySlots.sala01) {
+      await criarSessao(filmes[3].id, sala1.id, slot.hour, 30.0, slot.minute, diaOffset);
     }
-    await criarSessao(filmes[0].id, sala1.id, 20, 30.0, 15, dia);
-    await criarSessao(filmes[0].id, sala3.id, 21, 30.0, 45, dia);
-    await criarSessao(filmes[0].id, sala4.id, 22, 30.0, 30, dia);
-    await criarSessao(filmes[0].id, sala2.id, 23, 30.0, 0, dia);
 
-    // Oppenheimer
-    await criarSessao(filmes[1].id, sala3.id, 10, 30.0, 30, dia);
-    await criarSessao(filmes[1].id, sala1.id, 13, 30.0, 30, dia);
-    await criarSessao(filmes[1].id, sala4.id, 14, 30.0, 15, dia);
-    await criarSessao(filmes[1].id, sala2.id, 16, 30.0, 45, dia);
-    await criarSessao(filmes[1].id, sala3.id, 17, 30.0, 15, dia);
-    await criarSessao(filmes[1].id, sala1.id, 17, 30.0, 30, dia);
-    await criarSessao(filmes[1].id, sala4.id, 20, 30.0, 0, dia);
-    await criarSessao(filmes[1].id, sala2.id, 21, 30.0, 15, dia);
-    await criarSessao(filmes[1].id, sala3.id, 22, 30.0, 0, dia);
-    await criarSessao(filmes[1].id, sala4.id, 23, 30.0, 15, dia);
+    // Sala 02: Oppenheimer (filmes[1])
+    for (const slot of daySlots.sala02) {
+      await criarSessao(filmes[1].id, sala2.id, slot.hour, 30.0, slot.minute, diaOffset);
+    }
 
-    // Pobres Criaturas
-    await criarSessao(filmes[2].id, sala1.id, 11, 30.0, 15, dia);
-    await criarSessao(filmes[2].id, sala1.id, 13, 30.0, 45, dia);
-    await criarSessao(filmes[2].id, sala1.id, 14, 30.0, 30, dia);
-    await criarSessao(filmes[2].id, sala2.id, 15, 30.0, 0, dia);
-    await criarSessao(filmes[2].id, sala4.id, 16, 30.0, 15, dia);
-    await criarSessao(filmes[2].id, sala1.id, 18, 30.0, 30, dia);
-    await criarSessao(filmes[2].id, sala2.id, 19, 30.0, 30, dia);
-    await criarSessao(filmes[2].id, sala4.id, 20, 30.0, 30, dia);
-    await criarSessao(filmes[2].id, sala1.id, 21, 30.0, 0, dia);
-    await criarSessao(filmes[2].id, sala4.id, 22, 30.0, 15, dia);
+    // Sala 03: Duna: Parte Dois (filmes[0])
+    for (const slot of daySlots.sala03) {
+      const sess = await criarSessao(filmes[0].id, sala3.id, slot.hour, 30.0, slot.minute, diaOffset);
+      if (!sessaoLotada && diaOffset === 0) {
+        sessaoLotada = sess; // Guarda a primeira sessão de hoje para pré-lotação demo de ~90%
+      }
+    }
 
-    // Divertida Mente 2
-    await criarSessao(filmes[3].id, sala1.id, 9, 30.0, 30, dia);
-    await criarSessao(filmes[3].id, sala2.id, 10, 30.0, 15, dia);
-    await criarSessao(filmes[3].id, sala2.id, 11, 30.0, 30, dia);
-    await criarSessao(filmes[3].id, sala4.id, 12, 30.0, 30, dia);
-    await criarSessao(filmes[3].id, sala2.id, 13, 30.0, 30, dia);
-    await criarSessao(filmes[3].id, sala1.id, 14, 30.0, 15, dia);
-    await criarSessao(filmes[3].id, sala2.id, 15, 30.0, 30, dia);
-    await criarSessao(filmes[3].id, sala3.id, 16, 30.0, 0, dia);
-    await criarSessao(filmes[3].id, sala1.id, 17, 30.0, 0, dia);
-    await criarSessao(filmes[3].id, sala2.id, 17, 30.0, 45, dia);
-    await criarSessao(filmes[3].id, sala3.id, 18, 30.0, 30, dia);
-    await criarSessao(filmes[3].id, sala1.id, 20, 30.0, 0, dia);
-    await criarSessao(filmes[3].id, sala2.id, 20, 30.0, 45, dia);
+    // Sala 04: Pobres Criaturas (filmes[2])
+    for (const slot of daySlots.sala04) {
+      await criarSessao(filmes[2].id, sala4.id, slot.hour, 30.0, slot.minute, diaOffset);
+    }
   }
 
   // Pré-lotar ~90% da sessão lotada
