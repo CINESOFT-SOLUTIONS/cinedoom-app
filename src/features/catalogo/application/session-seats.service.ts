@@ -1,5 +1,6 @@
 import type { ISessionSeatsRepository } from "../domain/session-seats-repository.interface";
 import { defaultSessionSeatsRepository } from "../infrastructure/prisma-session-seats.repository";
+import { isSeatBlockedForMaintenance } from "@/modules/portal/mock-cinema-data";
 
 export class SessionSeatsServiceClass {
   constructor(
@@ -14,14 +15,25 @@ export class SessionSeatsServiceClass {
 
     const sessionSeats = await this.sessionSeatsRepo.findSessionSeats(sessionId, tenantId);
     const now = new Date();
+    const roomId = (sessionData as any).roomId;
 
     const lightweightPayload = sessionSeats.map((ss: any) => {
-      const isReservationExpired =
+      const code = ss.seat?.seatCode || (ss.seat ? `${ss.seat.rowLabel}${ss.seat.columnNumber}` : "");
+      const isPhysicallyBlocked =
+        ss.status === "BLOCKED" ||
+        ss.seat?.status === "BLOCKED" ||
+        isSeatBlockedForMaintenance(code, roomId);
+
+      let effectiveStatus = ss.status;
+      if (isPhysicallyBlocked) {
+        effectiveStatus = "BLOCKED";
+      } else if (
         ss.status === "RESERVED" &&
         ss.reservationExpiresAt &&
-        new Date(ss.reservationExpiresAt) <= now;
-
-      const effectiveStatus = isReservationExpired ? "AVAILABLE" : ss.status;
+        new Date(ss.reservationExpiresAt) <= now
+      ) {
+        effectiveStatus = "AVAILABLE";
+      }
 
       return {
         id: ss.id,
@@ -31,7 +43,7 @@ export class SessionSeatsServiceClass {
         rowLabel: ss.seat.rowLabel,
         number: ss.seat.columnNumber,
         columnNumber: ss.seat.columnNumber,
-        seatCode: ss.seat.seatCode || (ss.seat.rowLabel + String(ss.seat.columnNumber)),
+        seatCode: code,
         status: effectiveStatus,
         price: Number(sessionData.price),
       };

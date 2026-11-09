@@ -8,6 +8,7 @@ import {
   RoomNotFoundError,
   RoomInUseError,
 } from "@/modules/backoffice";
+import { MOCK_ROOMS, isSeatBlockedForMaintenance } from "@/modules/portal/mock-cinema-data";
 
 interface RouteParams {
   params: {
@@ -37,8 +38,54 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
   try {
     const room = await RoomService.getRoomById(params.id, tenantId);
+    if (room && (room as any).seats) {
+      const seatsWithMaintenance = (room as any).seats.map((s: any) => {
+        const code = s.seatCode || `${s.rowLabel}${s.columnNumber}`;
+        const isBlocked = s.status === "BLOCKED" || isSeatBlockedForMaintenance(code, room.id);
+        return {
+          ...s,
+          status: isBlocked ? "BLOCKED" : s.status || "AVAILABLE",
+        };
+      });
+      return NextResponse.json({ ...room, seats: seatsWithMaintenance }, { status: 200 });
+    }
     return NextResponse.json(room, { status: 200 });
   } catch (error) {
+    // Fallback gracioso para salas mock oficiais
+    const mockRoom = MOCK_ROOMS.find((r) => r.id === params.id);
+    if (mockRoom) {
+      const seats = [];
+      for (let r = 0; r < mockRoom.rows; r++) {
+        const rowLabel = String.fromCharCode(65 + r);
+        for (let c = 1; c <= mockRoom.columns; c++) {
+          const code = `${rowLabel}${c}`;
+          const isBlocked = isSeatBlockedForMaintenance(code, mockRoom.id);
+          seats.push({
+            id: `${mockRoom.id}-seat-${code}`,
+            roomId: mockRoom.id,
+            rowLabel,
+            columnNumber: c,
+            seatCode: code,
+            status: isBlocked ? "BLOCKED" : "AVAILABLE",
+          });
+        }
+      }
+      return NextResponse.json(
+        {
+          id: mockRoom.id,
+          name: mockRoom.name,
+          capacity: mockRoom.capacity,
+          layoutMetadata: {
+            rows: mockRoom.rows,
+            columns: mockRoom.columns,
+            totalSeats: mockRoom.capacity,
+          },
+          seats,
+        },
+        { status: 200 }
+      );
+    }
+
     if (error instanceof RoomNotFoundError) {
       return NextResponse.json({ error: error.message }, { status: 404 });
     }

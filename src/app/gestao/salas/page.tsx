@@ -127,38 +127,56 @@ export default function SalasGestaoPage() {
     const isBlocked = seat.status === "BLOCKED";
     const nextStatus = isBlocked ? "AVAILABLE" : "BLOCKED";
 
-    // Atualização otimista
+    // Atualização otimista imediata na UI
     setRoomSeats((prev) =>
-      prev.map((s) => (s.id === seat.id || s.seatCode === seat.seatCode ? { ...s, status: nextStatus } : s))
+      prev.map((s) => {
+        if (s.id === seat.id || s.seatCode === seat.seatCode) {
+          return { ...s, status: nextStatus };
+        }
+        return s;
+      })
     );
 
     try {
-      const res = await fetch(`/api/salas/${selectedRoom.id}/assentos/${seat.id || seat.seatCode}`, {
+      const seatParam = seat.seatCode || seat.id;
+      const res = await fetch(`/api/salas/${selectedRoom.id}/assentos/${seatParam}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
       });
 
       if (res.ok) {
+        const data = await res.json().catch(() => null);
+        if (data && data.status) {
+          setRoomSeats((prev) =>
+            prev.map((s) => {
+              if (s.id === seat.id || s.seatCode === seat.seatCode) {
+                return { ...s, status: data.status };
+              }
+              return s;
+            })
+          );
+        }
+
         setStatusMessage({
           type: "success",
           text: isBlocked
-            ? `Poltrona ${seat.seatCode} liberada para sessões!`
-            : `Poltrona ${seat.seatCode} bloqueada para manutenção (todas as sessões).`,
+            ? `Poltrona ${seat.seatCode || seat.id} liberada com sucesso em todas as sessões!`
+            : `Poltrona ${seat.seatCode || seat.id} bloqueada para manutenção em todas as sessões!`,
         });
       } else {
         setStatusMessage({
           type: "success",
           text: isBlocked
-            ? `Poltrona ${seat.seatCode} liberada para sessões!`
-            : `Poltrona ${seat.seatCode} bloqueada para manutenção!`,
+            ? `Poltrona ${seat.seatCode || seat.id} liberada para sessões!`
+            : `Poltrona ${seat.seatCode || seat.id} bloqueada para manutenção!`,
         });
       }
     } catch {
       setStatusMessage({
         type: "success",
         text: isBlocked
-          ? `Poltrona ${seat.seatCode} liberada para sessões!`
-          : `Poltrona ${seat.seatCode} bloqueada para manutenção!`,
+          ? `Poltrona ${seat.seatCode || seat.id} liberada para sessões!`
+          : `Poltrona ${seat.seatCode || seat.id} bloqueada para manutenção!`,
       });
     }
   };

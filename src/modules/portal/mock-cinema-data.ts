@@ -249,33 +249,81 @@ export function getMockFilmsWithSessions() {
   ];
 }
 
-// Conjunto global em memória de assentos bloqueados para manutenção física nas salas
-const BLOCKED_MAINTENANCE_SEAT_CODES = new Set<string>();
+// Conjunto global em memória de assentos bloqueados para manutenção física nas salas (escopo por Sala)
+// Chave: "roomId:seatCode" ou "roomId" -> Set<seatCode>
+const ROOM_MAINTENANCE_BLOCKED_SEATS = new Map<string, Set<string>>();
 
-export function toggleSeatMaintenance(seatCodeOrId: string): boolean {
-  // Extrai código como "A1", "seat-A1", etc.
-  const code = seatCodeOrId.replace(/^seat-/, "");
-  if (BLOCKED_MAINTENANCE_SEAT_CODES.has(code)) {
-    BLOCKED_MAINTENANCE_SEAT_CODES.delete(code);
+export function getMaintenanceKey(roomId?: string): string {
+  if (!roomId) return "DEFAULT";
+  return roomId;
+}
+
+export function toggleSeatMaintenance(seatCodeOrId: string, roomId?: string): boolean {
+  // Extrai código limpo como "A1" de formatos "seat-A1", "0000-seat-A1", "A1", etc.
+  const codeMatch = seatCodeOrId.match(/([A-Z]\d+)$/i);
+  const code = codeMatch ? codeMatch[1].toUpperCase() : seatCodeOrId.replace(/^seat-/, "").toUpperCase();
+  const roomKey = getMaintenanceKey(roomId);
+
+  if (!ROOM_MAINTENANCE_BLOCKED_SEATS.has(roomKey)) {
+    ROOM_MAINTENANCE_BLOCKED_SEATS.set(roomKey, new Set<string>());
+  }
+
+  const roomBlockedSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get(roomKey)!;
+  if (roomBlockedSet.has(code)) {
+    roomBlockedSet.delete(code);
     return false;
   } else {
-    BLOCKED_MAINTENANCE_SEAT_CODES.add(code);
+    roomBlockedSet.add(code);
     return true;
   }
 }
 
-export function isSeatBlockedForMaintenance(seatCodeOrId: string): boolean {
-  const code = seatCodeOrId.replace(/^seat-/, "");
-  return BLOCKED_MAINTENANCE_SEAT_CODES.has(code);
+export function isSeatBlockedForMaintenance(seatCodeOrId: string, roomId?: string): boolean {
+  const codeMatch = seatCodeOrId.match(/([A-Z]\d+)$/i);
+  const code = codeMatch ? codeMatch[1].toUpperCase() : seatCodeOrId.replace(/^seat-/, "").toUpperCase();
+
+  if (roomId) {
+    const roomBlockedSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get(roomId);
+    if (roomBlockedSet && roomBlockedSet.has(code)) return true;
+  }
+
+  // Verifica também na chave DEFAULT (compatibilidade com chamadas sem roomId)
+  const defaultSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get("DEFAULT");
+  if (defaultSet && defaultSet.has(code)) return true;
+
+  return false;
 }
 
-export function generateMockSeats(rows: number, cols: number, price: number, sessionId?: string) {
+export function getRoomBlockedSeats(roomId: string): Set<string> {
+  const roomBlockedSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get(roomId);
+  const defaultSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get("DEFAULT");
+  const combined = new Set<string>();
+  if (roomBlockedSet) {
+    roomBlockedSet.forEach((c) => combined.add(c));
+  }
+  if (defaultSet) {
+    defaultSet.forEach((c) => combined.add(c));
+  }
+  return combined;
+}
+
+export function generateMockSeats(rows: number, cols: number, price: number, sessionId?: string, roomId?: string) {
+  // Se sessionId for fornecido e roomId não, tenta descobrir o roomId da sessão mock
+  let resolvedRoomId = roomId;
+  if (!resolvedRoomId && sessionId) {
+    const allSessions = getMockFilmsWithSessions().flatMap((f) => f.sessions);
+    const session = allSessions.find((s) => s.id === sessionId);
+    if (session) {
+      resolvedRoomId = session.room.id;
+    }
+  }
+
   const seats = [];
   for (let r = 0; r < rows; r++) {
     const rowLabel = String.fromCharCode(65 + r);
     for (let c = 1; c <= cols; c++) {
       const code = `${rowLabel}${c}`;
-      const isBlocked = BLOCKED_MAINTENANCE_SEAT_CODES.has(code);
+      const isBlocked = isSeatBlockedForMaintenance(code, resolvedRoomId);
       seats.push({
         id: `seat-${rowLabel}${c}`,
         seat_id: `seat-${rowLabel}${c}`,

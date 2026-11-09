@@ -30,14 +30,23 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
   const { id: roomId, seatId } = params;
 
-  // Atualiza no cache/memoria de fallback (para mocks resilientes)
-  const toggledInMock = toggleSeatMaintenance(seatId);
+  // Atualiza no cache/memoria de fallback (para mocks resilientes, isolado por roomId)
+  const toggledInMock = toggleSeatMaintenance(seatId, roomId);
 
   // Tenta persistir no banco de dados se conectado
   if (tenantId) {
     try {
+      // Procura o assento por id UUID direto ou por seatCode (ex: "A1")
       const seat = await rawPrisma.seat.findFirst({
-        where: { id: seatId, roomId, tenantId },
+        where: {
+          roomId,
+          tenantId,
+          OR: [
+            { id: seatId },
+            { seatCode: seatId },
+            { seatCode: seatId.replace(/^.*seat-/, "") },
+          ],
+        },
       });
 
       if (seat) {
@@ -75,6 +84,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         return NextResponse.json({
           success: true,
           seatId: updated.id,
+          seatCode: updated.seatCode,
           status: updated.status,
         });
       }
