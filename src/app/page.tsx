@@ -161,18 +161,18 @@ export default function CinemarkStyleHomePage() {
       />
 
       {/* 4. Galeria Compacta de Pôsteres de Cinema */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full flex-1 space-y-10">
-        <div className="flex items-center justify-between border-b border-borderDark/60 pb-4">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 w-full flex-1 space-y-6 sm:space-y-10">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-borderDark/60 pb-4">
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
-              <Film className="w-6 h-6 text-cta" />
-              Programação CineDoom
+            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2 sm:gap-2.5">
+              <Film className="w-5 h-5 sm:w-6 sm:h-6 text-cta shrink-0" />
+              <span>Programação CineDoom</span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
               Clique nos pôsteres ou em &quot;Ver sessões&quot; para conferir salas, horários e reservar
             </p>
           </div>
-          <span className="liquid-glass-chip text-xs font-semibold text-slate-200">
+          <span className="liquid-glass-chip text-xs font-semibold text-slate-200 self-start sm:self-auto shrink-0">
             {filteredFilms.length} filmes em exibição
           </span>
         </div>

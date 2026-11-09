@@ -363,28 +363,28 @@ export default function BaixaReservaPage() {
         </div>
 
         {/* Abas Superiores de Navegação */}
-        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[#0A0E1A] border border-borderDark/60 w-fit">
+        <div className="grid grid-cols-2 sm:flex sm:items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-[#0A0E1A] border border-borderDark/60 w-full sm:w-fit">
           <button
             type="button"
             onClick={() => setActiveTab("RESERVAS")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeTab === "RESERVAS"
+            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeTab === "RESERVAS"
               ? "bg-cta text-white shadow-md shadow-cta/20"
               : "text-slate-400 hover:text-white hover:bg-white/5"
               }`}
           >
-            <Ticket className="w-3.5 h-3.5" />
+            <Ticket className="w-3.5 h-3.5 shrink-0" />
             <span>Resgate de Reservas</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("CANCELAMENTO")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeTab === "CANCELAMENTO"
+            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${activeTab === "CANCELAMENTO"
               ? "bg-cta text-white shadow-md shadow-cta/20"
               : "text-slate-400 hover:text-white hover:bg-white/5"
               }`}
           >
-            <Ban className="w-3.5 h-3.5" />
+            <Ban className="w-3.5 h-3.5 shrink-0" />
             <span>Cancelar Venda</span>
           </button>
         </div>
@@ -429,14 +429,14 @@ export default function BaixaReservaPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-1 bg-[#0A0E1A] p-1 rounded-xl border border-white/10 text-xs shrink-0">
+              <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-[#0A0E1A] p-1 rounded-xl border border-white/10 text-xs shrink-0 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => {
                     setStatusFilter("PENDING");
                     setReservationsPage(1);
                   }}
-                  className={`px-3 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+                  className={`px-2 sm:px-3 py-2 rounded-lg font-bold transition-all cursor-pointer text-center ${
                     statusFilter === "PENDING" ? "bg-cta text-white" : "text-slate-400 hover:text-white"
                   }`}
                 >
@@ -448,7 +448,7 @@ export default function BaixaReservaPage() {
                     setStatusFilter("CONFIRMED");
                     setReservationsPage(1);
                   }}
-                  className={`px-3 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+                  className={`px-2 sm:px-3 py-2 rounded-lg font-bold transition-all cursor-pointer text-center ${
                     statusFilter === "CONFIRMED" ? "bg-cta text-white" : "text-slate-400 hover:text-white"
                   }`}
                 >
@@ -460,7 +460,7 @@ export default function BaixaReservaPage() {
                     setStatusFilter("ALL");
                     setReservationsPage(1);
                   }}
-                  className={`px-3 py-2 rounded-lg font-bold transition-all cursor-pointer ${
+                  className={`px-2 sm:px-3 py-2 rounded-lg font-bold transition-all cursor-pointer text-center ${
                     statusFilter === "ALL" ? "bg-cta text-white" : "text-slate-400 hover:text-white"
                   }`}
                 >
@@ -520,11 +520,11 @@ export default function BaixaReservaPage() {
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t border-borderDark/60">
+                <div className="flex flex-col sm:flex-row justify-end gap-2.5 sm:gap-3 pt-3 border-t border-borderDark/60">
                   <button
                     type="button"
                     onClick={() => abrirIngressos(reservation.code)}
-                    className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer"
+                    className="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer flex sm:inline-block items-center justify-center"
                   >
                     Ver Ingressos
                   </button>
@@ -533,9 +533,9 @@ export default function BaixaReservaPage() {
                       type="button"
                       onClick={() => confirmar(reservation.code)}
                       disabled={loading}
-                      className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="w-full sm:w-auto px-5 py-2.5 sm:py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center sm:justify-start gap-1.5 cursor-pointer"
                     >
-                      <Check className="w-4 h-4" />
+                      <Check className="w-4 h-4 shrink-0" />
                       <span>Confirmar Pagamento & Liberar</span>
                     </button>
                   )}
@@ -645,16 +645,16 @@ export default function BaixaReservaPage() {
 
                           {/* Bloco 4: Ação Administrativa Limpa com Visualização de Ingressos */}
                           <div
-                            className="shrink-0 flex items-center justify-end gap-2 border-t lg:border-t-0 pt-2 lg:pt-0 border-white/5"
+                            className="shrink-0 flex items-center justify-end gap-2 border-t lg:border-t-0 pt-2.5 lg:pt-0 border-white/5 w-full lg:w-auto"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <button
                               type="button"
                               onClick={() => abrirIngressos(item.code)}
-                              className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                              className="flex-1 lg:flex-initial px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                               title="Ver ingressos"
                             >
-                              <Eye className="w-3.5 h-3.5" />
+                              <Eye className="w-3.5 h-3.5 shrink-0" />
                               <span>Ver Ingressos</span>
                             </button>
 
@@ -663,12 +663,12 @@ export default function BaixaReservaPage() {
                                 type="button"
                                 onClick={() => confirmar(item.code)}
                                 disabled={isItemActionLoading}
-                                className="w-full lg:w-auto px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                className="flex-1 lg:flex-initial px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                               >
                                 {isItemActionLoading ? (
-                                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                  <RefreshCw className="w-3.5 h-3.5 animate-spin shrink-0" />
                                 ) : (
-                                  <Check className="w-3.5 h-3.5" />
+                                  <Check className="w-3.5 h-3.5 shrink-0" />
                                 )}
                                 <span>Dar Baixa</span>
                               </button>
@@ -709,11 +709,11 @@ export default function BaixaReservaPage() {
                 />
               </div>
 
-              <div className="flex items-center gap-1 bg-[#0A0E1A] p-1 rounded-xl border border-white/10 text-xs shrink-0">
+              <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-[#0A0E1A] p-1 rounded-xl border border-white/10 text-xs shrink-0 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => setTicketStatusFilter("SOLD")}
-                  className={`px-3 py-2 rounded-lg font-bold transition-all cursor-pointer ${ticketStatusFilter === "SOLD" ? "bg-cta text-white" : "text-slate-400 hover:text-white"
+                  className={`px-2 sm:px-3 py-2 rounded-lg font-bold transition-all cursor-pointer text-center ${ticketStatusFilter === "SOLD" ? "bg-cta text-white" : "text-slate-400 hover:text-white"
                     }`}
                 >
                   Confirmados
@@ -721,7 +721,7 @@ export default function BaixaReservaPage() {
                 <button
                   type="button"
                   onClick={() => setTicketStatusFilter("CANCELLED")}
-                  className={`px-3 py-2 rounded-lg font-bold transition-all cursor-pointer ${ticketStatusFilter === "CANCELLED" ? "bg-cta text-white" : "text-slate-400 hover:text-white"
+                  className={`px-2 sm:px-3 py-2 rounded-lg font-bold transition-all cursor-pointer text-center ${ticketStatusFilter === "CANCELLED" ? "bg-cta text-white" : "text-slate-400 hover:text-white"
                     }`}
                 >
                   Cancelados
@@ -729,7 +729,7 @@ export default function BaixaReservaPage() {
                 <button
                   type="button"
                   onClick={() => setTicketStatusFilter("ALL")}
-                  className={`px-3 py-2 rounded-lg font-bold transition-all cursor-pointer ${ticketStatusFilter === "ALL" ? "bg-cta text-white" : "text-slate-400 hover:text-white"
+                  className={`px-2 sm:px-3 py-2 rounded-lg font-bold transition-all cursor-pointer text-center ${ticketStatusFilter === "ALL" ? "bg-cta text-white" : "text-slate-400 hover:text-white"
                     }`}
                 >
                   Todos
@@ -802,8 +802,8 @@ export default function BaixaReservaPage() {
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between md:justify-end gap-4 border-t md:border-t-0 pt-2 md:pt-0 border-white/5">
-                            <div className="text-left md:text-right">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between md:justify-end gap-3 sm:gap-4 border-t md:border-t-0 pt-2.5 md:pt-0 border-white/5">
+                            <div className="flex sm:block items-center justify-between text-left md:text-right">
                               <span className="text-[11px] text-slate-400 block">
                                 {t.buyer?.name || "Cliente Balcão"}
                               </span>
@@ -812,14 +812,14 @@ export default function BaixaReservaPage() {
                               </span>
                             </div>
 
-                            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center gap-2 w-full sm:w-auto" onClick={(e) => e.stopPropagation()}>
                               <button
                                 type="button"
                                 onClick={() => abrirIngressoDoTicket(t)}
-                                className="px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                                className="flex-1 sm:flex-initial justify-center px-3 py-2 sm:py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-medium text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
                                 title="Ver ingresso"
                               >
-                                <Eye className="w-3.5 h-3.5" />
+                                <Eye className="w-3.5 h-3.5 shrink-0" />
                                 <span>Ver Ingresso</span>
                               </button>
                               {isSold ? (
@@ -830,13 +830,13 @@ export default function BaixaReservaPage() {
                                     setCancelModalTicket(t);
                                     setCancelReason("");
                                   }}
-                                  className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer ${isPast
+                                  className={`flex-1 sm:flex-initial justify-center px-3 py-2 sm:py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer ${isPast
                                     ? "bg-white/5 text-slate-500 cursor-not-allowed"
                                     : "bg-rose-600/80 hover:bg-rose-600 text-white shadow-xs"
                                     }`}
                                   title={isPast ? "Sessão já iniciada ou encerrada" : "Cancelar este ingresso"}
                                 >
-                                  <Ban className="w-3.5 h-3.5" />
+                                  <Ban className="w-3.5 h-3.5 shrink-0" />
                                   <span>Cancelar Venda</span>
                                 </button>
                               ) : (

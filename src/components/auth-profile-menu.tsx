@@ -63,11 +63,11 @@ export function AuthProfileMenu() {
   const displayName = getFirstAndLastName(resolvedName);
 
   return (
-    <div className="relative ml-2 sm:ml-4 md:ml-6 lg:ml-8 shrink-0 flex items-center gap-2 h-full">
+    <div className="relative ml-1.5 sm:ml-4 md:ml-6 lg:ml-8 shrink-0 flex items-center gap-1.5 sm:gap-2 h-full">
       {/* Crachá / Badge de Identificação do Usuário Logado */}
       <div
         title={`Conectado como ${displayName} (${role || "CLIENTE"})`}
-        className="h-9 sm:h-10 md:h-11 flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] text-white border border-white/10 shadow-[0_4px_16px_rgba(15,52,96,0.25)] select-none"
+        className="h-9 sm:h-10 md:h-11 flex items-center gap-1.5 sm:gap-2.5 px-2 sm:px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] text-white border border-white/10 shadow-[0_4px_16px_rgba(15,52,96,0.25)] select-none"
       >
         {/* Avatar / Ícone de perfil em branco */}
         <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
@@ -82,17 +82,17 @@ export function AuthProfileMenu() {
 
         {/* Nome da Pessoa + Label do Perfil ao lado em branco */}
         <div className="flex items-center gap-1 sm:gap-2 text-left">
-          <span className="font-semibold text-xs md:text-[13px] text-white tracking-wide whitespace-nowrap max-w-[70px] sm:max-w-[130px] md:max-w-[180px] truncate">
+          <span className="font-semibold text-xs md:text-[13px] text-white tracking-wide whitespace-nowrap max-w-[72px] sm:max-w-[130px] md:max-w-[180px] truncate">
             {displayName}
           </span>
 
           {role === "GERENTE" && (
-            <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-white/15 text-white border border-white/20">
+            <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-white/15 text-white border border-white/20">
               Gerente
             </span>
           )}
           {role === "ATENDENTE" && (
-            <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-white/15 text-white border border-white/20">
+            <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-white/15 text-white border border-white/20">
               Atendente
             </span>
           )}
@@ -109,7 +109,7 @@ export function AuthProfileMenu() {
         type="button"
         onClick={() => signOut({ callbackUrl: "/" })}
         title={`Sair da conta (${displayName})`}
-        className="h-9 sm:h-10 md:h-11 px-2.5 sm:px-3 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 hover:text-rose-700 border border-rose-500/20 transition-all flex items-center justify-center gap-1.5 text-xs font-bold cursor-pointer active:scale-95"
+        className="h-9 sm:h-10 md:h-11 px-2 sm:px-3 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 hover:text-rose-700 border border-rose-500/20 transition-all flex items-center justify-center gap-1.5 text-xs font-bold cursor-pointer active:scale-95"
         aria-label="Sair da conta"
       >
         <LogOut className="w-4 h-4 shrink-0 text-rose-600" />

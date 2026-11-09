@@ -61,7 +61,7 @@ export function FilmModal({
       aria-labelledby="film-modal-title"
     >
       <div
-        className="liquid-glass liquid-glass--modal rounded-3xl max-w-2xl w-full p-5 sm:p-7 relative my-auto animate-in zoom-in-95 duration-200 overflow-hidden"
+        className="liquid-glass liquid-glass--modal rounded-3xl max-w-2xl w-full p-4 sm:p-7 relative my-auto max-sm:max-h-[90vh] max-sm:overflow-y-auto sm:overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Botão Fechar */}

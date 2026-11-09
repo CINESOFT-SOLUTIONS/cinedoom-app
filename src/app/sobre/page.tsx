@@ -143,7 +143,7 @@ export default function SobreCineDoomPage() {
           </div>
 
           {/* Janela de Visualizacao do Carrossel */}
-          <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] rounded-3xl overflow-hidden border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.6)] group bg-slate-900">
+          <div className="relative w-full aspect-[4/3] sm:aspect-[21/9] min-h-[280px] sm:min-h-0 rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.6)] group bg-slate-900">
             {SPACES_SLIDES.map((slide, index) => {
               const isActive = index === currentSlide;
               return (
@@ -161,17 +161,17 @@ export default function SobreCineDoomPage() {
                   />
 
                   {/* Gradiente Escuro para Legibilidade Impecavel */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/10 sm:from-black/90 sm:via-black/40 sm:to-transparent" />
 
                   {/* Legenda Informativa Flutuante */}
-                  <div className="absolute bottom-0 inset-x-0 p-5 sm:p-8 md:p-10 space-y-2 max-w-3xl">
-                    <span className="inline-block text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-cta text-white shadow-md">
+                  <div className="absolute bottom-0 inset-x-0 p-4 pb-9 sm:p-8 md:p-10 space-y-1.5 sm:space-y-2 max-w-3xl">
+                    <span className="inline-block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-cta text-white shadow-md">
                       {slide.badge}
                     </span>
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight drop-shadow-md">
+                    <h3 className="text-lg sm:text-2xl md:text-3xl font-bold text-white tracking-tight drop-shadow-md max-sm:leading-snug">
                       {slide.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-slate-200 leading-relaxed drop-shadow-sm max-w-2xl">
+                    <p className="text-[11px] sm:text-sm text-slate-200 leading-relaxed drop-shadow-sm max-w-2xl line-clamp-3 sm:line-clamp-none">
                       {slide.description}
                     </p>
                   </div>
@@ -180,7 +180,7 @@ export default function SobreCineDoomPage() {
             })}
 
             {/* Indicadores em Bolinhas (Dots) */}
-            <div className="absolute bottom-4 right-5 sm:bottom-6 sm:right-8 z-20 flex items-center gap-2">
+            <div className="absolute bottom-3 right-4 sm:bottom-6 sm:right-8 z-20 flex items-center gap-2">
               {SPACES_SLIDES.map((_, idx) => (
                 <button
                   key={idx}

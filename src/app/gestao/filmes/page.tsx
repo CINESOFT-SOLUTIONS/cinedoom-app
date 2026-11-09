@@ -317,8 +317,8 @@ export default function CatalogoFilmesPage() {
         )}
 
         {/* Filter & Search Bar */}
-        <div className="liquid-glass-card p-4 rounded-2xl shadow-xl flex items-center justify-between gap-4 border border-white/10">
-          <div className="relative flex-1 max-w-md">
+        <div className="liquid-glass-card p-4 rounded-2xl shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border border-white/10">
+          <div className="relative flex-1 w-full sm:max-w-md">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"

@@ -903,13 +903,13 @@ export function BookingFlow({
       {/* 1. BARRA DE PROGRESSO SUPERIOR COMPACTA */}
       <nav
         aria-label="Progresso da Reserva"
-        className="w-full bg-[#121829]/95 border border-white/10 rounded-xl px-4 py-2 sm:py-2.5 shadow-md backdrop-blur-md mb-2 sm:mb-3 shrink-0 relative"
+        className="w-full bg-[#121829]/95 border border-white/10 rounded-xl px-2.5 sm:px-4 py-2 sm:py-2.5 shadow-md backdrop-blur-md mb-2 sm:mb-3 shrink-0 relative"
       >
         {isModal && onClose && (
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-1/2 -translate-y-1/2 right-3 w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer z-20"
+            className="absolute top-1/2 -translate-y-1/2 right-2.5 sm:right-3 w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors cursor-pointer z-20"
             title="Fechar"
             aria-label="Fechar"
           >
@@ -917,9 +917,9 @@ export function BookingFlow({
           </button>
         )}
         <div className="flex items-start justify-between relative max-w-2xl mx-auto">
-          <div className="absolute top-3.5 sm:top-4 left-5 right-5 -translate-y-1/2 h-0.5 bg-white/10 -z-0" />
+          <div className="absolute top-3.5 sm:top-4 left-4 right-4 sm:left-5 sm:right-5 -translate-y-1/2 h-0.5 bg-white/10 -z-0" />
           <div
-            className="absolute top-3.5 sm:top-4 left-5 -translate-y-1/2 h-0.5 bg-cta transition-all duration-300 -z-0"
+            className="absolute top-3.5 sm:top-4 left-4 sm:left-5 -translate-y-1/2 h-0.5 bg-cta transition-all duration-300 -z-0"
             style={{ width: `${((currentStep - 1) / (maxSteps - 1)) * 100}%` }}
           />
 
@@ -941,21 +941,21 @@ export function BookingFlow({
                     setCurrentStep(step as BookingStep);
                   }
                 }}
-                className={`relative z-10 flex flex-col items-center gap-1 group outline-none ${canClick ? "cursor-pointer" : "cursor-default"
+                className={`relative z-10 flex flex-col items-center gap-1 group outline-none px-0.5 sm:px-0 ${canClick ? "cursor-pointer" : "cursor-default"
                   }`}
               >
                 <div
-                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-150 border-2 ${isCompleted
+                  className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold text-[11px] sm:text-xs transition-all duration-150 border-2 ${isCompleted
                     ? "bg-cta border-cta text-white shadow-xs shadow-cta/30"
                     : isCurrent
                       ? "bg-[#1A2238] border-cta text-cta ring-2 ring-cta/25 shadow-sm scale-105"
                       : "bg-[#0A0E1A] border-white/20 text-slate-400 opacity-60"
                     }`}
                 >
-                  {isCompleted ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : step}
+                  {isCompleted ? <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[3]" /> : step}
                 </div>
                 <span
-                  className={`text-[10px] sm:text-xs font-semibold tracking-wide uppercase inline-block text-center ${isCurrent
+                  className={`text-[9px] sm:text-xs font-semibold tracking-tight sm:tracking-wide uppercase inline-block text-center whitespace-nowrap ${isCurrent
                     ? "text-white font-bold"
                     : isCompleted
                       ? "text-slate-200 group-hover:text-cta"
@@ -1106,7 +1106,7 @@ export function BookingFlow({
                     return (
                       <div
                         key={roomName}
-                        className="flex-1 min-w-[220px] p-3.5 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-sm flex flex-col justify-start gap-2.5 hover:border-white/20 transition-all"
+                        className="flex-1 min-w-full sm:min-w-[220px] p-3.5 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-sm flex flex-col justify-start gap-2.5 hover:border-white/20 transition-all"
                       >
                         {/* Header da Sala com texto normal */}
                         <div className="flex items-center justify-between border-b border-white/10 pb-2">
@@ -1122,7 +1122,7 @@ export function BookingFlow({
                         </div>
 
                         {/* Grade adaptativa de Horários com espaçamento confortável entre sessões */}
-                        <div className="flex flex-wrap items-start gap-3.5 pt-1">
+                        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-start gap-2.5 sm:gap-3.5 pt-1">
                           {roomSessions.map((sess) => {
                             const timeStr = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
                               hour: "2-digit",
@@ -1137,7 +1137,7 @@ export function BookingFlow({
                             return (
                               <div
                                 key={sess.id}
-                                className="flex-1 min-w-[95px] max-w-[140px] flex flex-col items-stretch gap-1.5"
+                                className="w-full sm:flex-1 sm:min-w-[95px] sm:max-w-[140px] flex flex-col items-stretch gap-1.5"
                               >
                                 {/* Botão de Horário Amplo Retangular com altura confortável */}
                                 <button
@@ -1785,7 +1785,7 @@ export function BookingFlow({
 
                   {/* Corpo do Ingresso: Grid de Dados Essenciais */}
                   <div className="p-5 sm:p-6 space-y-4">
-                    <div className="grid grid-cols-3 gap-4 text-xs">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 text-xs">
                       <div className="space-y-1">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
                           Data
@@ -1814,11 +1814,11 @@ export function BookingFlow({
                         </p>
                       </div>
 
-                      <div className="space-y-1">
+                      <div className="space-y-1 col-span-2 sm:col-span-1">
                         <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block">
                           Assentos ({selectedSeatIds.length})
                         </span>
-                        <p className="font-bold text-white tracking-wide">
+                        <p className="font-bold text-white tracking-wide break-words">
                           {selectedSeatIds
                             .map((id) => {
                               const s = seats.find((st) => st.id === id);
@@ -1962,7 +1962,14 @@ export function BookingFlow({
                 <Timer className="w-3.5 h-3.5" />
               </div>
               <span className="text-[10px] sm:text-xs text-slate-300 font-semibold truncate">
-                {isHoldExpired ? "Prazo Expirado" : "Tempo restante para concluir sua reserva:"}
+                {isHoldExpired ? (
+                  "Prazo Expirado"
+                ) : (
+                  <>
+                    <span className="sm:hidden">Tempo restante:</span>
+                    <span className="hidden sm:inline">Tempo restante para concluir sua reserva:</span>
+                  </>
+                )}
               </span>
               <span
                 className={`text-xs sm:text-sm font-extrabold font-mono tracking-wider ${isHoldExpired || remainingSeconds <= 120 ? "text-rose-400 animate-pulse" : "text-white"
@@ -2031,11 +2038,11 @@ export function BookingFlow({
           aria-modal="true"
           aria-labelledby="half-price-modal-title"
           onClick={() => setShowHalfPriceModal(false)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 cursor-pointer"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 cursor-pointer max-sm:overflow-y-auto"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-2xl bg-[#0F1422] border border-white/15 rounded-3xl p-5 sm:p-6 shadow-2xl text-left space-y-3 cursor-default font-sans"
+            className="relative w-full max-w-2xl bg-[#0F1422] border border-white/15 rounded-3xl p-4 sm:p-6 shadow-2xl text-left space-y-3 cursor-default font-sans max-sm:my-auto max-sm:max-h-[90vh] max-sm:overflow-y-auto"
           >
             {/* Cabeçalho Limpo e Compacto */}
             <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-2.5">

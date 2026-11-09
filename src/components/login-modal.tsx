@@ -38,12 +38,12 @@ export function LoginModal() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="auth-card-title"
-      className="liquid-glass-scrim z-[100] p-4 animate-in fade-in duration-200 overflow-y-auto"
+      className="liquid-glass-scrim z-[100] p-3 sm:p-4 animate-in fade-in duration-200 overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) close();
       }}
     >
-      <div className="my-auto w-full max-w-md">
+      <div className="my-auto w-full max-w-md max-sm:max-h-[92vh] max-sm:overflow-y-auto max-sm:rounded-3xl">
         <AuthCard
           isModal={true}
           activeView={view}

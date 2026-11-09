@@ -191,23 +191,23 @@ export default function SalasGestaoPage() {
   };
 
   return (
-    <div className="h-screen max-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col overflow-hidden selection:bg-cta selection:text-white">
+    <div className="min-h-screen md:h-screen md:max-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col md:overflow-hidden selection:bg-cta selection:text-white">
       {/* Header Oficial CineDoom */}
       <CineDoomHeader activePage="gestao" />
 
-      {/* Main Content - Sem rolagem da página inteira (View única h-full) */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-2.5 flex flex-col min-h-0 overflow-hidden space-y-2">
+      {/* Main Content - Responsivo no celular e View única h-full no desktop */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-4 py-3 md:py-2.5 flex flex-col min-h-0 md:overflow-hidden space-y-2.5 md:space-y-2">
         {/* Barra Superior Compacta: Título, Voltar e Seletor de Salas */}
-        <div className="flex flex-wrap items-center justify-between gap-2 shrink-0">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-between gap-2.5 sm:gap-2 shrink-0">
           <div className="flex items-center gap-2">
             <Link
               href="/gestao"
-              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
+              className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors shrink-0"
               title="Voltar ao Painel"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
-            <div className="w-7 h-7 rounded-lg bg-cta/15 text-cta border border-cta/30 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-cta/15 text-cta border border-cta/30 flex items-center justify-center shrink-0">
               <DoorOpen className="w-4 h-4" />
             </div>
             <div>
@@ -219,14 +219,14 @@ export default function SalasGestaoPage() {
           </div>
 
           {/* Seletor de Salas Compacto */}
-          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 scrollbar-none">
             {rooms.map((room) => {
               const isSelected = selectedRoom?.id === room.id;
               return (
                 <button
                   key={room.id}
                   onClick={() => loadRoomDetails(room)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${isSelected
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0 ${isSelected
                       ? "bg-cta text-white shadow-md shadow-cta/25"
                       : "bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10"
                     }`}
@@ -266,11 +266,11 @@ export default function SalasGestaoPage() {
           </div>
         )}
 
-        {/* Card do Mapa Interativo Padronizado (Sem Scroll Global) */}
+        {/* Card do Mapa Interativo Padronizado */}
         {selectedRoom && (
-          <div className="flex-1 liquid-glass-card rounded-2xl p-3 sm:p-4 border border-white/10 shadow-xl flex flex-col justify-between min-h-0 overflow-hidden">
+          <div className="flex-1 liquid-glass-card rounded-2xl p-3 sm:p-4 border border-white/10 shadow-xl flex flex-col justify-between min-h-0 md:overflow-hidden gap-3 md:gap-0">
             {/* Header da Sala com Legenda */}
-            <div className="flex items-center justify-between border-b border-borderDark/50 pb-2 shrink-0">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-borderDark/50 pb-2 shrink-0">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-white">{selectedRoom.name}</span>
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 border border-white/10">
@@ -291,8 +291,8 @@ export default function SalasGestaoPage() {
               </div>
             </div>
 
-            {/* Grid Canônico Centralizado que cabe perfeitamente na viewport */}
-            <div className="flex-1 flex flex-col justify-center items-center min-h-0 py-1 overflow-auto">
+            {/* Grid Canônico Centralizado que permite rolagem horizontal suave no mobile */}
+            <div className="flex-1 flex flex-col justify-center items-center min-h-0 py-2 md:py-1 overflow-x-auto md:overflow-auto w-full">
               <SeatingGrid
                 seats={roomSeats}
                 onSeatToggle={handleSeatToggle}

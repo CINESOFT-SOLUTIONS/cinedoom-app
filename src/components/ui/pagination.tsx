@@ -60,7 +60,7 @@ export function Pagination({
         <span className="font-semibold text-white">{totalItems}</span> {itemLabel}
       </div>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap sm:flex-nowrap items-center justify-center sm:justify-start gap-1 sm:gap-1.5">
         <button
           type="button"
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
@@ -75,7 +75,7 @@ export function Pagination({
         {getPageNumbers().map((p, idx) => {
           if (p === "...") {
             return (
-              <span key={`ellipsis-${idx}`} className="px-2 py-1 text-slate-600 select-none">
+              <span key={`ellipsis-${idx}`} className="px-1.5 sm:px-2 py-1 text-slate-600 select-none">
                 ...
               </span>
             );
@@ -87,7 +87,7 @@ export function Pagination({
               key={`page-${pageNum}`}
               type="button"
               onClick={() => onPageChange(pageNum)}
-              className={`min-w-[32px] h-8 px-2 rounded-lg font-semibold text-xs transition-all cursor-pointer ${
+              className={`min-w-[30px] sm:min-w-[32px] h-8 px-1.5 sm:px-2 rounded-lg font-semibold text-xs transition-all cursor-pointer ${
                 isActive
                   ? "bg-cta text-white font-bold shadow-[0_0_10px_rgba(233,69,96,0.3)]"
                   : "bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/5"

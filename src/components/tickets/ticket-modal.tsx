@@ -123,7 +123,7 @@ export function TicketModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-[#121624] text-slate-200 border border-white/15 rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden font-sans my-auto cursor-default animate-in zoom-in-95 duration-150 print:bg-white print:text-black print:border-black/30 print:shadow-none print:max-w-full print:rounded-none"
+        className="bg-[#121624] text-slate-200 border border-white/15 rounded-3xl max-w-xl w-full shadow-2xl max-sm:overflow-y-auto max-sm:max-h-[90vh] sm:overflow-hidden font-sans my-auto cursor-default animate-in zoom-in-95 duration-150 print:bg-white print:text-black print:border-black/30 print:shadow-none print:max-w-full print:max-h-none print:overflow-visible print:rounded-none"
       >
         {/* Barra superior de controle (Oculta na impressão) */}
         <div className="p-4 sm:p-5 bg-white/[0.04] border-b border-white/10 flex items-center justify-between print:hidden">

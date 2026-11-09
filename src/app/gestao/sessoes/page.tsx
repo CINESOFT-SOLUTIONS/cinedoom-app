@@ -614,22 +614,22 @@ export default function ProgramacaoSessoesPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                   {/* Coluna Esquerda: Calendário Interativo do Mês */}
                   <div className="lg:col-span-7 space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                       <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                        <CalendarIcon className="w-3.5 h-3.5 text-cta" />
+                        <CalendarIcon className="w-3.5 h-3.5 text-cta shrink-0" />
                         <span>Selecione os dias no calendário:</span>
                       </span>
 
                       <button
                         type="button"
                         onClick={selectAllDaysInMonth}
-                        className="text-[11px] font-bold text-cta hover:text-white uppercase transition-colors cursor-pointer"
+                        className="text-[11px] font-bold text-cta hover:text-white uppercase transition-colors cursor-pointer self-start sm:self-auto"
                       >
                         {batchSelectedDays.length === totalDaysInMonth ? "Desmarcar todos" : "Marcar todo o mês"}
                       </button>
                     </div>
 
-                    <div className="p-4 rounded-2xl bg-[#0A0E1A]/90 border border-white/10 space-y-2">
+                    <div className="p-2.5 sm:p-4 rounded-2xl bg-[#0A0E1A]/90 border border-white/10 space-y-2">
                       {/* Dias da Semana (D S T Q Q S S) */}
                       <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider pb-1">
                         <span>Dom</span>
@@ -642,7 +642,7 @@ export default function ProgramacaoSessoesPage() {
                       </div>
 
                       {/* Grade dos Dias do Mês */}
-                      <div className="grid grid-cols-7 gap-1.5">
+                      <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
                         {/* Espaços vazios do início do mês */}
                         {Array.from({ length: firstDayOfWeek }).map((_, i) => (
                           <div key={`empty-${i}`} className="h-10 sm:h-12 rounded-xl bg-transparent" />
@@ -661,7 +661,7 @@ export default function ProgramacaoSessoesPage() {
                               key={`day-${day}`}
                               type="button"
                               onClick={() => toggleDaySelection(day)}
-                              className={`h-10 sm:h-12 rounded-xl transition-all cursor-pointer flex flex-col items-center justify-center relative p-1 leading-none ${
+                              className={`h-10 sm:h-12 rounded-xl transition-all cursor-pointer flex flex-col items-center justify-center relative p-0.5 sm:p-1 leading-none ${
                                 isSelectedForBatch
                                   ? "bg-cta text-white ring-2 ring-white shadow-md shadow-cta/30 font-bold"
                                   : hasSessions
@@ -671,8 +671,8 @@ export default function ProgramacaoSessoesPage() {
                             >
                               <span className="text-xs sm:text-sm font-bold">{day}</span>
                               {hasSessions && (
-                                <span className={`text-[9px] mt-0.5 font-bold ${isSelectedForBatch ? "text-white" : "text-cta"}`}>
-                                  {daySessions.length} sess.
+                                <span className={`text-[8px] sm:text-[9px] mt-0.5 font-bold ${isSelectedForBatch ? "text-white" : "text-cta"}`}>
+                                  {daySessions.length}<span className="hidden sm:inline"> sess.</span><span className="sm:hidden">x</span>
                                 </span>
                               )}
                             </button>
@@ -681,7 +681,7 @@ export default function ProgramacaoSessoesPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 text-[11px] text-slate-400 px-1">
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px] text-slate-400 px-1">
                       <div className="flex items-center gap-1.5">
                         <span className="w-2.5 h-2.5 rounded-full bg-slate-800 border border-white/20" />
                         <span>Dia com sessões já programadas</span>
