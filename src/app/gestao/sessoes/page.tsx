@@ -8,6 +8,7 @@ import {
   LayoutGrid,
   Plus,
   Trash2,
+  Edit2,
   AlertCircle,
   CheckCircle,
   X,
@@ -98,6 +99,8 @@ export default function SessoesGestãoPage() {
   const [rooms, setRooms] = useState<RoomItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingSession, setEditingSession] = useState<SessionItem | null>(null);
+  const [sessionStatus, setSessionStatus] = useState<string>("SCHEDULED");
   const [dateFilter, setDateFilter] = useState<"TODAY" | "TOMORROW" | "UPCOMING" | "ALL">("TODAY");
 
   // Form states
@@ -246,8 +249,10 @@ export default function SessoesGestãoPage() {
   }, []);
 
   const handleOpenCreateModal = () => {
+    setEditingSession(null);
     setFilmId(films[0]?.id || "");
     setRoomId(rooms[0]?.id || "");
+    setSessionStatus("SCHEDULED");
     
     // Sugere horario de inicio para a proxima hora cheia
     const nextHour = new Date();
@@ -262,7 +267,24 @@ export default function SessoesGestãoPage() {
     setIsCreateModalOpen(true);
   };
 
-  const handleCreateSession = async (e: React.FormEvent) => {
+  const handleOpenEditModal = (session: SessionItem) => {
+    setEditingSession(session);
+    setFilmId(session.film.id || session.filmId || "");
+    setRoomId(session.room.id || session.roomId || "");
+    setSessionStatus(session.status || "OPEN");
+
+    // Formata startsAt local para input datetime-local
+    const d = new Date(session.startsAt);
+    const tzOffset = d.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+    setStartsAt(localISOTime);
+
+    setPrice(Number(session.price).toFixed(2));
+    setFormErrors({});
+    setIsCreateModalOpen(true);
+  };
+
+  const handleSaveSession = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormErrors({});
 
@@ -284,25 +306,40 @@ export default function SessoesGestãoPage() {
       return;
     }
 
+    const isEditing = Boolean(editingSession);
+
     startTransition(async () => {
       try {
-        const res = await fetch("/api/sessoes", {
-          method: "POST",
+        const endpoint = isEditing ? `/api/sessoes/${editingSession?.id}` : "/api/sessoes";
+        const method = isEditing ? "PUT" : "POST";
+
+        const payload: any = {
+          startsAt: new Date(startsAt).toISOString(),
+          price: numPrice,
+        };
+
+        if (!isEditing) {
+          payload.filmId = filmId;
+          payload.roomId = roomId;
+        } else {
+          payload.status = sessionStatus;
+        }
+
+        const res = await fetch(endpoint, {
+          method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            filmId,
-            roomId,
-            startsAt: new Date(startsAt).toISOString(),
-            price: numPrice,
-          }),
+          body: JSON.stringify(payload),
         });
 
         const data = await res.json();
 
-        if (res.status === 201) {
+        if (res.status === 200 || res.status === 201) {
           setIsCreateModalOpen(false);
+          setEditingSession(null);
           setActionSuccess(
-            `Sessão agendada com sucesso! Mapa com ${data.seatsGeneratedCount ?? 0} poltronas liberado para venda.`
+            isEditing
+              ? "Sessão atualizada com sucesso!"
+              : `Sessão agendada com sucesso! Mapa com ${data.seatsGeneratedCount ?? 0} poltronas liberado para venda.`
           );
           fetchData();
         } else if (res.status === 409) {
@@ -319,7 +356,7 @@ export default function SessoesGestãoPage() {
           }
           setFormErrors(errorsObj);
         } else {
-          setFormErrors({ general: data.error || "Erro ao agendar sessão." });
+          setFormErrors({ general: data.error || (isEditing ? "Erro ao editar sessão." : "Erro ao agendar sessão.") });
         }
       } catch {
         setFormErrors({ general: "Erro inesperado de conexão com o servidor." });
@@ -534,13 +571,22 @@ export default function SessoesGestãoPage() {
                           {sess.film.title}
                         </h2>
                       </div>
-                      <button
-                        onClick={() => handleDeleteSession(sess)}
-                        title="Cancelar / Excluir Sessão"
-                        className="text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-950/30 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleOpenEditModal(sess)}
+                          title="Editar Sessão"
+                          className="text-gray-500 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSession(sess)}
+                          title="Cancelar / Excluir Sessão"
+                          className="text-gray-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-950/30 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
 
                     <div className="space-y-2 text-sm text-gray-300">
@@ -592,10 +638,13 @@ export default function SessoesGestãoPage() {
             <div className="flex items-center justify-between border-b border-gray-800 pb-4">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-[#E94560]" />
-                Agendar Nova Sessão
+                {editingSession ? "Editar Sessão" : "Agendar Nova Sessão"}
               </h2>
               <button
-                onClick={() => setIsCreateModalOpen(false)}
+                onClick={() => {
+                  setIsCreateModalOpen(false);
+                  setEditingSession(null);
+                }}
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
@@ -609,15 +658,16 @@ export default function SessoesGestãoPage() {
               </div>
             )}
 
-            <form onSubmit={handleCreateSession} className="space-y-4">
+            <form onSubmit={handleSaveSession} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
                   Filme
                 </label>
                 <select
                   value={filmId}
+                  disabled={Boolean(editingSession)}
                   onChange={(e) => setFilmId(e.target.value)}
-                  className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
+                  className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {films.map((f) => (
                     <option key={f.id} value={f.id}>
@@ -636,8 +686,9 @@ export default function SessoesGestãoPage() {
                 </label>
                 <select
                   value={roomId}
+                  disabled={Boolean(editingSession)}
                   onChange={(e) => setRoomId(e.target.value)}
-                  className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
+                  className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {rooms.map((r) => (
                     <option key={r.id} value={r.id}>
@@ -649,6 +700,24 @@ export default function SessoesGestãoPage() {
                   <p className="text-xs text-red-400 mt-1">{formErrors.roomId}</p>
                 )}
               </div>
+
+              {editingSession && (
+                <div>
+                  <label className="block text-xs font-semibold uppercase text-gray-400 mb-1.5">
+                    Status da Sessão
+                  </label>
+                  <select
+                    value={sessionStatus}
+                    onChange={(e) => setSessionStatus(e.target.value)}
+                    className="w-full liquid-glass-input rounded-xl px-4 py-2.5 text-sm text-white"
+                  >
+                    <option value="OPEN">Aberta</option>
+                    <option value="SCHEDULED">Agendada</option>
+                    <option value="CLOSED">Encerrada</option>
+                    <option value="CANCELLED">Cancelada</option>
+                  </select>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -685,13 +754,16 @@ export default function SessoesGestãoPage() {
               </div>
 
               <div className="p-3 bg-sky-950/30 border border-sky-500/20 rounded-xl text-xs text-slate-300">
-                <span className="font-semibold text-sky-400">Aviso:</span> Ao confirmar o agendamento, o sistema verifica a disponibilidade do horário da sala e disponibiliza automaticamente o mapa de poltronas para venda.
+                <span className="font-semibold text-sky-400">Aviso:</span> Ao confirmar as alterações, o sistema valida a disponibilidade de horários da sala para evitar sobreposição.
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-gray-800">
                 <button
                   type="button"
-                  onClick={() => setIsCreateModalOpen(false)}
+                  onClick={() => {
+                    setIsCreateModalOpen(false);
+                    setEditingSession(null);
+                  }}
                   className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-sm font-medium transition-colors"
                 >
                   Cancelar
@@ -701,7 +773,7 @@ export default function SessoesGestãoPage() {
                   disabled={isPending}
                   className="px-5 py-2 rounded-xl bg-[#E94560] hover:bg-[#d63d56] text-white text-sm font-bold shadow-lg shadow-[#E94560]/30 transition-all disabled:opacity-50"
                 >
-                  {isPending ? "Agendando..." : "Criar Sessão"}
+                  {isPending ? "Salvando..." : editingSession ? "Salvar Alterações" : "Criar Sessão"}
                 </button>
               </div>
             </form>
