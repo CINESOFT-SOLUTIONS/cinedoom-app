@@ -48,15 +48,16 @@ export class TemporaryHoldServiceClass {
     seatIds: string[];
     holdToken: string;
     tenantId?: string;
+    isAttendant?: boolean;
   }): Promise<{ holdToken: string; expiresAt: Date; remainingSeconds: number }> {
-    const { sessionId, seatIds, holdToken } = params;
+    const { sessionId, seatIds, holdToken, isAttendant } = params;
     const now = new Date();
 
     if (!seatIds || seatIds.length === 0) {
       throw new Error("Selecione ao menos um assento para bloquear.");
     }
 
-    if (seatIds.length > 5) {
+    if (!isAttendant && seatIds.length > 5) {
       throw new Error("Limite maximo de 5 assentos por reserva excedido.");
     }
 

@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/modules/auth/auth-options";
 import { TemporaryHoldService } from "@/features/reserva/application/temporary-hold.service";
 
 interface RouteParams {
@@ -9,6 +11,10 @@ interface RouteParams {
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   const sessionId = params.id;
+  const session = await getServerSession(authOptions);
+  const headerRole = request.headers.get("x-user-role");
+  const userRole = session?.user?.role || headerRole;
+  const isAttendant = userRole === "ATENDENTE" || userRole === "GERENTE";
 
   let body: any;
   try {
@@ -33,7 +39,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     );
   }
 
-  if (seatIds.length > 5) {
+  // Limite máximo de 5 assentos aplica-se exclusivamente a clientes (reservas online)
+  if (!isAttendant && seatIds.length > 5) {
     return NextResponse.json(
       { error: "Limite maximo de 5 assentos por reserva excedido." },
       { status: 422 }
@@ -48,6 +55,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       seatIds,
       holdToken: effectiveToken,
       tenantId: request.headers.get("x-tenant-id") || undefined,
+      isAttendant,
     });
 
     return NextResponse.json(result, { status: 200 });

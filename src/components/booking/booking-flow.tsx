@@ -613,7 +613,8 @@ export function BookingFlow({
       if (prev.includes(seat.id)) {
         return prev.filter((id) => id !== seat.id);
       } else {
-        if (prev.length >= 5) {
+        // Limite máximo de 5 assentos aplica-se exclusivamente para reservas de clientes
+        if (!isAttendantOrManager && prev.length >= 5) {
           setErrorNotice("Limite máximo de 5 assentos por reserva online.");
           return prev;
         }
