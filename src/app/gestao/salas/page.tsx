@@ -64,6 +64,15 @@ export default function SalasGestaoPage() {
     text: string;
   } | null>(null);
 
+  // Auto-dismiss de mensagens de aviso/sucesso após 4 segundos
+  useEffect(() => {
+    if (!statusMessage) return;
+    const timer = setTimeout(() => {
+      setStatusMessage(null);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [statusMessage]);
+
   const fetchRooms = async () => {
     try {
       const response = await fetch("/api/salas");

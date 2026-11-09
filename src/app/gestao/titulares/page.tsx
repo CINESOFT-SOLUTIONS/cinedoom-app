@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import {
   ShieldCheck,
@@ -42,6 +42,15 @@ export default function ComplianceTitularesPage() {
     type: "success" | "error";
     text: string;
   } | null>(null);
+
+  // Auto-dismiss de mensagens após 4 segundos
+  useEffect(() => {
+    if (!statusMessage) return;
+    const timer = setTimeout(() => {
+      setStatusMessage(null);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [statusMessage]);
 
   const [isPending, startTransition] = useTransition();
 

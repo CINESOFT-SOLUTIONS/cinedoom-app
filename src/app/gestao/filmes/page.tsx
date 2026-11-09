@@ -60,6 +60,15 @@ export default function CatalogoFilmesPage() {
     text: string;
   } | null>(null);
 
+  // Auto-dismiss de mensagens após 4 segundos
+  useEffect(() => {
+    if (!statusMessage) return;
+    const timer = setTimeout(() => {
+      setStatusMessage(null);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [statusMessage]);
+
   const [isPending, startTransition] = useTransition();
 
   const fetchFilms = async (searchQuery = "") => {
