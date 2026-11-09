@@ -1129,7 +1129,7 @@ export function BookingFlow({
                   seats={seats}
                   selectedSeatIds={selectedSeatIds}
                   onSeatToggle={handleSeatToggle}
-                  maxSelection={5}
+                  maxSelection={isAttendantOrManager ? undefined : 5}
                   unitPrice={unitPrice}
                   showLegend={false}
                   showScreen={true}
@@ -1175,7 +1175,9 @@ export function BookingFlow({
               <div className="p-3 rounded-2xl bg-[#121829]/90 border border-white/10 shadow-md space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                    Poltronas ({selectedSeatIds.length}/5)
+                    {isAttendantOrManager
+                      ? `Poltronas (${selectedSeatIds.length})`
+                      : `Poltronas (${selectedSeatIds.length})`}
                   </span>
                   <span className="text-[11px] text-slate-400 font-mono">
                     R$ {unitPrice.toFixed(2)} un
