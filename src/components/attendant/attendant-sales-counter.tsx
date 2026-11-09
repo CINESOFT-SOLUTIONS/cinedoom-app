@@ -118,7 +118,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-7 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 sm:gap-7 items-start w-full">
           {filmsWithTodaySessions.map((film) => {
             const hasSessions = film.todaySessions.length > 0;
 
@@ -126,7 +126,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
               <div
                 key={film.id}
                 data-testid={`attendant-card-${film.id}`}
-                className="liquid-glass-card rounded-2xl p-5 sm:p-6 flex flex-col gap-3.5 transition-all shadow-lg hover:border-white/20"
+                className="liquid-glass-card rounded-2xl p-5 sm:p-6 flex flex-col gap-4 transition-all shadow-lg hover:border-white/20 w-full"
               >
                 {/* Cabeçalho do Card: Nome do filme em cima do pôster */}
                 <h2

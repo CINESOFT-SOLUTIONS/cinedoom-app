@@ -116,7 +116,7 @@ export default function CinemarkStyleHomePage() {
     return (
       <div className="min-h-screen liquid-glass-backdrop text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
         <CineDoomHeader activePage="filmes" />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 flex flex-col">
+        <main className="w-full px-3 sm:px-6 lg:px-8 py-5 flex-1 flex flex-col">
           <AttendantSalesCounter films={films} loading={loading} />
         </main>
         <CineDoomFooter simple className="mt-8" />
