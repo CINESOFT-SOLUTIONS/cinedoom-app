@@ -69,35 +69,35 @@ export function AuthProfileMenu() {
         title={`Conectado como ${displayName} (${role || "CLIENTE"})`}
         className="h-9 sm:h-10 md:h-11 flex items-center gap-1.5 sm:gap-2.5 px-2.5 sm:px-3.5 md:px-4 rounded-full bg-gradient-to-r from-[#0F3460] to-[#16213E] text-white border border-white/10 shadow-[0_4px_16px_rgba(15,52,96,0.25)] select-none"
       >
-        {/* Avatar / Ícone específico e representativo de cada perfil */}
+        {/* Avatar / Ícone de perfil em branco */}
         <div className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
           {role === "GERENTE" ? (
-            <SlidersHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-amber-300" />
+            <SlidersHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
           ) : role === "ATENDENTE" ? (
-            <Ticket className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-emerald-300" />
+            <Ticket className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
           ) : (
-            <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-rose-300" />
+            <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-white" />
           )}
         </div>
 
-        {/* Nome da Pessoa + Label do Perfil ao lado */}
+        {/* Nome da Pessoa + Label do Perfil ao lado em branco */}
         <div className="flex items-center gap-1 sm:gap-2 text-left">
           <span className="font-semibold text-xs md:text-[13px] text-white tracking-wide whitespace-nowrap max-w-[70px] sm:max-w-[130px] md:max-w-[180px] truncate">
             {displayName}
           </span>
 
           {role === "GERENTE" && (
-            <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/30">
+            <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-white/15 text-white border border-white/20">
               Gerente
             </span>
           )}
           {role === "ATENDENTE" && (
-            <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+            <span className="inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-white/15 text-white border border-white/20">
               Atendente
             </span>
           )}
           {(!role || role === "CLIENTE") && (
-            <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-400/30">
+            <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-white/15 text-white border border-white/20">
               Cliente
             </span>
           )}
