@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Film, DoorOpen, Calendar, Users, ArrowRight } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 
 export default function GestãoDashboardPage() {
   const modules = [
@@ -86,10 +87,7 @@ export default function GestãoDashboardPage() {
         </div>
       </main>
 
-      {/* Footer minimalista */}
-      <footer className="border-t border-borderDark/40 py-6 text-center text-xs text-slate-500">
-        CineDoom Cinema Management &bull; Painel Administrativo
-      </footer>
+      <CineDoomFooter simple className="mt-8" />
     </div>
   );
 }

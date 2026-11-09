@@ -17,6 +17,7 @@ import {
   Lock,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { Pagination } from "@/components/ui/pagination";
 
 interface UserItem {
@@ -713,6 +714,8 @@ export default function GestaoUsuariosPage() {
           </div>
         </div>
       )}
+
+      <CineDoomFooter simple className="mt-8" />
     </div>
   );
 }

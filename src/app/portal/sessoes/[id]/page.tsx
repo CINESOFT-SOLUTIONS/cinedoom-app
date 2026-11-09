@@ -16,7 +16,7 @@ export default function PortalSessionReservationPage() {
       <main className="flex-1 w-full flex flex-col justify-between overflow-x-hidden lg:overflow-y-auto">
         <BookingFlow initialSessionId={sessionId} />
       </main>
-      <CineDoomFooter className="lg:hidden" />
+      <CineDoomFooter simple className="lg:hidden" />
     </div>
   );
 }

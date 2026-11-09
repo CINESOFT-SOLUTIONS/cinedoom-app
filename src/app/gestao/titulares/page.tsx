@@ -16,6 +16,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 
 interface TitularData {
   id: string;
@@ -411,6 +412,8 @@ export default function ComplianceTitularesPage() {
           </div>
         </div>
       )}
+
+      <CineDoomFooter simple className="mt-8" />
     </div>
   );
 }

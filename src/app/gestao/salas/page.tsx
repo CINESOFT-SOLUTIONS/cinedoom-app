@@ -11,6 +11,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { getCanonicalRoomName } from "@/shared/experiences";
 import { MOCK_ROOMS } from "@/modules/portal/mock-cinema-data";
 import { SeatingGrid, type GridSeatItem } from "@/modules/bilheteria/components/seating-grid";
@@ -315,6 +316,8 @@ export default function SalasGestaoPage() {
           </div>
         )}
       </main>
+
+      <CineDoomFooter simple className="md:hidden mt-6" />
     </div>
   );
 }

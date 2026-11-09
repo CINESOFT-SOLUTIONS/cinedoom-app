@@ -15,6 +15,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { Pagination } from "@/components/ui/pagination";
 
 interface FilmItem {
@@ -622,6 +623,8 @@ export default function CatalogoFilmesPage() {
           </div>
         </div>
       )}
+
+      <CineDoomFooter simple className="mt-8" />
     </div>
   );
 }

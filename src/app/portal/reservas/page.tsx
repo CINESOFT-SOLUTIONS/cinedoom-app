@@ -39,7 +39,7 @@ export default function PortalReservasPage() {
           <BookingFlowContainer />
         </Suspense>
       </main>
-      <CineDoomFooter className="lg:hidden" />
+      <CineDoomFooter simple className="lg:hidden" />
     </div>
   );
 }
