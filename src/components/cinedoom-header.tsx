@@ -354,10 +354,6 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                 </Link>
               </>
             )}
-
-            <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between px-2">
-              <span className="font-semibold text-slate-700">Bilheteria Física</span>
-            </div>
           </div>
         </div>
       )}
