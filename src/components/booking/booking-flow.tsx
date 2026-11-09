@@ -1125,11 +1125,11 @@ export function BookingFlow({
                                 key={sess.id}
                                 className="flex-1 min-w-[95px] max-w-[140px] flex flex-col items-stretch gap-1"
                               >
-                                {/* Botão de Horário Amplo */}
+                                {/* Botão de Horário Amplo Retangular */}
                                 <button
                                   type="button"
                                   onClick={() => handleSelectSession(sess.id)}
-                                  className={`w-full py-2 px-2.5 rounded-xl font-bold text-sm tracking-normal transition-all duration-150 cursor-pointer shadow-xs active:scale-95 flex items-center justify-center leading-none ${
+                                  className={`w-full py-2 px-2.5 rounded-md font-bold text-sm tracking-normal transition-all duration-150 cursor-pointer shadow-xs active:scale-95 flex items-center justify-center leading-none ${
                                     isSelected
                                       ? "bg-cta text-white ring-2 ring-white/90 shadow-md shadow-cta/40 scale-102"
                                       : "bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-white"
@@ -1141,10 +1141,10 @@ export function BookingFlow({
 
                                 {/* Badges divididos e ocupando todo o espaço embaixo */}
                                 <div className="grid grid-cols-2 gap-1 w-full">
-                                  <span className="w-full text-center text-[10px] font-semibold py-0.5 px-1 rounded bg-white/10 text-slate-300 leading-tight">
+                                  <span className="w-full text-center text-[10px] font-semibold py-0.5 px-1 rounded-sm bg-white/10 text-slate-300 leading-tight">
                                     {format}
                                   </span>
-                                  <span className="w-full text-center text-[10px] font-semibold py-0.5 px-1 rounded bg-cta/20 text-cta leading-tight">
+                                  <span className="w-full text-center text-[10px] font-semibold py-0.5 px-1 rounded-sm bg-cta/20 text-cta leading-tight">
                                     {language}
                                   </span>
                                 </div>
