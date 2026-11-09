@@ -21,6 +21,7 @@ import {
   EyeOff,
   ArrowRight,
   ArrowLeft,
+  Sparkles,
 } from "lucide-react";
 
 // Validacao oficial de CPF brasileiro via Modulo 11
@@ -44,6 +45,33 @@ function isValidCPF(rawCpf: string): boolean {
   let secondCheck = 11 - (sum % 11);
   if (secondCheck >= 10) secondCheck = 0;
   return secondCheck === Number.parseInt(cpf.charAt(10), 10);
+}
+
+// Gerador aleatorio de CPF valido segundo algoritmo oficial Modulo 11 (para homologacao/testes)
+function generateRandomValidCPF(): string {
+  let digits: number[];
+  do {
+    digits = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10));
+  } while (digits.every((d) => d === digits[0]));
+
+  let sum1 = 0;
+  for (let i = 0; i < 9; i++) {
+    sum1 += digits[i] * (10 - i);
+  }
+  let rest1 = 11 - (sum1 % 11);
+  const dv1 = rest1 >= 10 ? 0 : rest1;
+  digits.push(dv1);
+
+  let sum2 = 0;
+  for (let i = 0; i < 10; i++) {
+    sum2 += digits[i] * (11 - i);
+  }
+  let rest2 = 11 - (sum2 % 11);
+  const dv2 = rest2 >= 10 ? 0 : rest2;
+  digits.push(dv2);
+
+  const d = digits.join("");
+  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9, 11)}`;
 }
 
 // Validacao de formato de E-mail via Regex
@@ -223,6 +251,13 @@ export function AuthCard({
       formatted = `${raw.slice(0, 3)}.${raw.slice(3)}`;
     }
     setRegisterForm((prev) => ({ ...prev, cpf: formatted }));
+  }
+
+  function handleGenerateRandomCpf() {
+    const randomCpf = generateRandomValidCPF();
+    setRegisterForm((prev) => ({ ...prev, cpf: randomCpf }));
+    setRegisterTouched((prev) => ({ ...prev, cpf: true }));
+    setRegisterError(null);
   }
 
   async function handleRegisterSubmit(e: React.FormEvent) {
@@ -533,34 +568,45 @@ export function AuthCard({
                 <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-0.5">
                   CPF
                 </label>
-                <div className="relative">
-                  <FileText className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="000.000.000-00"
-                    value={registerForm.cpf}
-                    maxLength={14}
-                    onBlur={() => setRegisterTouched((prev) => ({ ...prev, cpf: true }))}
-                    onChange={(e) => {
-                      handleCpfChange(e);
-                      if (!registerTouched.cpf && e.target.value.length > 0) {
-                        setRegisterTouched((prev) => ({ ...prev, cpf: true }));
-                      }
-                    }}
-                    required
-                    className={`w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${isCpfValid
-                        ? "border-emerald-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-                        : isCpfInvalid
-                          ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
-                          : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
-                      }`}
-                  />
-                  {isCpfValid && (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none animate-in fade-in" />
-                  )}
-                  {isCpfInvalid && (
-                    <AlertCircle className="w-4 h-4 text-rose-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none animate-in fade-in" />
-                  )}
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <FileText className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder="000.000.000-00"
+                      value={registerForm.cpf}
+                      maxLength={14}
+                      onBlur={() => setRegisterTouched((prev) => ({ ...prev, cpf: true }))}
+                      onChange={(e) => {
+                        handleCpfChange(e);
+                        if (!registerTouched.cpf && e.target.value.length > 0) {
+                          setRegisterTouched((prev) => ({ ...prev, cpf: true }));
+                        }
+                      }}
+                      required
+                      className={`w-full pl-9 pr-9 py-2 rounded-xl bg-slate-50 hover:bg-slate-100/60 focus:bg-white border text-slate-900 placeholder-slate-400 text-sm focus:outline-none transition-all shadow-xs ${isCpfValid
+                          ? "border-emerald-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                          : isCpfInvalid
+                            ? "border-rose-400 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                            : "border-slate-200 focus:border-cta focus:ring-2 focus:ring-cta/20"
+                        }`}
+                    />
+                    {isCpfValid && (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none animate-in fade-in" />
+                    )}
+                    {isCpfInvalid && (
+                      <AlertCircle className="w-4 h-4 text-rose-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none animate-in fade-in" />
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleGenerateRandomCpf}
+                    className="shrink-0 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 active:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold inline-flex items-center gap-1.5 transition-all cursor-pointer shadow-xs active:scale-95"
+                    title="Gerar CPF válido para testes"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-cta" />
+                    <span>Gerar</span>
+                  </button>
                 </div>
                 {isCpfInvalid && (
                   <p className="text-[10px] text-rose-600 font-medium mt-0.5">

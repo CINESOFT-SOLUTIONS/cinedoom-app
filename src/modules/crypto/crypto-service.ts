@@ -114,6 +114,36 @@ export function formatCPF(rawCpf: string): string {
 }
 
 /**
+ * Gera um CPF matematicamente valido e aleatorio segundo o algoritmo oficial do Modulo 11.
+ * Utilizado para testes e homologacao em ambiente de deploy.
+ */
+export function generateRandomValidCPF(): string {
+  let digits: number[];
+  do {
+    digits = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10));
+  } while (digits.every((d) => d === digits[0]));
+
+  let sum1 = 0;
+  for (let i = 0; i < 9; i++) {
+    sum1 += digits[i] * (10 - i);
+  }
+  let rest1 = 11 - (sum1 % 11);
+  const dv1 = rest1 >= 10 ? 0 : rest1;
+  digits.push(dv1);
+
+  let sum2 = 0;
+  for (let i = 0; i < 10; i++) {
+    sum2 += digits[i] * (11 - i);
+  }
+  let rest2 = 11 - (sum2 % 11);
+  const dv2 = rest2 >= 10 ? 0 : rest2;
+  digits.push(dv2);
+
+  const d = digits.join("");
+  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9, 11)}`;
+}
+
+/**
  * Mascara o CPF para exibicao em telas operacionais sem expor PII completa (AC-6 / LGPD).
  * Exemplo: 123.456.789-01 -> ***.***.789-01
  */

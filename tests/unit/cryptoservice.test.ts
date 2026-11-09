@@ -5,6 +5,7 @@ import {
   validateCPF,
   formatCPF,
   maskCPF,
+  generateRandomValidCPF,
   encryptCPF,
   decryptCPF,
   hashCPF,
@@ -76,6 +77,14 @@ describe("CryptoService — Criptografia LGPD & Blind Index (ADR-008 / AC-6)", (
     it("deve mascarar CPF para exibicao protegida (AC-6 / LGPD)", () => {
       expect(maskCPF(VALID_CPF_CLEAN)).toBe("***.***.247-25");
       expect(maskCPF("invalido")).toBe("***.***.***-**");
+    });
+
+    it("deve gerar CPF aleatorio matematicamente valido segundo Modulo 11", () => {
+      for (let i = 0; i < 100; i++) {
+        const generated = generateRandomValidCPF();
+        expect(generated).toMatch(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);
+        expect(validateCPF(generated)).toBe(true);
+      }
     });
   });
 
