@@ -184,12 +184,10 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                     )}
                   </div>
 
-                  {/* 3. Sala correspondente */}
+                  {/* 3. Sala correspondente como texto normal */}
                   {hasSessions && film.roomName && (
-                    <div className="mt-1 mb-2.5">
-                      <span className="inline-block text-[11px] font-semibold text-slate-300 bg-white/[0.06] border border-white/10 px-2 py-0.5 rounded-md leading-none">
-                        {film.roomName}
-                      </span>
+                    <div className="mt-1 mb-2.5 flex items-center gap-1.5 text-xs text-slate-300">
+                      <span className="font-semibold text-white">{film.roomName}</span>
                     </div>
                   )}
 
@@ -207,7 +205,7 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                         return (
                           <div
                             key={session.id}
-                            className="flex flex-col items-center gap-1.5"
+                            className="flex flex-col items-stretch gap-1 w-full"
                           >
                             {/* Botão de Horário amplo com a tipografia oficial Poppins do CineDoom */}
                             <button
@@ -219,12 +217,12 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                               {timeStr}
                             </button>
 
-                            {/* Indicadores de Formato e Idioma alinhados ao respectivo botão */}
-                            <div className="flex items-center gap-1">
-                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 leading-tight">
+                            {/* Indicadores de Formato e Idioma divididos e ocupando 100% do espaço abaixo do botão */}
+                            <div className="grid grid-cols-2 gap-1 w-full">
+                              <span className="w-full text-center text-[10px] font-semibold py-0.5 px-1 rounded bg-white/10 text-slate-300 leading-tight">
                                 {format}
                               </span>
-                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-cta/20 text-cta leading-tight">
+                              <span className="w-full text-center text-[10px] font-semibold py-0.5 px-1 rounded bg-cta/20 text-cta leading-tight">
                                 {language}
                               </span>
                             </div>

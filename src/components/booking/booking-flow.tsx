@@ -1094,28 +1094,20 @@ export function BookingFlow({
                         key={roomName}
                         className="p-3.5 rounded-2xl bg-[#0B0F1A] border border-white/10 shadow-sm flex flex-col justify-start gap-2.5 hover:border-white/20 transition-all"
                       >
-                        {/* Header da Sala */}
+                        {/* Header da Sala com texto normal */}
                         <div className="flex items-center justify-between border-b border-white/10 pb-2">
                           <div className="flex items-center gap-1.5 truncate">
                             <MapPin className="w-3.5 h-3.5 text-cta shrink-0" />
-                            <h3 className="text-xs font-bold text-white uppercase tracking-wider truncate">
+                            <span className="text-xs font-semibold text-white tracking-wide truncate">
                               {displayName}
-                            </h3>
+                            </span>
                           </div>
-                          <span
-                            className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${
-                              category === "IMAX"
-                                ? "bg-sky-500/20 text-sky-300 border border-sky-500/30"
-                                : category === "VIP"
-                                ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                                : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                            }`}
-                          >
+                          <span className="text-[11px] font-medium text-slate-400">
                             {category}
                           </span>
                         </div>
 
-                        {/* Grade de Horários com Formato e Idioma embaixo (Padrão Oficial da Bilheteria) */}
+                        {/* Grade de Horários com Formato e Idioma divididos e ocupando 100% do espaço abaixo */}
                         <div className="grid grid-cols-2 gap-2 pt-0.5">
                           {roomSessions.map((sess) => {
                             const timeStr = new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
@@ -1129,7 +1121,7 @@ export function BookingFlow({
                             );
 
                             return (
-                              <div key={sess.id} className="flex flex-col items-center gap-1.5">
+                              <div key={sess.id} className="flex flex-col items-stretch gap-1 w-full">
                                 {/* Botão de Horário Amplo */}
                                 <button
                                   type="button"
@@ -1144,12 +1136,12 @@ export function BookingFlow({
                                   {timeStr}
                                 </button>
 
-                                {/* Badges de Formato e Idioma alinhados logo abaixo do botão */}
-                                <div className="flex items-center gap-1">
-                                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-white/10 text-slate-300 leading-tight">
+                                {/* Badges divididos e ocupando todo o espaço embaixo */}
+                                <div className="grid grid-cols-2 gap-1 w-full">
+                                  <span className="w-full text-center text-[10px] font-semibold py-0.5 px-1 rounded bg-white/10 text-slate-300 leading-tight">
                                     {format}
                                   </span>
-                                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-cta/20 text-cta leading-tight">
+                                  <span className="w-full text-center text-[10px] font-semibold py-0.5 px-1 rounded bg-cta/20 text-cta leading-tight">
                                     {language}
                                   </span>
                                 </div>
