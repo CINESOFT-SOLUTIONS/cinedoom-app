@@ -1048,14 +1048,14 @@ export function BookingFlow({
                         key={tab.index}
                         type="button"
                         onClick={() => setSelectedDateIndex(tab.index)}
-                        className={`flex flex-col items-center py-1.5 px-1 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex flex-col items-center py-1.5 px-1 rounded-xl text-xs font-semibold transition-all cursor-pointer font-sans ${
                           isSelected
                             ? "bg-cta text-white shadow-sm shadow-cta/30 scale-102"
                             : "bg-[#0A0E1A] hover:bg-white/10 text-slate-300 hover:text-white border border-white/10"
                         }`}
                       >
-                        <span className="text-[9px] uppercase tracking-wider">{tab.dayName}</span>
-                        <span className="text-xs font-bold font-mono">{tab.dayNumber}</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider">{tab.dayName}</span>
+                        <span className="text-xs font-bold leading-tight">{tab.dayNumber}</span>
                       </button>
                     );
                   })}
