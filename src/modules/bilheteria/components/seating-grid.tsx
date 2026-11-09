@@ -129,9 +129,8 @@ const SeatButton = React.memo(function SeatButton({
       data-testid={`seat-${code}`}
       data-seat-id={seat.id}
       data-status={effectiveStatus}
-      className={`group relative w-6 h-7 sm:w-7 sm:h-7.5 md:w-7.5 md:h-8 flex flex-col items-center justify-center transition-transform duration-150 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 select-none ${
-        isClickable ? "hover:scale-105 active:scale-95 cursor-pointer" : "cursor-not-allowed"
-      }`}
+      className={`group relative w-6 h-7 sm:w-7 sm:h-7.5 md:w-7.5 md:h-8 flex flex-col items-center justify-center transition-transform duration-150 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 select-none ${isClickable ? "hover:scale-105 active:scale-95 cursor-pointer" : "cursor-not-allowed"
+        }`}
     >
       {/* 1. Encosto superior ergonômico contínuo (unido diretamente ao assento, sem vão) */}
       <div
@@ -263,7 +262,7 @@ export function SeatingGrid({
 
               <div className="flex items-center gap-2 text-[9px] sm:text-[10px] font-bold tracking-widest uppercase text-gray-400 mt-0.5 shadow-[0_0_15px_rgba(233,69,96,0.6)]">
                 <Monitor className="w-3 h-3 text-[#E94560]" />
-                <span>TELA / PROJECAO</span>
+                <span>TELA</span>
               </div>
             </div>
           </div>

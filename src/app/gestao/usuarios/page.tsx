@@ -17,6 +17,7 @@ import {
   Lock,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { Pagination } from "@/components/ui/pagination";
 
 interface UserItem {
   id: string;
@@ -85,6 +86,7 @@ export default function GestaoUsuariosPage() {
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [users, setUsers] = useState<UserItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
   // Modal Novo Atendente (FRAME-7)
@@ -377,7 +379,10 @@ export default function GestaoUsuariosPage() {
               type="text"
               placeholder="Buscar operador por nome ou e-mail..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               className="w-full pl-10 pr-4 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 focus:outline-none border-borderDark focus:border-cta"
             />
           </div>
@@ -417,7 +422,9 @@ export default function GestaoUsuariosPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredUsers.map((u) => (
+                  filteredUsers
+                    .slice((currentPage - 1) * 20, currentPage * 20)
+                    .map((u) => (
                     <tr key={u.id} className="hover:bg-white/[0.03] transition-colors">
                       <td className="px-6 py-4 font-semibold text-white flex items-center gap-2">
                         <span>{u.name}</span>
@@ -487,6 +494,15 @@ export default function GestaoUsuariosPage() {
               </tbody>
             </table>
           </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredUsers.length}
+            pageSize={20}
+            onPageChange={setCurrentPage}
+            className="p-4"
+            itemLabel="usuários"
+          />
         </div>
       </main>
 

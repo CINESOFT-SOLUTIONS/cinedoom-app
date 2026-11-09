@@ -180,7 +180,7 @@ export function TicketModal({
                       : "bg-amber-500/20 text-amber-300 border border-amber-500/30 print:bg-neutral-100 print:text-black print:border-neutral-400"
                   }`}
                 >
-                  {isConfirmed ? "Emitido" : "Aguardando Baixa"}
+                  {isConfirmed ? "Confirmado" : "Aguardando Baixa"}
                 </span>
               ) : (
                 <div className="flex items-center gap-1.5 pt-0.5">

@@ -147,6 +147,26 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                       <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
                     )}
                   </Link>
+
+                  <Link
+                    href="/bilheteria/baixa-reserva"
+                    className="group relative py-1 text-sm md:text-[15px] font-semibold tracking-tight transition-colors flex flex-col items-center"
+                  >
+                    <span
+                      className={
+                        activePage === "baixa-reserva"
+                          ? "text-slate-950 font-bold group-hover:text-cta transition-colors"
+                          : "text-slate-600 hover:text-slate-950 font-medium transition-colors"
+                      }
+                    >
+                      Reservas
+                    </span>
+                    {activePage === "baixa-reserva" ? (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2.5px] bg-gradient-to-r from-cta to-rose-500 rounded-full shadow-[0_2px_6px_rgba(233,69,96,0.45)]" />
+                    ) : (
+                      <span className="absolute -bottom-1.5 left-0 right-0 h-[2px] bg-slate-300 scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
+                    )}
+                  </Link>
                 </>
               ) : (
                 <>
@@ -288,6 +308,17 @@ export function CineDoomHeader({ activePage = "filmes" }: CineDoomHeaderProps) {
                   }`}
                 >
                   Bilheteria
+                </Link>
+                <Link
+                  href="/bilheteria/baixa-reserva"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-colors ${
+                    activePage === "baixa-reserva"
+                      ? "bg-cta/10 text-cta font-bold"
+                      : "text-slate-800 hover:bg-slate-100/70"
+                  }`}
+                >
+                  Reservas
                 </Link>
               </>
             ) : (

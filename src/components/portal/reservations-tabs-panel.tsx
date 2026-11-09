@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Clock, Ticket, ExternalLink, CheckCircle2, History } from "lucide-react";
 import { getCanonicalRoomName } from "@/shared/experiences";
 import { TicketModal, type TicketVoucherData } from "@/components/tickets/ticket-modal";
+import { Pagination } from "@/components/ui/pagination";
 
 export interface ReservationItem {
   id: string;
@@ -48,9 +49,16 @@ export function ReservationsTabsPanel({
   const [activeTab, setActiveTab] = useState<"active" | "expired">("active");
   const [selectedVoucher, setSelectedVoucher] = useState<TicketVoucherData | null>(null);
   const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
 
   const displayedList = activeTab === "active" ? activeReservations : expiredReservations;
   const isCurrentExpired = activeTab === "expired";
+
+  const PAGE_SIZE = 20;
+  const paginatedList = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return displayedList.slice(start, start + PAGE_SIZE);
+  }, [displayedList, page]);
 
   const handleOpenVoucherModal = async (res: ReservationItem) => {
     // Carrega dados ricos do voucher via API com fallback para os dados locais da reserva
@@ -97,7 +105,10 @@ export function ReservationsTabsPanel({
       <div className="flex items-center gap-2 border-b border-white/10 pb-0">
         <button
           type="button"
-          onClick={() => setActiveTab("active")}
+          onClick={() => {
+            setActiveTab("active");
+            setPage(1);
+          }}
           className={`group relative flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-all cursor-pointer rounded-t-xl outline-none focus-visible:ring-2 focus-visible:ring-cta ${
             activeTab === "active"
               ? "bg-white/10 text-white font-bold"
@@ -119,7 +130,10 @@ export function ReservationsTabsPanel({
 
         <button
           type="button"
-          onClick={() => setActiveTab("expired")}
+          onClick={() => {
+            setActiveTab("expired");
+            setPage(1);
+          }}
           className={`group relative flex items-center gap-2 px-5 py-3 text-sm font-semibold transition-all cursor-pointer rounded-t-xl outline-none focus-visible:ring-2 focus-visible:ring-cta ${
             activeTab === "expired"
               ? "bg-white/10 text-white font-bold"
@@ -156,100 +170,110 @@ export function ReservationsTabsPanel({
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {displayedList.map((res) => {
-            const sessionDT = formatSessionDateTime(res.session.startsAt);
-            const seatList = res.sessionSeats.map((s) => s.seat.seatCode).join(", ");
-            const isConfirmed = res.status === "CONFIRMED";
+        <>
+          <div className="space-y-3">
+            {paginatedList.map((res) => {
+              const sessionDT = formatSessionDateTime(res.session.startsAt);
+              const seatList = res.sessionSeats.map((s) => s.seat.seatCode).join(", ");
+              const isConfirmed = res.status === "CONFIRMED";
 
-            return (
-              <div
-                key={res.id}
-                onClick={() => handleOpenVoucherModal(res)}
-                className={`group w-full rounded-2xl liquid-glass-card transition-all duration-200 border ${
-                  isCurrentExpired
-                    ? "opacity-75 border-white/5 hover:opacity-95 hover:border-white/20 hover:bg-white/[0.04]"
-                    : "border-white/10 hover:border-white/30 hover:shadow-xl hover:shadow-black/30 hover:bg-white/[0.06]"
-                } p-4 sm:p-5 cursor-pointer`}
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  {/* Bloco Principal: Informações essenciais do filme e sessão */}
-                  <div className="space-y-2 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3
-                        className={`text-base font-bold tracking-tight truncate ${
-                          isCurrentExpired ? "text-slate-300" : "text-white"
-                        } group-hover:text-cta transition-colors`}
-                      >
-                        {res.session.film.title}
-                      </h3>
-                      {!isCurrentExpired && (
-                        <span className="text-[11px] font-semibold text-cta bg-cta/10 border border-cta/25 px-2 py-0.5 rounded-full">
-                          {getCanonicalRoomName(res.session.room.name)}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Dados contextuais essenciais em uma linha legível */}
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-cta shrink-0" />
-                        <span>
-                          {sessionDT.date} às{" "}
-                          <strong className="text-white font-medium">{sessionDT.time}</strong>
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <Ticket className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>
-                          Assentos:{" "}
-                          <strong className="text-white font-mono">{seatList}</strong>
-                        </span>
-                      </div>
-
-                      <div className="text-slate-400">
-                        Código:{" "}
-                        <strong className="text-white font-mono">{res.code}</strong>
-                      </div>
-
-                      <div className="text-slate-400">
-                        Total:{" "}
-                        <strong className="font-semibold text-white">
-                          R$ {Number(res.totalPrice).toFixed(2)}
-                        </strong>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bloco Lateral: Status e Botão "Ver Mais" */}
-                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2.5 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-white/10">
-                    {!isCurrentExpired && (
-                      <div className="flex items-center">
-                        <span
-                          className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
-                            isConfirmed
-                              ? "bg-emerald-500/15 text-emerald-400"
-                              : "bg-amber-500/15 text-amber-300"
-                          }`}
+              return (
+                <div
+                  key={res.id}
+                  onClick={() => handleOpenVoucherModal(res)}
+                  className={`group w-full rounded-2xl liquid-glass-card transition-all duration-200 border ${
+                    isCurrentExpired
+                      ? "opacity-75 border-white/5 hover:opacity-95 hover:border-white/20 hover:bg-white/[0.04]"
+                      : "border-white/10 hover:border-white/30 hover:shadow-xl hover:shadow-black/30 hover:bg-white/[0.06]"
+                  } p-4 sm:p-5 cursor-pointer`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    {/* Bloco Principal: Informações essenciais do filme e sessão */}
+                    <div className="space-y-2 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3
+                          className={`text-base font-bold tracking-tight truncate ${
+                            isCurrentExpired ? "text-slate-300" : "text-white"
+                          } group-hover:text-cta transition-colors`}
                         >
-                          {isConfirmed ? "Confirmada" : "Aguardando retirada"}
-                        </span>
+                          {res.session.film.title}
+                        </h3>
+                        {!isCurrentExpired && (
+                          <span className="text-[11px] font-semibold text-cta bg-cta/10 border border-cta/25 px-2 py-0.5 rounded-full">
+                            {getCanonicalRoomName(res.session.room.name)}
+                          </span>
+                        )}
                       </div>
-                    )}
 
-                    <div
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/10 group-hover:bg-cta group-hover:border-cta/40 group-hover:text-white border border-white/15 text-white font-semibold text-xs transition-all shadow-sm"
-                    >
-                      <span>Ver Mais</span>
-                      <ExternalLink className="w-3.5 h-3.5 text-slate-300 group-hover:text-white transition-colors" />
+                      {/* Dados contextuais essenciais em uma linha legível */}
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-300">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-cta shrink-0" />
+                          <span>
+                            {sessionDT.date} às{" "}
+                            <strong className="text-white font-medium">{sessionDT.time}</strong>
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <Ticket className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <span>
+                            Assentos:{" "}
+                            <strong className="text-white font-mono">{seatList}</strong>
+                          </span>
+                        </div>
+
+                        <div className="text-slate-400">
+                          Código:{" "}
+                          <strong className="text-white font-mono">{res.code}</strong>
+                        </div>
+
+                        <div className="text-slate-400">
+                          Total:{" "}
+                          <strong className="font-semibold text-white">
+                            R$ {Number(res.totalPrice).toFixed(2)}
+                          </strong>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bloco Lateral: Status e Botão "Ver Mais" */}
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2.5 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-white/10">
+                      {!isCurrentExpired && (
+                        <div className="flex items-center">
+                          <span
+                            className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                              isConfirmed
+                                ? "bg-emerald-500/15 text-emerald-400"
+                                : "bg-amber-500/15 text-amber-300"
+                            }`}
+                          >
+                            {isConfirmed ? "Confirmada" : "Aguardando retirada"}
+                          </span>
+                        </div>
+                      )}
+
+                      <div
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/10 group-hover:bg-cta group-hover:border-cta/40 group-hover:text-white border border-white/15 text-white font-semibold text-xs transition-all shadow-sm"
+                      >
+                        <span>Ver Mais</span>
+                        <ExternalLink className="w-3.5 h-3.5 text-slate-300 group-hover:text-white transition-colors" />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+
+          <Pagination
+            currentPage={page}
+            totalItems={displayedList.length}
+            pageSize={PAGE_SIZE}
+            onPageChange={setPage}
+            itemLabel="reservas"
+          />
+        </>
       )}
 
       {/* Modal Canônico do Ingresso / Voucher do Cliente */}

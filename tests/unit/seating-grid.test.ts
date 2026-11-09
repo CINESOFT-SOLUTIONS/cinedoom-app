@@ -13,7 +13,7 @@ describe("Componente SeatingGrid - Design System & Estados Cromáticos (TASK-17 
   ];
 
   describe("Estrutura e Elementos Visuais", () => {
-    it("renderiza o indicador visual da tela de cinema (TELA / PROJECAO)", () => {
+    it("renderiza o indicador visual da tela de cinema (TELA)", () => {
       const html = renderToStaticMarkup(
         React.createElement(SeatingGrid, {
           seats: mockSeats,
@@ -21,7 +21,7 @@ describe("Componente SeatingGrid - Design System & Estados Cromáticos (TASK-17 
         })
       );
 
-      expect(html).toContain("TELA / PROJECAO");
+      expect(html).toContain("TELA");
       expect(html).toContain("shadow-[0_0_15px_rgba(233,69,96,0.6)]");
     });
 

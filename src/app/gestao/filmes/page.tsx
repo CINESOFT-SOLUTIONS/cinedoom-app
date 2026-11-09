@@ -15,6 +15,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
+import { Pagination } from "@/components/ui/pagination";
 
 interface FilmItem {
   id: string;
@@ -46,6 +47,7 @@ export default function CatalogoFilmesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFilm, setEditingFilm] = useState<FilmItem | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Form states
   const [title, setTitle] = useState("");
@@ -322,7 +324,10 @@ export default function CatalogoFilmesPage() {
               type="text"
               placeholder="Buscar filme por título..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
               className="w-full pl-10 pr-4 py-2.5 text-sm liquid-glass-input rounded-xl text-white placeholder-slate-500 focus:outline-none border-borderDark focus:border-cta"
             />
           </div>
@@ -363,11 +368,13 @@ export default function CatalogoFilmesPage() {
                     </td>
                   </tr>
                 ) : (
-                  films.map((film) => (
-                    <tr
-                      key={film.id}
-                      className="hover:bg-white/[0.03] transition-colors group"
-                    >
+                  films
+                    .slice((currentPage - 1) * 20, currentPage * 20)
+                    .map((film) => (
+                      <tr
+                        key={film.id}
+                        className="hover:bg-white/[0.03] transition-colors group"
+                      >
                       <td className="py-3.5 px-5">
                         <div className="flex items-center gap-3">
                           {film.posterUrl ? (
@@ -432,6 +439,15 @@ export default function CatalogoFilmesPage() {
               </tbody>
             </table>
           </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalItems={films.length}
+            pageSize={20}
+            onPageChange={setCurrentPage}
+            className="p-4"
+            itemLabel="filmes"
+          />
         </div>
       </main>
 

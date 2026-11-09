@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/modules/auth/auth-options";
 import { rawPrisma } from "@/shared/db/prisma";
-import { toggleSeatMaintenance } from "@/modules/portal/mock-cinema-data";
+import { toggleSeatMaintenance, isSeatBlockedForMaintenance } from "@/modules/portal/mock-cinema-data";
 
 interface RouteParams {
   params: {
@@ -55,6 +55,20 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
           where: { id: seat.id },
           data: { status: nextStatus },
         });
+
+        // Sincroniza também no cache em memória para consistência total entre DB e mocks
+        const normalizedCode = updated.seatCode || seat.seatCode;
+        if (nextStatus === "AVAILABLE") {
+          // Garante remoção em caso de desbloqueio
+          if (isSeatBlockedForMaintenance(normalizedCode, roomId)) {
+            toggleSeatMaintenance(normalizedCode, roomId);
+          }
+        } else {
+          // Garante adição em caso de bloqueio
+          if (!isSeatBlockedForMaintenance(normalizedCode, roomId)) {
+            toggleSeatMaintenance(normalizedCode, roomId);
+          }
+        }
 
         // Sincroniza em sessões abertas/agendadas futuras
         const openSessions = await rawPrisma.session.findMany({

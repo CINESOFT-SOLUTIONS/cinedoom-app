@@ -533,7 +533,11 @@ export function BookingFlow({
         if (saved.ticketQuantities) setTicketQuantities(saved.ticketQuantities);
         if (saved.selectedSessionId) setSelectedSessionId(saved.selectedSessionId);
         if (saved.currentStep && saved.currentStep >= 2) {
-          setCurrentStep(saved.currentStep as BookingStep);
+          // Se o usuário salvo estava no resumo (passo 4 ou 5) mas não está logado, trava na etapa 3 (Ingressos)
+          const targetStep = (!isAttendantOrManager && authStatus === "unauthenticated" && saved.currentStep >= 4)
+            ? 3
+            : saved.currentStep;
+          setCurrentStep(targetStep as BookingStep);
         }
       } else if (saved.holdExpiresAt && saved.holdExpiresAt <= Date.now()) {
         // Expirou
@@ -739,6 +743,13 @@ export function BookingFlow({
       return;
     }
 
+    // Se o cliente não estiver logado, exige obrigatoriamente login antes de avançar para o Resumo
+    if (!isAttendantOrManager && authStatus !== "authenticated") {
+      openLogin({ redirectOnLogin: false });
+      setErrorNotice("É necessário entrar ou criar uma conta para avançar para o resumo e confirmar sua reserva.");
+      return;
+    }
+
     // Se for atendente/gerente, a próxima etapa é a Etapa 4 (Forma de Pagamento)
     // Se for cliente, avança direto para o Resumo (Etapa 4 do cliente, ou seja, step 4)
     saveStateToStorage(4);
@@ -757,6 +768,13 @@ export function BookingFlow({
 
   const handleConfirmReservation = async () => {
     setErrorNotice(null);
+
+    // Verificação de segurança: cliente deve estar autenticado para confirmar
+    if (!isAttendantOrManager && authStatus !== "authenticated") {
+      openLogin({ redirectOnLogin: false });
+      setErrorNotice("Você precisa estar logado para confirmar sua reserva.");
+      return;
+    }
 
     if (isHoldExpired) {
       setErrorNotice("O tempo de bloqueio de 10 minutos expirou. Por favor, reinicie a seleção de poltronas.");

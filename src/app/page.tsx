@@ -12,6 +12,7 @@ import { FilmModal } from "@/components/home/film-modal";
 import { InstitutionalBanner } from "@/components/home/institutional-banner";
 import { AttendantSalesCounter } from "@/components/attendant/attendant-sales-counter";
 import { abandonPreviousReservationIfDifferent } from "@/components/booking/reservation-lifecycle";
+import { Pagination } from "@/components/ui/pagination";
 import type { FilmItem } from "@/components/home/types";
 import { Film } from "lucide-react";
 
@@ -26,6 +27,7 @@ export default function CinemarkStyleHomePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDay, setSelectedDay] = useState<number>(0);
   const [selectedModalFilm, setSelectedModalFilm] = useState<FilmItem | null>(null);
+  const [filmsPage, setFilmsPage] = useState<number>(1);
 
   // Redireciona Gerente para a área administrativa se acessar a raiz
   useEffect(() => {
@@ -147,9 +149,15 @@ export default function CinemarkStyleHomePage() {
       <FilmFilters
         dateTabs={dateTabs}
         selectedDay={selectedDay}
-        onSelectDay={setSelectedDay}
+        onSelectDay={(day) => {
+          setSelectedDay(day);
+          setFilmsPage(1);
+        }}
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={(query) => {
+          setSearchQuery(query);
+          setFilmsPage(1);
+        }}
       />
 
       {/* 4. Galeria Compacta de Pôsteres de Cinema */}
@@ -183,20 +191,32 @@ export default function CinemarkStyleHomePage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
-            {filteredFilms.map((film) => (
-              <FilmCard
-                key={film.id}
-                film={film}
-                onOpenSessions={(f) => {
-                  abandonPreviousReservationIfDifferent(f.id);
-                  router.push(`/portal/reservas?filmeId=${f.id}&dia=${selectedDay}`);
-                }}
-                onOpenDetails={(f) => {
-                  setSelectedModalFilm(f);
-                }}
-              />
-            ))}
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+              {filteredFilms
+                .slice((filmsPage - 1) * 20, filmsPage * 20)
+                .map((film) => (
+                  <FilmCard
+                    key={film.id}
+                    film={film}
+                    onOpenSessions={(f) => {
+                      abandonPreviousReservationIfDifferent(f.id);
+                      router.push(`/portal/reservas?filmeId=${f.id}&dia=${selectedDay}`);
+                    }}
+                    onOpenDetails={(f) => {
+                      setSelectedModalFilm(f);
+                    }}
+                  />
+                ))}
+            </div>
+
+            <Pagination
+              currentPage={filmsPage}
+              totalItems={filteredFilms.length}
+              pageSize={20}
+              onPageChange={setFilmsPage}
+              itemLabel="filmes"
+            />
           </div>
         )}
 

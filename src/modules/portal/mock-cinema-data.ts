@@ -264,10 +264,22 @@ if (process.env.NODE_ENV !== "production") {
 
 export function getMaintenanceKey(roomId?: string): string {
   if (!roomId) return "DEFAULT";
-  // Se for UUID de sala mock canônica ou ID genérico, normaliza para associar por número de sala também
+  // Normaliza identificadores (ex: UUID oficial, aliases com sala 01, sala 1, sala-01, sala-1)
+  const lower = roomId.toLowerCase().trim();
   for (let i = 0; i < MOCK_ROOMS.length; i++) {
     const r = MOCK_ROOMS[i];
-    if (r.id === roomId || roomId.includes(`020${i + 1}`) || roomId.includes(`sala-0${i + 1}`) || roomId.toLowerCase().includes(`sala 0${i + 1}`)) {
+    const roomNum = i + 1;
+    if (
+      r.id === roomId ||
+      lower.includes(`020${roomNum}`) ||
+      lower.includes(`sala-0${roomNum}`) ||
+      lower.includes(`sala 0${roomNum}`) ||
+      lower.includes(`sala-${roomNum}`) ||
+      lower.includes(`sala ${roomNum}`) ||
+      lower.includes(`00000000001${roomNum}`) ||
+      lower === `${roomNum}` ||
+      lower === `0${roomNum}`
+    ) {
       return r.id;
     }
   }
@@ -285,10 +297,21 @@ export function toggleSeatMaintenance(seatCodeOrId: string, roomId?: string): bo
   }
 
   const roomBlockedSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get(roomKey)!;
-  if (roomBlockedSet.has(code)) {
+  const isCurrentlyBlocked = isSeatBlockedForMaintenance(code, roomId);
+
+  if (isCurrentlyBlocked) {
+    // Desbloqueio: remove da sala canônica, da sala bruta e da chave DEFAULT
     roomBlockedSet.delete(code);
+    if (roomId && ROOM_MAINTENANCE_BLOCKED_SEATS.has(roomId)) {
+      ROOM_MAINTENANCE_BLOCKED_SEATS.get(roomId)?.delete(code);
+    }
+    const defaultSet = ROOM_MAINTENANCE_BLOCKED_SEATS.get("DEFAULT");
+    if (defaultSet) {
+      defaultSet.delete(code);
+    }
     return false;
   } else {
+    // Bloqueio
     roomBlockedSet.add(code);
     return true;
   }

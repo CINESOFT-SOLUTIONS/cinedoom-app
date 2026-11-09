@@ -1,24 +1,27 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import React, { useState, useEffect, useTransition, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Calendar,
+  Calendar as CalendarIcon,
   Clock,
   Plus,
   Trash2,
-  Edit2,
   AlertCircle,
   CheckCircle,
   X,
   ArrowLeft,
   Film as FilmIcon,
+  ChevronLeft,
+  ChevronRight,
+  Settings,
   Sparkles,
 } from "lucide-react";
 import { CineDoomHeader } from "@/components/cinedoom-header";
 import { CineDoomFooter } from "@/components/cinedoom-footer";
 import { getCanonicalRoomName } from "@/shared/experiences";
+import { Pagination } from "@/components/ui/pagination";
 
 const OFFICIAL_CATALOG_FILM_IDS = new Set([
   "00000000-0000-4000-a000-000000000101",
@@ -33,21 +36,6 @@ const FALLBACK_ROOMS_LIST: RoomItem[] = [
   { id: "00000000-0000-4000-a000-000000000013", name: "Sala 03", capacity: 120 },
   { id: "00000000-0000-4000-a000-000000000014", name: "Sala 04", capacity: 40 },
 ];
-
-function formatSessionStatusLabel(status: SessionItem["status"]): string {
-  switch (status) {
-    case "OPEN":
-      return "Aberta";
-    case "SCHEDULED":
-      return "Agendada";
-    case "CLOSED":
-      return "Encerrada";
-    case "CANCELLED":
-      return "Cancelada";
-    default:
-      return status;
-  }
-}
 
 interface FilmItem {
   id: string;
@@ -82,46 +70,34 @@ interface SessionItem {
   };
 }
 
-interface FormErrors {
-  filmId?: string;
-  roomId?: string;
-  startsAt?: string;
-  price?: string;
-  general?: string;
-}
-
-export default function SessoesGestaoInteligentePage() {
+export default function ProgramacaoSessoesPage() {
   const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [films, setFilms] = useState<FilmItem[]>([]);
   const [rooms, setRooms] = useState<RoomItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Filtro inteligente de filme selecionado
-  const [selectedFilmId, setSelectedFilmId] = useState<string>("ALL");
+  // Mês e Ano de navegação do calendário
+  const [viewDate, setViewDate] = useState(() => new Date());
 
-  // Filtro de mês / período
-  const [currentYearMonth, setCurrentYearMonth] = useState(() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-  });
+  // Filme atualmente selecionado para gerenciar programação (null = visão geral)
+  const [selectedFilmForSchedule, setSelectedFilmForSchedule] = useState<FilmItem | null>(null);
+  const [filmsPage, setFilmsPage] = useState<number>(1);
 
-  // Modal de edição pontual
-  const [editingSession, setEditingSession] = useState<SessionItem | null>(null);
-  const [sessionStatus, setSessionStatus] = useState<string>("SCHEDULED");
-  const [singleStartsAt, setSingleStartsAt] = useState("");
-  const [singlePrice, setSinglePrice] = useState("30.00");
-  const [formErrors, setFormErrors] = useState<FormErrors>({});
+  // Dias selecionados no calendário para lote
+  const [batchSelectedDays, setBatchSelectedDays] = useState<number[]>([]);
 
-  // Modal inteligente de programação de sessões para o filme (Multi-dias & horários)
-  const [isSmartSchedulerOpen, setIsSmartSchedulerOpen] = useState(false);
-  const [targetFilm, setTargetFilm] = useState<FilmItem | null>(null);
-  const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const [selectedRoomId, setSelectedRoomId] = useState<string>("");
-  const [scheduleTimes, setScheduleTimes] = useState<string[]>(["14:00", "17:30", "20:30"]);
+  // Configuração da programação para aplicar aos dias selecionados
+  const [batchRoomId, setBatchRoomId] = useState<string>("");
+  const [batchTimes, setBatchTimes] = useState<string[]>(["14:00", "17:30", "20:30"]);
   const [newTimeInput, setNewTimeInput] = useState("");
-  const [smartPrice, setSmartPrice] = useState("30.00");
+  const [batchPrice, setBatchPrice] = useState("30.00");
 
+  // Dia ativo para inspeção detalhada
+  const [activeDayDetail, setActiveDayDetail] = useState<number | null>(null);
+
+  // Notificações e feedback
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const normalizeSessionItem = (s: any): SessionItem => {
@@ -170,25 +146,10 @@ export default function SessoesGestaoInteligentePage() {
         }
       }
 
-      const now = new Date();
-      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-
       if (resSessions.ok) {
         const data = await resSessions.json();
         if (Array.isArray(data) && data.length > 0) {
-          const validSessions = data
-            .map(normalizeSessionItem)
-            .filter((s: SessionItem) => new Date(s.startsAt) >= startOfToday)
-            .sort(
-              (a: SessionItem, b: SessionItem) =>
-                new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
-            );
-
-          if (validSessions.length > 0) {
-            setSessions(validSessions);
-          } else {
-            await loadPortalSessionsFallback();
-          }
+          setSessions(data.map(normalizeSessionItem));
         } else {
           await loadPortalSessionsFallback();
         }
@@ -207,34 +168,25 @@ export default function SessoesGestaoInteligentePage() {
       const portalRes = await fetch("/api/portal/filmes");
       if (portalRes.ok) {
         const filmsData = await portalRes.json();
-        const now = new Date();
-        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-
-        const flattened: SessionItem[] = (filmsData || [])
-          .flatMap((f: any) =>
-            (f.sessions || []).map((s: any) =>
-              normalizeSessionItem({
-                id: s.id,
-                filmId: f.id,
-                roomId: s.room.id,
-                startsAt: s.startsAt,
-                price: s.price,
-                status: s.status || "OPEN",
-                film: {
-                  id: f.id,
-                  title: f.title,
-                  durationMinutes: f.duration || f.durationMinutes || 120,
-                  posterUrl: f.posterUrl,
-                },
-                room: s.room,
-              })
-            )
+        const flattened: SessionItem[] = (filmsData || []).flatMap((f: any) =>
+          (f.sessions || []).map((s: any) =>
+            normalizeSessionItem({
+              id: s.id,
+              filmId: f.id,
+              roomId: s.room.id,
+              startsAt: s.startsAt,
+              price: s.price,
+              status: s.status || "OPEN",
+              film: {
+                id: f.id,
+                title: f.title,
+                durationMinutes: f.duration || f.durationMinutes || 120,
+                posterUrl: f.posterUrl,
+              },
+              room: s.room,
+            })
           )
-          .filter((s: SessionItem) => new Date(s.startsAt) >= startOfToday)
-          .sort(
-            (a: SessionItem, b: SessionItem) =>
-              new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime()
-          );
+        );
 
         if (flattened.length > 0) {
           setSessions(flattened);
@@ -260,79 +212,140 @@ export default function SessoesGestaoInteligentePage() {
     fetchData();
   }, []);
 
-  // Dias do mês atual para o seletor inteligente
-  const [selectedYear, selectedMonth] = currentYearMonth.split("-").map(Number);
-  const daysInCurrentMonth = new Date(selectedYear, selectedMonth, 0).getDate();
-  const daysList = Array.from({ length: daysInCurrentMonth }, (_, i) => i + 1);
+  // Define sala padrão se não houver selecionada
+  useEffect(() => {
+    if (rooms.length > 0 && !batchRoomId) {
+      setBatchRoomId(rooms[0].id);
+    }
+  }, [rooms, batchRoomId]);
 
-  // Abre agendamento inteligente por filme
-  const handleOpenSmartScheduler = (film: FilmItem) => {
-    setTargetFilm(film);
-    setSelectedDays([]);
-    setSelectedRoomId(rooms[0]?.id || "");
-    setScheduleTimes(["14:00", "17:30", "20:30"]);
-    setSmartPrice(OFFICIAL_CATALOG_FILM_IDS.has(film.id) ? "30.00" : "30.00");
-    setFormErrors({});
-    setIsSmartSchedulerOpen(true);
+  // Constantes de data para o calendário
+  const currentYear = viewDate.getFullYear();
+  const currentMonth = viewDate.getMonth(); // 0 a 11
+
+  const monthName = viewDate.toLocaleDateString("pt-BR", { month: "long" });
+  const capitalizedMonthName = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+  // Primeiro dia da semana do mês e total de dias
+  const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay(); // 0 = Domingo
+  const totalDaysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  // Navegar meses
+  const handlePrevMonth = () => {
+    setViewDate(new Date(currentYear, currentMonth - 1, 1));
+    setBatchSelectedDays([]);
+    setActiveDayDetail(null);
   };
 
-  const handleToggleDay = (day: number) => {
-    setSelectedDays((prev) =>
+  const handleNextMonth = () => {
+    setViewDate(new Date(currentYear, currentMonth + 1, 1));
+    setBatchSelectedDays([]);
+    setActiveDayDetail(null);
+  };
+
+  // Mapa de sessões do filme selecionado agrupadas por dia do mês
+  const filmSessionsByDay = useMemo(() => {
+    if (!selectedFilmForSchedule) return new Map<number, SessionItem[]>();
+
+    const map = new Map<number, SessionItem[]>();
+    sessions.forEach((s) => {
+      const matchFilm = s.filmId === selectedFilmForSchedule.id || s.film?.id === selectedFilmForSchedule.id;
+      if (!matchFilm) return;
+
+      const d = new Date(s.startsAt);
+      if (d.getFullYear() === currentYear && d.getMonth() === currentMonth) {
+        const dayNumber = d.getDate();
+        const currentList = map.get(dayNumber) || [];
+        map.set(dayNumber, [...currentList, s]);
+      }
+    });
+
+    return map;
+  }, [sessions, selectedFilmForSchedule, currentYear, currentMonth]);
+
+  // Estatísticas resumidas de cada filme
+  const filmSummaries = useMemo(() => {
+    return films.map((film) => {
+      const filmSessions = sessions.filter(
+        (s) => s.filmId === film.id || s.film?.id === film.id
+      );
+
+      // Quantidade de dias distintos com sessões
+      const distinctDaysSet = new Set(
+        filmSessions.map((s) => {
+          const d = new Date(s.startsAt);
+          return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+        })
+      );
+
+      return {
+        film,
+        distinctDaysCount: distinctDaysSet.size,
+        totalSessionsCount: filmSessions.length,
+      };
+    });
+  }, [films, sessions]);
+
+  // Seleção e alternância de dias
+  const toggleDaySelection = (day: number) => {
+    setBatchSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort((a, b) => a - b)
     );
+    setActiveDayDetail(day);
   };
 
-  const handleSelectAllDays = () => {
-    if (selectedDays.length === daysList.length) {
-      setSelectedDays([]);
+  const selectAllDaysInMonth = () => {
+    if (batchSelectedDays.length === totalDaysInMonth) {
+      setBatchSelectedDays([]);
     } else {
-      setSelectedDays(daysList);
+      setBatchSelectedDays(Array.from({ length: totalDaysInMonth }, (_, i) => i + 1));
     }
   };
 
   const handleAddTime = () => {
     if (!newTimeInput) return;
-    if (!scheduleTimes.includes(newTimeInput)) {
-      setScheduleTimes((prev) => [...prev, newTimeInput].sort());
+    if (!batchTimes.includes(newTimeInput)) {
+      setBatchTimes((prev) => [...prev, newTimeInput].sort());
     }
     setNewTimeInput("");
   };
 
   const handleRemoveTime = (timeToRemove: string) => {
-    setScheduleTimes((prev) => prev.filter((t) => t !== timeToRemove));
+    setBatchTimes((prev) => prev.filter((t) => t !== timeToRemove));
   };
 
-  // Salvar sessões em lote criadas pelo agendador inteligente
-  const handleSaveSmartBatch = async () => {
-    if (!targetFilm) return;
-    if (selectedDays.length === 0) {
-      setFormErrors({ general: "Selecione ao menos um dia do mês para programar as sessões." });
+  // Salvar programação em lote para o filme
+  const handleApplyScheduleToSelectedDays = async () => {
+    if (!selectedFilmForSchedule) return;
+    if (batchSelectedDays.length === 0) {
+      setActionError("Selecione ao menos um dia no calendário para aplicar a programação.");
       return;
     }
-    if (scheduleTimes.length === 0) {
-      setFormErrors({ general: "Adicione ao menos um horário para as sessões." });
+    if (batchTimes.length === 0) {
+      setActionError("Defina ao menos um horário para as sessões.");
       return;
     }
-    if (!selectedRoomId) {
-      setFormErrors({ general: "Selecione uma sala de exibição." });
+    if (!batchRoomId) {
+      setActionError("Selecione a sala de exibição.");
       return;
     }
 
     startTransition(async () => {
-      setFormErrors({});
+      setActionError(null);
+      setActionSuccess(null);
       let successCount = 0;
       let conflictCount = 0;
 
-      for (const day of selectedDays) {
-        for (const time of scheduleTimes) {
+      for (const day of batchSelectedDays) {
+        for (const time of batchTimes) {
           const [hours, minutes] = time.split(":").map(Number);
-          const dateObj = new Date(selectedYear, selectedMonth - 1, day, hours, minutes, 0, 0);
+          const dateObj = new Date(currentYear, currentMonth, day, hours, minutes, 0, 0);
 
           const payload = {
-            filmId: targetFilm.id,
-            roomId: selectedRoomId,
+            filmId: selectedFilmForSchedule.id,
+            roomId: batchRoomId,
             startsAt: dateObj.toISOString(),
-            price: Number(smartPrice) || 30.0,
+            price: Number(batchPrice) || 30.0,
           };
 
           try {
@@ -353,26 +366,42 @@ export default function SessoesGestaoInteligentePage() {
         }
       }
 
-      setIsSmartSchedulerOpen(false);
       setActionSuccess(
-        `Programação concluída: ${successCount} sessões criadas com sucesso para "${targetFilm.title}".` +
-          (conflictCount > 0 ? ` (${conflictCount} ignoradas por conflito de horário na sala)` : "")
+        `Programação aplicada: ${successCount} sessões criadas com sucesso.` +
+          (conflictCount > 0 ? ` (${conflictCount} ignoradas por conflito de horário/sala).` : "")
       );
-      fetchData();
+      setBatchSelectedDays([]);
+      await fetchData();
     });
   };
 
-  // Excluir sessão individual
-  const handleDeleteSession = async (session: SessionItem) => {
-    if (
-      !confirm(
-        `Deseja realmente cancelar/excluir a sessão do filme "${session.film.title}" às ${new Date(
-          session.startsAt
-        ).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}?`
-      )
-    ) {
+  // Remover todas as sessões de um dia específico
+  const handleRemoveAllSessionsOfDay = async (dayNumber: number) => {
+    const sessionsOfDay = filmSessionsByDay.get(dayNumber) || [];
+    if (sessionsOfDay.length === 0) return;
+
+    if (!confirm(`Remover as ${sessionsOfDay.length} sessões programadas para o dia ${dayNumber}?`)) {
       return;
     }
+
+    startTransition(async () => {
+      let removed = 0;
+      for (const sess of sessionsOfDay) {
+        try {
+          const res = await fetch(`/api/sessoes/${sess.id}`, { method: "DELETE" });
+          if (res.status === 204) removed++;
+        } catch {
+          // Continua
+        }
+      }
+      setActionSuccess(`${removed} sessões removidas do dia ${dayNumber}.`);
+      await fetchData();
+    });
+  };
+
+  // Excluir sessão pontual
+  const handleDeleteSingleSession = async (session: SessionItem) => {
+    if (!confirm(`Excluir esta sessão?`)) return;
 
     try {
       const res = await fetch(`/api/sessoes/${session.id}`, { method: "DELETE" });
@@ -381,111 +410,48 @@ export default function SessoesGestaoInteligentePage() {
         fetchData();
       } else {
         const data = await res.json();
-        alert(data.error || "Não foi possível excluir a sessão.");
+        setActionError(data.error || "Não foi possível excluir a sessão.");
       }
     } catch {
-      alert("Erro ao tentar excluir a sessão.");
+      setActionError("Erro de comunicação ao excluir sessão.");
     }
   };
-
-  // Edição pontual
-  const handleOpenEditModal = (sess: SessionItem) => {
-    setEditingSession(sess);
-    setSessionStatus(sess.status);
-    const d = new Date(sess.startsAt);
-    const tzOffset = d.getTimezoneOffset() * 60000;
-    const localISOTime = new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
-    setSingleStartsAt(localISOTime);
-    setSinglePrice(String(sess.price));
-    setFormErrors({});
-  };
-
-  const handleSaveEditSession = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingSession) return;
-
-    startTransition(async () => {
-      try {
-        const res = await fetch(`/api/sessoes/${editingSession.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            status: sessionStatus,
-            startsAt: new Date(singleStartsAt).toISOString(),
-            price: Number(singlePrice),
-          }),
-        });
-
-        if (res.ok) {
-          setEditingSession(null);
-          setActionSuccess("Sessão atualizada com sucesso!");
-          fetchData();
-        } else {
-          const data = await res.json();
-          setFormErrors({ general: data.error || "Erro ao editar sessão." });
-        }
-      } catch {
-        setFormErrors({ general: "Erro de conexão ao salvar sessão." });
-      }
-    });
-  };
-
-  // Agrupamento inteligente das sessões por filme
-  const filteredFilmsList =
-    selectedFilmId === "ALL" ? films : films.filter((f) => f.id === selectedFilmId);
 
   return (
     <div className="min-h-screen bg-[#0E1322] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
       <CineDoomHeader activePage="gestao" />
 
-      <main className="max-w-7xl mx-auto px-4 py-8 space-y-6 flex-1 w-full">
-        {/* Barra de Ações & Título */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-borderDark/60">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 flex-1 w-full">
+        {/* Cabeçalho da Página */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-borderDark/60">
           <div className="flex items-center gap-3">
             <Link
               href="/gestao"
               className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
-              title="Voltar ao Painel"
+              title="Voltar ao Painel Geral"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div className="w-10 h-10 rounded-xl bg-cta/15 text-cta border border-cta/30 flex items-center justify-center shadow-lg shadow-cta/10">
-              <Calendar className="w-5 h-5" />
+              <CalendarIcon className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">Programação de Sessões</h1>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                Programação de Sessões
+              </h1>
               <p className="text-xs text-slate-400">
-                Configure os dias do mês, salas e horários agrupados de forma inteligente por filme
+                Gerencie os dias e horários de exibição mensal organizados por filme
               </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Seletor de Filme Filtro */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400 font-semibold uppercase">Filtrar:</span>
-              <select
-                value={selectedFilmId}
-                onChange={(e) => setSelectedFilmId(e.target.value)}
-                className="px-3 py-1.5 rounded-xl bg-[#0A0E1A] border border-borderDark text-xs text-white focus:border-cta outline-none"
-              >
-                <option value="ALL">Todos os filmes ({films.length})</option>
-                {films.map((f) => (
-                  <option key={f.id} value={f.id}>
-                    {f.title}
-                  </option>
-                ))}
-              </select>
             </div>
           </div>
         </div>
 
-        {/* Notificação de Sucesso */}
+        {/* Feedbacks de Alerta */}
         {actionSuccess && (
-          <div className="flex items-center justify-between p-4 bg-emerald-950/50 border border-emerald-500/50 rounded-xl text-emerald-200">
-            <div className="flex items-center gap-3">
-              <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
-              <span className="text-sm font-medium">{actionSuccess}</span>
+          <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-500/50 text-xs text-emerald-200 flex items-center justify-between shadow-md">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{actionSuccess}</span>
             </div>
             <button onClick={() => setActionSuccess(null)} className="text-emerald-400 hover:text-emerald-200 cursor-pointer">
               <X className="w-4 h-4" />
@@ -493,442 +459,421 @@ export default function SessoesGestaoInteligentePage() {
           </div>
         )}
 
-        {/* Listagem Inteligente Separada por Filme */}
-        {isLoading ? (
-          <div className="flex justify-center items-center py-24 text-gray-400">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cta mr-3" />
-            Carregando catálogo e programação de sessões...
+        {actionError && (
+          <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-500/50 text-xs text-rose-200 flex items-center justify-between shadow-md">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+              <span>{actionError}</span>
+            </div>
+            <button onClick={() => setActionError(null)} className="text-rose-400 hover:text-rose-200 cursor-pointer">
+              <X className="w-4 h-4" />
+            </button>
           </div>
-        ) : filteredFilmsList.length === 0 ? (
-          <div className="text-center py-20 liquid-glass-card rounded-3xl p-8 space-y-4">
-            <FilmIcon className="w-16 h-16 text-gray-600 mx-auto" />
-            <h2 className="text-xl font-bold text-gray-300">Nenhum filme cadastrado</h2>
-            <p className="text-sm text-gray-500 max-w-md mx-auto">
-              Cadastre filmes no catálogo para poder configurar as sessões e horários das salas.
-            </p>
+        )}
+
+        {isLoading ? (
+          <div className="py-24 text-center text-slate-400 text-xs flex items-center justify-center gap-2">
+            <div className="w-6 h-6 border-2 border-cta border-t-transparent rounded-full animate-spin" />
+            <span>Carregando programação de cinema...</span>
           </div>
         ) : (
           <div className="space-y-6">
-            {filteredFilmsList.map((film) => {
-              const filmSessions = sessions.filter((s) => s.filmId === film.id || s.film.id === film.id);
+            {/* ========================================================================= */}
+            {/* 1. SELEÇÃO / LISTA DE FILMES (Área Própria e Resumida por Filme)          */}
+            {/* ========================================================================= */}
+            <div className="space-y-3">
+              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                Filmes em Cartaz ({films.length})
+              </span>
 
-              return (
-                <div
-                  key={film.id}
-                  className="liquid-glass-card rounded-2xl p-5 sm:p-6 border border-white/10 shadow-xl space-y-5"
-                >
-                  {/* Cabeçalho do Filme + Botão Programar Sessões */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-                    <div className="flex items-center gap-4">
-                      <div className="relative aspect-[2/3] w-12 sm:w-14 rounded-lg overflow-hidden bg-[#0A0E1A] border border-white/10 shrink-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {filmSummaries
+                  .slice((filmsPage - 1) * 20, filmsPage * 20)
+                  .map(({ film, distinctDaysCount, totalSessionsCount }) => {
+                  const isSelected = selectedFilmForSchedule?.id === film.id;
+
+                  return (
+                    <button
+                      key={film.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedFilmForSchedule(film);
+                        setBatchSelectedDays([]);
+                        setActiveDayDetail(null);
+                        setActionError(null);
+                      }}
+                      className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 ${
+                        isSelected
+                          ? "bg-[#182038] border-cta ring-2 ring-cta/40 shadow-lg shadow-cta/15"
+                          : "bg-[#0A0E1A]/90 hover:bg-[#12182B] border-white/10 hover:border-white/20"
+                      }`}
+                    >
+                      <div className="relative aspect-[2/3] w-12 rounded-lg overflow-hidden bg-[#0A0E1A] border border-white/10 shrink-0">
                         {film.posterUrl ? (
                           <Image
                             src={film.posterUrl}
                             alt={film.title}
                             fill
-                            sizes="56px"
+                            sizes="48px"
                             className="object-cover"
                             unoptimized
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-slate-600">
-                            <FilmIcon className="w-6 h-6 opacity-40" />
+                            <FilmIcon className="w-5 h-5 opacity-40" />
                           </div>
                         )}
                       </div>
 
-                      <div>
-                        <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <h2 className="text-xs sm:text-sm font-bold text-white truncate leading-tight">
                           {film.title}
                         </h2>
-                        <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
-                          <span>{film.durationMinutes} min</span>
+                        <span className="text-[11px] text-slate-400 block">
+                          {film.durationMinutes} min
+                        </span>
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
+                          <span className="font-semibold text-white">{distinctDaysCount} dias</span>
                           <span>•</span>
-                          <span className="text-slate-300 font-medium">
-                            {filmSessions.length} {filmSessions.length === 1 ? "sessão programada" : "sessões programadas"}
-                          </span>
+                          <span className="text-slate-300 font-semibold">{totalSessionsCount} sessões</span>
                         </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <Pagination
+                currentPage={filmsPage}
+                totalItems={filmSummaries.length}
+                pageSize={20}
+                onPageChange={setFilmsPage}
+                itemLabel="filmes"
+              />
+            </div>
+
+            {/* ========================================================================= */}
+            {/* 2. CONFIGURADOR DA PROGRAMAÇÃO MENSAL DO FILME SELECIONADO                 */}
+            {/* ========================================================================= */}
+            {selectedFilmForSchedule ? (
+              <div className="liquid-glass-card rounded-3xl p-5 sm:p-6 border border-white/10 shadow-2xl space-y-6 animate-in fade-in duration-200">
+                {/* Header do Gerenciador do Filme */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="relative aspect-[2/3] w-10 rounded-md overflow-hidden bg-[#0A0E1A] border border-white/10 shrink-0">
+                      {selectedFilmForSchedule.posterUrl ? (
+                        <Image
+                          src={selectedFilmForSchedule.posterUrl}
+                          alt={selectedFilmForSchedule.title}
+                          fill
+                          sizes="40px"
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-600">
+                          <FilmIcon className="w-4 h-4 opacity-40" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] font-bold text-cta uppercase tracking-widest block leading-none">
+                        Programação do Mês
+                      </span>
+                      <h2 className="text-base sm:text-lg font-bold text-white tracking-tight leading-tight">
+                        {selectedFilmForSchedule.title}
+                      </h2>
+                    </div>
+                  </div>
+
+                  {/* Controles de Mês do Calendário */}
+                  <div className="flex items-center gap-2 bg-[#0A0E1A] p-1 rounded-xl border border-white/10 self-start sm:self-auto">
+                    <button
+                      type="button"
+                      onClick={handlePrevMonth}
+                      className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white cursor-pointer"
+                      title="Mês anterior"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <span className="text-xs font-bold text-white px-2">
+                      {capitalizedMonthName} {currentYear}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleNextMonth}
+                      className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white cursor-pointer"
+                      title="Próximo mês"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  {/* Coluna Esquerda: Calendário Interativo do Mês */}
+                  <div className="lg:col-span-7 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <CalendarIcon className="w-3.5 h-3.5 text-cta" />
+                        <span>Selecione os dias no calendário:</span>
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={selectAllDaysInMonth}
+                        className="text-[11px] font-bold text-cta hover:text-white uppercase transition-colors cursor-pointer"
+                      >
+                        {batchSelectedDays.length === totalDaysInMonth ? "Desmarcar todos" : "Marcar todo o mês"}
+                      </button>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-[#0A0E1A]/90 border border-white/10 space-y-2">
+                      {/* Dias da Semana (D S T Q Q S S) */}
+                      <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider pb-1">
+                        <span>Dom</span>
+                        <span>Seg</span>
+                        <span>Ter</span>
+                        <span>Qua</span>
+                        <span>Qui</span>
+                        <span>Sex</span>
+                        <span>Sáb</span>
+                      </div>
+
+                      {/* Grade dos Dias do Mês */}
+                      <div className="grid grid-cols-7 gap-1.5">
+                        {/* Espaços vazios do início do mês */}
+                        {Array.from({ length: firstDayOfWeek }).map((_, i) => (
+                          <div key={`empty-${i}`} className="h-10 sm:h-12 rounded-xl bg-transparent" />
+                        ))}
+
+                        {/* Dias reais */}
+                        {Array.from({ length: totalDaysInMonth }).map((_, i) => {
+                          const day = i + 1;
+                          const isSelectedForBatch = batchSelectedDays.includes(day);
+                          const daySessions = filmSessionsByDay.get(day) || [];
+                          const hasSessions = daySessions.length > 0;
+                          const isInspecting = activeDayDetail === day;
+
+                          return (
+                            <button
+                              key={`day-${day}`}
+                              type="button"
+                              onClick={() => toggleDaySelection(day)}
+                              className={`h-10 sm:h-12 rounded-xl transition-all cursor-pointer flex flex-col items-center justify-center relative p-1 leading-none ${
+                                isSelectedForBatch
+                                  ? "bg-cta text-white ring-2 ring-white shadow-md shadow-cta/30 font-bold"
+                                  : hasSessions
+                                  ? "bg-slate-800 text-white border border-white/20 hover:border-cta"
+                                  : "bg-white/[0.03] text-slate-400 hover:bg-white/[0.08] hover:text-white"
+                              } ${isInspecting && !isSelectedForBatch ? "ring-1 ring-white/50" : ""}`}
+                            >
+                              <span className="text-xs sm:text-sm font-bold">{day}</span>
+                              {hasSessions && (
+                                <span className={`text-[9px] mt-0.5 font-bold ${isSelectedForBatch ? "text-white" : "text-cta"}`}>
+                                  {daySessions.length} sess.
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => handleOpenSmartScheduler(film)}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-bold shadow-md shadow-cta/20 transition-all cursor-pointer active:scale-95 shrink-0"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Programar Sessões (Dias & Horários)</span>
-                    </button>
+                    <div className="flex items-center gap-4 text-[11px] text-slate-400 px-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-slate-800 border border-white/20" />
+                        <span>Dia com sessões já programadas</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-cta" />
+                        <span>Dia selecionado para aplicar</span>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Sessões Existentes do Filme em Grade Limpa */}
-                  {filmSessions.length === 0 ? (
-                    <div className="py-6 px-4 rounded-xl bg-white/[0.02] border border-white/5 text-center">
-                      <p className="text-xs text-slate-400">
-                        Nenhuma sessão cadastrada para este filme. Clique em{" "}
-                        <strong className="text-white">&quot;Programar Sessões&quot;</strong> para definir os dias e horários no mês.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                      {filmSessions.map((sess) => {
-                        const startDate = new Date(sess.startsAt);
-                        const dateFormatted = startDate.toLocaleDateString("pt-BR", {
-                          day: "2-digit",
-                          month: "short",
-                        });
-                        const timeFormatted = startDate.toLocaleTimeString("pt-BR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        });
+                  {/* Coluna Direita: Configuração dos Horários e Salas em Lote */}
+                  <div className="lg:col-span-5 space-y-4">
+                    <div className="p-4 rounded-2xl bg-[#0A0E1A]/90 border border-white/10 space-y-3.5 text-xs">
+                      <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                        <span className="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
+                          <Settings className="w-3.5 h-3.5 text-cta" />
+                          <span>Configurar Programação</span>
+                        </span>
+                        <span className="text-[11px] font-bold text-cta">
+                          {batchSelectedDays.length} {batchSelectedDays.length === 1 ? "dia marcado" : "dias marcados"}
+                        </span>
+                      </div>
 
-                        return (
-                          <div
-                            key={sess.id}
-                            className="p-3.5 rounded-xl bg-[#0A0E1A]/90 border border-white/10 hover:border-white/20 transition-all flex flex-col justify-between gap-3 shadow-sm"
+                      {/* 1. Escolha de Sala */}
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-semibold text-slate-300 block">
+                          Sala de Exibição
+                        </label>
+                        <select
+                          value={batchRoomId}
+                          onChange={(e) => setBatchRoomId(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl bg-[#12182B] border border-white/10 text-white font-medium outline-none focus:border-cta"
+                        >
+                          {rooms.map((r) => (
+                            <option key={r.id} value={r.id}>
+                              {r.name} ({r.capacity} assentos)
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* 2. Horários das Sessões */}
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-semibold text-slate-300 block">
+                          Horários das Sessões
+                        </label>
+
+                        <div className="flex flex-wrap gap-1.5">
+                          {batchTimes.map((timeStr) => (
+                            <span
+                              key={timeStr}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 text-white font-bold text-xs border border-white/15"
+                            >
+                              <span>{timeStr}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveTime(timeStr)}
+                                className="text-slate-400 hover:text-rose-400 cursor-pointer"
+                                title="Remover este horário"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-1">
+                          <input
+                            type="time"
+                            value={newTimeInput}
+                            onChange={(e) => setNewTimeInput(e.target.value)}
+                            className="px-2.5 py-1 rounded-lg bg-[#12182B] border border-white/10 text-white text-xs outline-none focus:border-cta"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleAddTime}
+                            disabled={!newTimeInput}
+                            className="px-3 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors disabled:opacity-40 cursor-pointer"
                           >
-                            <div className="space-y-1.5">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-white capitalize flex items-center gap-1.5">
-                                  <Calendar className="w-3.5 h-3.5 text-cta" />
-                                  <span>{dateFormatted}</span>
-                                </span>
-                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-slate-300">
-                                  {formatSessionStatusLabel(sess.status)}
-                                </span>
-                              </div>
+                            + Adicionar
+                          </button>
+                        </div>
+                      </div>
 
-                              <div className="flex items-center justify-between pt-1 border-t border-white/5">
-                                <span className="text-sm font-extrabold text-white flex items-center gap-1">
-                                  <Clock className="w-3.5 h-3.5 text-cta" />
-                                  <span>{timeFormatted}</span>
+                      {/* 3. Preço Base */}
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-semibold text-slate-300 block">
+                          Preço do Ingresso (R$)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.50"
+                          min="1.00"
+                          value={batchPrice}
+                          onChange={(e) => setBatchPrice(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl bg-[#12182B] border border-white/10 text-white font-medium outline-none focus:border-cta"
+                        />
+                      </div>
+
+                      {/* Resumo da Operação */}
+                      <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 text-[11px] text-slate-300 leading-snug">
+                        Serão criadas:{" "}
+                        <strong className="text-white">
+                          {batchSelectedDays.length * batchTimes.length} sessões
+                        </strong>{" "}
+                        ({batchSelectedDays.length} dias × {batchTimes.length} horários) com poltronas geradas automaticamente.
+                      </div>
+
+                      {/* Botão de Aplicação em Lote */}
+                      <button
+                        type="button"
+                        disabled={isPending || batchSelectedDays.length === 0 || batchTimes.length === 0}
+                        onClick={handleApplyScheduleToSelectedDays}
+                        className="w-full py-2.5 px-4 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-bold shadow-md shadow-cta/25 transition-all disabled:opacity-40 cursor-pointer flex items-center justify-center gap-1.5"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>
+                          {isPending ? "Aplicando..." : "Aplicar Programação aos Dias"}
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Inspeção e Ajuste de um Dia Específico */}
+                    {activeDayDetail && (
+                      <div className="p-4 rounded-2xl bg-[#0A0E1A]/90 border border-white/10 space-y-2 text-xs">
+                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                          <span className="font-bold text-white">
+                            Dia {activeDayDetail} de {capitalizedMonthName}
+                          </span>
+                          {(filmSessionsByDay.get(activeDayDetail)?.length || 0) > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveAllSessionsOfDay(activeDayDetail)}
+                              className="text-[11px] text-rose-400 hover:text-rose-300 font-bold transition-colors cursor-pointer"
+                            >
+                              Remover do dia
+                            </button>
+                          )}
+                        </div>
+
+                        {(filmSessionsByDay.get(activeDayDetail)?.length || 0) === 0 ? (
+                          <p className="text-[11px] text-slate-500 py-1">
+                            Nenhuma sessão programada para este dia.
+                          </p>
+                        ) : (
+                          <div className="space-y-1.5 pt-1">
+                            {filmSessionsByDay.get(activeDayDetail)?.map((sess) => (
+                              <div
+                                key={sess.id}
+                                className="flex items-center justify-between p-2 rounded-lg bg-white/[0.04] border border-white/5"
+                              >
+                                <span className="font-bold text-white">
+                                  {new Date(sess.startsAt).toLocaleTimeString("pt-BR", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
                                 </span>
-                                <span className="text-xs text-slate-400 font-medium">
+                                <span className="text-slate-400 text-[11px]">
                                   {sess.room.name}
                                 </span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                              <span className="text-xs font-bold text-slate-300">
-                                R$ {Number(sess.price).toFixed(2)}
-                              </span>
-                              <div className="flex items-center gap-1">
                                 <button
                                   type="button"
-                                  onClick={() => handleOpenEditModal(sess)}
-                                  className="p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                                  title="Editar Sessão"
-                                >
-                                  <Edit2 className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteSession(sess)}
-                                  className="p-1.5 rounded-lg hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
-                                  title="Excluir Sessão"
+                                  onClick={() => handleDeleteSingleSession(sess)}
+                                  className="text-slate-500 hover:text-rose-400 p-1 cursor-pointer"
+                                  title="Excluir sessão"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
                               </div>
-                            </div>
+                            ))}
                           </div>
-                        );
-                      })}
-                    </div>
-                  )}
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            ) : (
+              <div className="py-12 px-6 rounded-3xl liquid-glass-card text-center space-y-2">
+                <FilmIcon className="w-10 h-10 text-slate-600 mx-auto" />
+                <h3 className="text-sm font-bold text-white">Selecione um filme acima</h3>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                  Clique em um dos filmes em cartaz para abrir o gerenciador mensal e programar os dias, salas e horários.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </main>
 
       <CineDoomFooter simple className="mt-8" />
-
-      {/* Modal Inteligente: Programação de Sessões em Lote para o Filme */}
-      {isSmartSchedulerOpen && targetFilm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-2xl bg-[#12182B] border border-white/15 rounded-3xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-white/10 pb-3">
-              <div>
-                <span className="text-[10px] font-bold text-cta uppercase tracking-wider block">
-                  Agendamento Inteligente
-                </span>
-                <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                  Programar Sessões: {targetFilm.title}
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsSmartSchedulerOpen(false)}
-                className="p-1.5 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {formErrors.general && (
-              <div className="p-3 bg-rose-950/50 border border-rose-500/50 rounded-xl text-rose-200 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
-                <span>{formErrors.general}</span>
-              </div>
-            )}
-
-            <div className="space-y-4 text-xs">
-              {/* 1. Mês de Referência */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">
-                    Mês de Programação
-                  </label>
-                  <input
-                    type="month"
-                    value={currentYearMonth}
-                    onChange={(e) => {
-                      setCurrentYearMonth(e.target.value);
-                      setSelectedDays([]);
-                    }}
-                    className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white font-medium outline-none focus:border-cta"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">
-                    Sala de Exibição
-                  </label>
-                  <select
-                    value={selectedRoomId}
-                    onChange={(e) => setSelectedRoomId(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white font-medium outline-none focus:border-cta"
-                  >
-                    {rooms.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.name} ({r.capacity} assentos)
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* 2. Seleção de Dias do Mês */}
-              <div className="space-y-1.5 p-3.5 rounded-2xl bg-[#0A0E1A]/80 border border-white/10">
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-white text-xs flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-cta" />
-                    <span>Selecione os dias do mês:</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleSelectAllDays}
-                    className="text-[10px] text-cta hover:text-white font-bold uppercase transition-colors cursor-pointer"
-                  >
-                    {selectedDays.length === daysList.length ? "Desmarcar todos" : "Selecionar todos"}
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-7 gap-1.5 pt-2">
-                  {daysList.map((day) => {
-                    const isSelected = selectedDays.includes(day);
-                    return (
-                      <button
-                        key={day}
-                        type="button"
-                        onClick={() => handleToggleDay(day)}
-                        className={`py-2 rounded-lg font-bold text-xs transition-all cursor-pointer ${
-                          isSelected
-                            ? "bg-cta text-white shadow-sm shadow-cta/30"
-                            : "bg-white/[0.04] text-slate-400 hover:text-white hover:bg-white/10"
-                        }`}
-                      >
-                        {day}
-                      </button>
-                    );
-                  })}
-                </div>
-                <span className="text-[10px] text-slate-500 block pt-1">
-                  {selectedDays.length} {selectedDays.length === 1 ? "dia selecionado" : "dias selecionados"}
-                </span>
-              </div>
-
-              {/* 3. Horários das Sessões */}
-              <div className="space-y-2 p-3.5 rounded-2xl bg-[#0A0E1A]/80 border border-white/10">
-                <span className="font-bold text-white text-xs flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-cta" />
-                  <span>Horários das sessões nos dias escolhidos:</span>
-                </span>
-
-                <div className="flex flex-wrap items-center gap-2 pt-1">
-                  {scheduleTimes.map((t) => (
-                    <span
-                      key={t}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 text-white font-bold text-xs border border-white/15"
-                    >
-                      <span>{t}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTime(t)}
-                        className="text-slate-400 hover:text-rose-400 cursor-pointer"
-                        title="Remover horário"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-2 pt-2">
-                  <input
-                    type="time"
-                    value={newTimeInput}
-                    onChange={(e) => setNewTimeInput(e.target.value)}
-                    className="px-3 py-1.5 rounded-xl bg-[#12182B] border border-white/10 text-white text-xs outline-none focus:border-cta"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddTime}
-                    disabled={!newTimeInput}
-                    className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors disabled:opacity-40 cursor-pointer"
-                  >
-                    + Adicionar Horário
-                  </button>
-                </div>
-              </div>
-
-              {/* 4. Preço dos Ingressos */}
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1">
-                  Preço Base do Ingresso (R$)
-                </label>
-                <input
-                  type="number"
-                  step="0.50"
-                  min="1.00"
-                  value={smartPrice}
-                  onChange={(e) => setSmartPrice(e.target.value)}
-                  className="w-full sm:w-48 px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white font-medium outline-none focus:border-cta"
-                />
-              </div>
-
-              {/* Resumo da Operação */}
-              <div className="p-3 bg-white/[0.03] border border-white/5 rounded-xl text-slate-300">
-                Total a ser criado:{" "}
-                <strong className="text-white">
-                  {selectedDays.length * scheduleTimes.length} sessões
-                </strong>{" "}
-                ({selectedDays.length} dias × {scheduleTimes.length} horários) com assentos gerados automaticamente.
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-3 border-t border-white/10">
-              <button
-                type="button"
-                onClick={() => setIsSmartSchedulerOpen(false)}
-                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                disabled={isPending || selectedDays.length === 0 || scheduleTimes.length === 0}
-                onClick={handleSaveSmartBatch}
-                className="px-5 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white text-xs font-bold shadow-md shadow-cta/25 transition-all disabled:opacity-40 cursor-pointer"
-              >
-                {isPending ? "Criando Sessões..." : "Confirmar e Criar Sessões"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de Edição Pontual de Sessão */}
-      {editingSession && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-[#12182B] border border-white/15 rounded-3xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h2 className="text-base font-bold text-white">Editar Sessão</h2>
-              <button
-                type="button"
-                onClick={() => setEditingSession(null)}
-                className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {formErrors.general && (
-              <div className="p-2.5 bg-rose-950/50 border border-rose-500/50 rounded-xl text-rose-200 text-xs">
-                {formErrors.general}
-              </div>
-            )}
-
-            <form onSubmit={handleSaveEditSession} className="space-y-3 text-xs">
-              <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Filme</label>
-                <p className="font-bold text-white text-sm">{editingSession.film.title}</p>
-              </div>
-
-              <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Sala</label>
-                <p className="font-semibold text-slate-300">{editingSession.room.name}</p>
-              </div>
-
-              <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Data e Horário</label>
-                <input
-                  type="datetime-local"
-                  value={singleStartsAt}
-                  onChange={(e) => setSingleStartsAt(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-cta"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Status</label>
-                <select
-                  value={sessionStatus}
-                  onChange={(e) => setSessionStatus(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-cta"
-                >
-                  <option value="OPEN">Aberta</option>
-                  <option value="SCHEDULED">Agendada</option>
-                  <option value="CLOSED">Encerrada</option>
-                  <option value="CANCELLED">Cancelada</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Preço (R$)</label>
-                <input
-                  type="number"
-                  step="0.50"
-                  min="1.00"
-                  value={singlePrice}
-                  onChange={(e) => setSinglePrice(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-[#0A0E1A] border border-white/10 text-white outline-none focus:border-cta"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={() => setEditingSession(null)}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="px-4 py-2 rounded-xl bg-cta hover:bg-cta-hover text-white font-bold"
-                >
-                  {isPending ? "Salvando..." : "Salvar Alterações"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
