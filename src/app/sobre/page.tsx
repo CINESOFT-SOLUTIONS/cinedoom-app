@@ -61,6 +61,8 @@ export default function SobreCineDoomPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   // Auto-play do Carrossel (5 segundos), pausavel ao passar o mouse
   useEffect(() => {
@@ -83,13 +85,34 @@ export default function SobreCineDoomPage() {
     setCurrentSlide((prev) => (prev + 1) % SPACES_SLIDES.length);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+    const distance = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 45;
+    if (distance > minSwipeDistance) {
+      handleNextSlide();
+    } else if (distance < -minSwipeDistance) {
+      handlePrevSlide();
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
   return (
     <div className="min-h-screen bg-[#0A0E1A] text-neutralBg font-sans flex flex-col selection:bg-cta selection:text-white">
       {/* 1. Cabecalho Superior CineDoom (White Liquid Glass) */}
       <CineDoomHeader activePage="sobre" />
 
       {/* Conteudo Principal */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-14 space-y-12 sm:space-y-16 md:space-y-20">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-14 space-y-10 sm:space-y-16 md:space-y-20">
         {/* ================= HERO PRINCIPAL ================= */}
         <section className="text-center max-w-3xl mx-auto space-y-4 pt-2">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cta/10 border border-cta/30 text-cta text-xs font-semibold uppercase tracking-wider shadow-sm animate-in fade-in duration-300">
@@ -113,7 +136,7 @@ export default function SobreCineDoomPage() {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+          <div className="flex flex-row items-end justify-between gap-3">
             <div>
               <span className="text-xs font-bold text-cta uppercase tracking-wider block">
                 Galeria dos Espaços
@@ -122,11 +145,11 @@ export default function SobreCineDoomPage() {
                 Conheça nossa Estrutura
               </h2>
             </div>
-            <div className="flex items-center gap-2 self-end sm:self-auto">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 type="button"
                 onClick={handlePrevSlide}
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white flex items-center justify-center transition-all cursor-pointer active:scale-95"
                 aria-label="Ambiente anterior"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -134,7 +157,7 @@ export default function SobreCineDoomPage() {
               <button
                 type="button"
                 onClick={handleNextSlide}
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white flex items-center justify-center transition-all cursor-pointer active:scale-95"
                 aria-label="Próximo ambiente"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -143,7 +166,12 @@ export default function SobreCineDoomPage() {
           </div>
 
           {/* Janela de Visualizacao do Carrossel */}
-          <div className="relative w-full aspect-[4/3] sm:aspect-[21/9] min-h-[280px] sm:min-h-0 rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.6)] group bg-slate-900">
+          <div
+            className="relative w-full aspect-[4/3] sm:aspect-[21/9] min-h-[310px] sm:min-h-0 rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.6)] group bg-slate-900 touch-pan-y"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             {SPACES_SLIDES.map((slide, index) => {
               const isActive = index === currentSlide;
               return (
@@ -164,11 +192,11 @@ export default function SobreCineDoomPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/10 sm:from-black/90 sm:via-black/40 sm:to-transparent" />
 
                   {/* Legenda Informativa Flutuante */}
-                  <div className="absolute bottom-0 inset-x-0 p-4 pb-9 sm:p-8 md:p-10 space-y-1.5 sm:space-y-2 max-w-3xl">
+                  <div className="absolute bottom-0 inset-x-0 p-4 pb-10 sm:p-8 md:p-10 space-y-1 sm:space-y-2 max-w-3xl pr-24 sm:pr-8">
                     <span className="inline-block text-[10px] sm:text-[11px] font-bold uppercase tracking-wider px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-cta text-white shadow-md">
                       {slide.badge}
                     </span>
-                    <h3 className="text-lg sm:text-2xl md:text-3xl font-bold text-white tracking-tight drop-shadow-md max-sm:leading-snug">
+                    <h3 className="text-base sm:text-2xl md:text-3xl font-bold text-white tracking-tight drop-shadow-md leading-snug">
                       {slide.title}
                     </h3>
                     <p className="text-[11px] sm:text-sm text-slate-200 leading-relaxed drop-shadow-sm max-w-2xl line-clamp-3 sm:line-clamp-none">
@@ -180,14 +208,14 @@ export default function SobreCineDoomPage() {
             })}
 
             {/* Indicadores em Bolinhas (Dots) */}
-            <div className="absolute bottom-3 right-4 sm:bottom-6 sm:right-8 z-20 flex items-center gap-2">
+            <div className="absolute bottom-3 right-3 sm:bottom-6 sm:right-8 z-20 flex items-center gap-1.5 sm:gap-2">
               {SPACES_SLIDES.map((_, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => setCurrentSlide(idx)}
                   className={`h-2 rounded-full transition-all cursor-pointer ${idx === currentSlide
-                    ? "w-7 bg-cta shadow-[0_0_10px_rgba(233,69,96,0.8)]"
+                    ? "w-6 sm:w-7 bg-cta shadow-[0_0_10px_rgba(233,69,96,0.8)]"
                     : "w-2 bg-white/40 hover:bg-white/70"
                     }`}
                   aria-label={`Ir para slide ${idx + 1}`}
@@ -220,7 +248,7 @@ export default function SobreCineDoomPage() {
               orb2Color="rgba(99, 102, 241, 0.20)"
               spotlightColor="rgba(59, 130, 246, 0.12)"
             >
-              <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
+              <div className="p-5 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
                   {/* 1. Nome da experiência */}
                   <h3 className="text-xl font-bold text-white tracking-tight">
@@ -269,7 +297,7 @@ export default function SobreCineDoomPage() {
               orb2Color="rgba(168, 85, 247, 0.22)"
               spotlightColor="rgba(233, 69, 96, 0.15)"
             >
-              <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
+              <div className="p-5 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
                   {/* 1. Nome da experiência */}
                   <h3 className="text-xl font-bold text-white tracking-tight">
@@ -319,7 +347,7 @@ export default function SobreCineDoomPage() {
               orb2Color="rgba(233, 69, 96, 0.20)"
               spotlightColor="rgba(245, 158, 11, 0.14)"
             >
-              <div className="p-6 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
+              <div className="p-5 sm:p-7 space-y-4 flex-1 flex flex-col justify-between">
                 <div className="space-y-3">
                   {/* 1. Nome da experiência */}
                   <h3 className="text-xl font-bold text-white tracking-tight">
@@ -365,8 +393,8 @@ export default function SobreCineDoomPage() {
         {/* ================= COMO FUNCIONA (EXPERIENCIA DESCOMPLICADA) ================= */}
         <InteractiveGlowCard
           as="section"
-          className="p-8 sm:p-10 rounded-3xl liquid-glass-card border border-white/15 shadow-2xl"
-          contentClassName="space-y-8"
+          className="p-5 sm:p-8 md:p-10 rounded-3xl liquid-glass-card border border-white/15 shadow-2xl"
+          contentClassName="space-y-6 sm:space-y-8"
           orb1Color="rgba(233, 69, 96, 0.16)"
           orb2Color="rgba(59, 130, 246, 0.12)"
           spotlightColor="rgba(255, 255, 255, 0.05)"
@@ -376,16 +404,16 @@ export default function SobreCineDoomPage() {
             <span className="text-xs font-bold text-cta uppercase tracking-wider block">
               Sem Filas & Sem Taxas
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-bold text-white tracking-tight">
               Como Funciona a Sua Visita ao CineDoom
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 relative">
             {/* Passo 1 */}
             <InteractiveGlowCard
-              className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-cta/40 transition-all duration-300 group"
-              contentClassName="space-y-3"
+              className="p-5 sm:p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-cta/40 transition-all duration-300 group"
+              contentClassName="space-y-2.5 sm:space-y-3"
               orb1Color="rgba(233, 69, 96, 0.30)"
               orb2Color="rgba(147, 51, 234, 0.20)"
               spotlightColor="rgba(233, 69, 96, 0.12)"
@@ -402,8 +430,8 @@ export default function SobreCineDoomPage() {
 
             {/* Passo 2 */}
             <InteractiveGlowCard
-              className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-amber-400/40 transition-all duration-300 group"
-              contentClassName="space-y-3"
+              className="p-5 sm:p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-amber-400/40 transition-all duration-300 group"
+              contentClassName="space-y-2.5 sm:space-y-3"
               orb1Color="rgba(245, 158, 11, 0.30)"
               orb2Color="rgba(234, 88, 12, 0.20)"
               spotlightColor="rgba(245, 158, 11, 0.12)"
@@ -420,8 +448,8 @@ export default function SobreCineDoomPage() {
 
             {/* Passo 3 */}
             <InteractiveGlowCard
-              className="p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-emerald-400/40 transition-all duration-300 group"
-              contentClassName="space-y-3"
+              className="p-5 sm:p-6 rounded-2xl bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 hover:border-emerald-400/40 transition-all duration-300 group"
+              contentClassName="space-y-2.5 sm:space-y-3"
               orb1Color="rgba(16, 185, 129, 0.30)"
               orb2Color="rgba(14, 165, 233, 0.20)"
               spotlightColor="rgba(16, 185, 129, 0.12)"
@@ -441,7 +469,7 @@ export default function SobreCineDoomPage() {
         {/* ================= CHAMADA PARA AÇÃO (CTA) ================= */}
         <InteractiveGlowCard
           as="section"
-          className="p-6 sm:p-10 md:p-12 rounded-3xl bg-gradient-to-r from-[#1A2238] via-[#16213E] to-[#12182B] border border-white/15 text-center shadow-2xl"
+          className="p-5 sm:p-10 md:p-12 rounded-3xl bg-gradient-to-r from-[#1A2238] via-[#16213E] to-[#12182B] border border-white/15 text-center shadow-2xl"
           contentClassName="space-y-4 sm:space-y-5"
           orb1Color="rgba(233, 69, 96, 0.35)"
           orb2Color="rgba(245, 158, 11, 0.25)"
@@ -461,7 +489,7 @@ export default function SobreCineDoomPage() {
                 className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full bg-cta hover:bg-cta-hover text-white text-xs sm:text-sm font-bold shadow-lg shadow-cta/30 hover:shadow-cta/40 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto"
               >
                 <span>Ver Filmes e Programação em Cartaz</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 shrink-0" />
               </Link>
             </div>
           </div>
