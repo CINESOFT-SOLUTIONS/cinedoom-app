@@ -208,11 +208,11 @@ export function AttendantSalesCounter({ films, loading }: AttendantSalesCounterP
                               key={session.id}
                               className="flex flex-col items-stretch gap-1.5 w-full"
                             >
-                              {/* Botão de Horário amplo com formato retangular firme */}
+                              {/* Botão de Horário amplo com formato retangular firme e altura reforçada */}
                               <button
                                 type="button"
                                 onClick={() => handleSelectSession(film.id, session.id)}
-                                className="w-full py-2.5 px-3 rounded-md bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-white font-bold text-base tracking-normal transition-all duration-150 cursor-pointer shadow-sm active:scale-95 flex items-center justify-center leading-none"
+                                className="w-full py-3.5 px-3 min-h-[44px] rounded-md bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-white font-bold text-base tracking-normal transition-all duration-150 cursor-pointer shadow-sm active:scale-95 flex items-center justify-center leading-none"
                                 title={`Iniciar venda da sessão de ${timeStr} - ${format} ${language}`}
                               >
                                 {timeStr}

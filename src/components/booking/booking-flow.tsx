@@ -1125,11 +1125,11 @@ export function BookingFlow({
                                 key={sess.id}
                                 className="flex-1 min-w-[95px] max-w-[140px] flex flex-col items-stretch gap-1"
                               >
-                                {/* Botão de Horário Amplo Retangular */}
+                                {/* Botão de Horário Amplo Retangular com altura confortável */}
                                 <button
                                   type="button"
                                   onClick={() => handleSelectSession(sess.id)}
-                                  className={`w-full py-2 px-2.5 rounded-md font-bold text-sm tracking-normal transition-all duration-150 cursor-pointer shadow-xs active:scale-95 flex items-center justify-center leading-none ${
+                                  className={`w-full py-3 px-2.5 min-h-[42px] rounded-md font-bold text-sm sm:text-base tracking-normal transition-all duration-150 cursor-pointer shadow-xs active:scale-95 flex items-center justify-center leading-none ${
                                     isSelected
                                       ? "bg-cta text-white ring-2 ring-white/90 shadow-md shadow-cta/40 scale-102"
                                       : "bg-[#141A2D] hover:bg-cta hover:text-white border border-white/10 text-white"
