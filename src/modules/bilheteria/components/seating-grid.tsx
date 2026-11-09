@@ -129,7 +129,7 @@ const SeatButton = React.memo(function SeatButton({
       data-testid={`seat-${code}`}
       data-seat-id={seat.id}
       data-status={effectiveStatus}
-      className={`group relative w-6 h-7 sm:w-7 sm:h-7.5 md:w-7.5 md:h-8 flex flex-col items-center justify-center transition-transform duration-150 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 select-none ${isClickable ? "hover:scale-105 active:scale-95 cursor-pointer" : "cursor-not-allowed"
+      className={`group relative w-6 h-7 sm:w-7 sm:h-7.5 md:w-7.5 md:h-8 flex flex-col items-center justify-center shrink-0 transition-transform duration-150 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 select-none ${isClickable ? "hover:scale-105 active:scale-95 cursor-pointer" : "cursor-not-allowed"
         }`}
     >
       {/* 1. Encosto superior ergonômico contínuo (unido diretamente ao assento, sem vão) */}
@@ -279,9 +279,9 @@ export function SeatingGrid({
       <div
         role="grid"
         aria-label="Mapa interativo de assentos"
-        className="w-full overflow-x-auto pb-1 flex flex-col items-center touch-pan-x"
+        className="w-full overflow-x-auto pb-2 touch-pan-x"
       >
-        <div className="min-w-fit space-y-1 sm:space-y-1.5 md:space-y-1.5 p-0.5">
+        <div className="min-w-fit mx-auto space-y-1 sm:space-y-1.5 md:space-y-1.5 p-0.5 px-3 sm:px-4">
           {groupedRows.map(({ label, seats: rowSeats }) => {
             const hasCentralAisle = rowSeats.length >= 4;
             const splitIndex = hasCentralAisle ? Math.ceil(rowSeats.length / 2) : rowSeats.length;
@@ -307,23 +307,23 @@ export function SeatingGrid({
             };
 
             return (
-              <div key={label} role="row" className="flex items-center gap-2 sm:gap-3 md:gap-4">
+              <div key={label} role="row" className="flex items-center gap-2 sm:gap-3 md:gap-4 shrink-0">
                 {/* Rotulo da fileira a esquerda */}
-                <div className="w-6 sm:w-7 flex items-center justify-center">
+                <div className="w-6 sm:w-7 flex items-center justify-center shrink-0">
                   <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/5 border border-white/10 text-center text-[10px] sm:text-xs font-bold text-gray-400 flex items-center justify-center select-none shadow-xs">
                     {label}
                   </span>
                 </div>
 
                 {/* Bloco lateral esquerdo */}
-                <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                   {leftBlock.map(renderSeat)}
                 </div>
 
                 {/* Corredor central mais amplo dividindo os blocos laterais */}
                 {hasCentralAisle && (
                   <div
-                    className="w-6 sm:w-8 md:w-10 flex items-center justify-center pointer-events-none select-none"
+                    className="w-6 sm:w-8 md:w-10 flex items-center justify-center pointer-events-none select-none shrink-0"
                     aria-hidden="true"
                   >
                     <div className="w-1.5 h-1.5 rounded-full bg-white/15" />
@@ -332,13 +332,13 @@ export function SeatingGrid({
 
                 {/* Bloco lateral direito */}
                 {rightBlock.length > 0 && (
-                  <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                     {rightBlock.map(renderSeat)}
                   </div>
                 )}
 
                 {/* Rotulo da fileira a direita */}
-                <div className="w-6 sm:w-7 flex items-center justify-center">
+                <div className="w-6 sm:w-7 flex items-center justify-center shrink-0">
                   <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white/5 border border-white/10 text-center text-[10px] sm:text-xs font-bold text-gray-400 flex items-center justify-center select-none shadow-xs">
                     {label}
                   </span>

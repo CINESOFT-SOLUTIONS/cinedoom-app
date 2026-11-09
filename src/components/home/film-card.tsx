@@ -149,16 +149,6 @@ export function FilmCard({ film, onOpenSessions, onOpenDetails }: FilmCardProps)
             </button>
           </div>
         </div>
-
-        {/* Botão Rápido de Detalhes Visível em Dispositivos Touch (Mobile) */}
-        <button
-          type="button"
-          onClick={handleDetailsClick}
-          aria-label={`Ver detalhes de ${film.title}`}
-          className="md:hidden absolute bottom-2 right-2 z-20 w-7 h-7 rounded-full bg-black/75 border border-white/25 backdrop-blur-md text-white flex items-center justify-center shadow-lg active:scale-90 transition-transform"
-        >
-          <Info className="w-3.5 h-3.5 text-slate-200" />
-        </button>
       </div>
 
       {/* 3. Título do Filme e 4. Metadados Padronizados Imediatamente Abaixo */}
