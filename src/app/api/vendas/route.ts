@@ -12,7 +12,7 @@ import {
 
 /**
  * Route Handler para Venda Atomica de Ingressos (AC-1 / AC-6 / TC-1 / TC-9 / TC-14 / ADR-007)
- * - Trava pessimista SELECT FOR UPDATE em session_seats no PostgreSQL Neon.
+ * - Trava pessimista SELECT FOR UPDATE em session_seats no PostgreSQL (Supabase).
  * - Garante atomicidade: exactly 1 transacao bem-sucedida (201) e concorrentes rejeitadas (409 Conflict).
  * - Criptografia ponta a ponta de dados pessoais do comprador (HMAC-SHA256 + AES-256-GCM).
  */

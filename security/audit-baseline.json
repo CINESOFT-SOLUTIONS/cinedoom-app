@@ -1,0 +1,67 @@
+{
+  "reviewedAt": "2026-11-12",
+  "reviewAfter": "2026-12-12",
+  "notes": "Exceções de auditoria para vulnerabilidades altas/críticas sem correção disponível na linha Next.js 14.x. A migração para Next.js 15.5.x está planejada para a Macroentrega 2, junto da atualização do NextAuth. Novas vulnerabilidades fora desta lista bloqueiam o CI.",
+  "advisories": {
+    "GHSA-p293-qw3h-jr36": {
+      "package": "next",
+      "severity": "critical",
+      "reason": "RCE em servidores hospedados no Windows; produção e CI rodam em Linux/Vercel."
+    },
+    "GHSA-2xp9-vwfh-vxw4": {
+      "package": "next",
+      "severity": "critical",
+      "reason": "RCE na Image Optimization API com AVIF; todos os usos de next/image são unoptimized e os hosts remotos são restritos a TMDB/Unsplash."
+    },
+    "GHSA-2464-fhr4-w9xw": {
+      "package": "next",
+      "severity": "critical",
+      "reason": "RCE na Image Optimization API com SVG; todos os usos de next/image são unoptimized e não há upload de SVG pelo usuário."
+    },
+    "GHSA-h25m-26qc-wcjf": {
+      "package": "next",
+      "severity": "high",
+      "reason": "DoS em React Server Components; mitigado por limites e timeout da Vercel e monitoramento de 5xx."
+    },
+    "GHSA-q4gf-8mx6-v5v3": {
+      "package": "next",
+      "severity": "high",
+      "reason": "DoS em Server Components; mitigado por limites e timeout da Vercel e monitoramento de 5xx."
+    },
+    "GHSA-8h8q-6873-q5fj": {
+      "package": "next",
+      "severity": "high",
+      "reason": "DoS em Server Components; mitigado por limites e timeout da Vercel e monitoramento de 5xx."
+    },
+    "GHSA-c4j6-fc7j-m34r": {
+      "package": "next",
+      "severity": "high",
+      "reason": "SSRF em upgrades WebSocket; a aplicação não usa WebSocket nem servidor customizado."
+    },
+    "GHSA-36qx-fr4f-26g5": {
+      "package": "next",
+      "severity": "high",
+      "reason": "Bypass de middleware em Pages Router com i18n; a aplicação usa App Router e não configura i18n."
+    },
+    "GHSA-m99w-x7hq-7vfj": {
+      "package": "next",
+      "severity": "high",
+      "reason": "DoS em Server Actions; a aplicação não declara Server Actions (usa Route Handlers)."
+    },
+    "GHSA-89xv-2m56-2m9x": {
+      "package": "next",
+      "severity": "high",
+      "reason": "SSRF em Server Actions de servidor customizado; a aplicação não usa servidor customizado nem Server Actions."
+    },
+    "GHSA-p9j2-gv94-2wf4": {
+      "package": "next",
+      "severity": "high",
+      "reason": "SSRF em rewrites com host controlado pelo atacante; a aplicação não configura rewrites."
+    },
+    "GHSA-p3m5-59mp-jv5r": {
+      "package": "next",
+      "severity": "high",
+      "reason": "DoS em Server Actions; a aplicação não declara Server Actions (usa Route Handlers)."
+    }
+  }
+}

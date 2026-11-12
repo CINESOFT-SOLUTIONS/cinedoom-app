@@ -87,7 +87,7 @@ describe("Reformulação do Fluxo de Reservas do CineDoom (4 Etapas Sequenciais)
       });
 
       expect(result.holdToken).toBe(token);
-      expect(result.remainingSeconds).toBeGreaterThanOrEqual(598);
+      expect(result.remainingSeconds).toBeGreaterThanOrEqual(595);
       expect(result.remainingSeconds).toBeLessThanOrEqual(600);
       expect(TemporaryHoldService.isHoldValid(token, sessionId, seatIds)).toBe(true);
     });

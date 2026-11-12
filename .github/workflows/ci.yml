@@ -25,7 +25,7 @@ jobs:
     env:
       NODE_ENV: test
       DATABASE_URL: "postgresql://cinedoom_ci:cinedoom_ci@localhost:5432/cinedoom_test?sslmode=disable"
-      DATABASE_URL_UNPOOLED: "postgresql://cinedoom_ci:cinedoom_ci@localhost:5432/cinedoom_test?sslmode=disable"
+      DIRECT_URL: "postgresql://cinedoom_ci:cinedoom_ci@localhost:5432/cinedoom_test?sslmode=disable"
       NEXTAUTH_URL: "http://localhost:3000"
       NEXTAUTH_SECRET: "cinedoom-ci-super-secret-key-at-least-32-chars-long"
       CINEDOOM_CPF_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
@@ -61,8 +61,11 @@ jobs:
       - name: ESLint & No-Cycle Check
         run: pnpm eslint
 
-      - name: Run Unit Tests
-        run: pnpm test
+      - name: Run Unit & Integration Tests with Coverage
+        run: pnpm vitest run --coverage
+
+      - name: Dependency Vulnerability Audit
+        run: pnpm security:audit
 
       - name: Production Build Verification
         run: pnpm build

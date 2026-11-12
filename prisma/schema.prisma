@@ -1,5 +1,5 @@
 // ============================================================
-// CineDoom SaaS — Prisma Schema (Neon Serverless PostgreSQL)
+// CineDoom SaaS — Prisma Schema (PostgreSQL gerenciado no Supabase)
 // Especificacao: specs/data-model/data-model.md
 // Rastreabilidade: ADR-004, ADR-007, ADR-008, ADR-010, ADR-012
 // ============================================================

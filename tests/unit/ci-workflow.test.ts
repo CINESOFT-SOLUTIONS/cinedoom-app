@@ -46,7 +46,8 @@ describe("CI/CD Pipeline & Tooling Configuration (TASK-16 / Issue #17 / ADR-005)
     expect(content).toContain("pnpm prisma generate");
     expect(content).toContain("pnpm tsc --noEmit");
     expect(content).toContain("pnpm eslint");
-    expect(content).toContain("pnpm test");
+    expect(content).toContain("pnpm vitest run --coverage");
+    expect(content).toContain("pnpm security:audit");
     expect(content).toContain("pnpm build");
   });
 

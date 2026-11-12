@@ -28,7 +28,7 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/cinedoom?sslmode=disable"
-      DATABASE_URL_UNPOOLED: "postgresql://postgres:postgres@postgres:5432/cinedoom?sslmode=disable"
+      DIRECT_URL: "postgresql://postgres:postgres@postgres:5432/cinedoom?sslmode=disable"
       NEXTAUTH_URL: "http://localhost:3000"
       NEXTAUTH_SECRET: "cinedoom-super-secret-key-at-least-32-chars-long"
       CINEDOOM_CPF_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"

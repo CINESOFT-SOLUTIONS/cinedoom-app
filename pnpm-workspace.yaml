@@ -1,6 +1,10 @@
 packages:
   - '.'
 
+overrides:
+  # Corrige GHSAs de XSS/DoS no PostCSS transitivo do Next.js 14.
+  postcss: 8.5.31
+
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
